@@ -73,7 +73,7 @@ CPSC[ if (e1) { b1 }  k ] =  {
     __f1 ();
 };
 
-CSPC[ for (e1; e2; e3) { b } k ] = {
+CSPC[ l : for (e1; e2; e3) { b } k ] = {
     var __f1 = function () {
 	e1; 
 	var __f2 = function () { return e2; }; 
@@ -93,5 +93,9 @@ CSPC[ for (e1; e2; e3) { b } k ] = {
 	__f4 ();
     };
     __f1 ();
+};
+
+CPSC[ try { b1 } catch (e) { b2 } k ] = {
+    try { CPSC[b1 k] } catch (e) { CSCP[b2 k] }
 };
 
