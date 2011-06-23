@@ -1,5 +1,6 @@
 
 if (false) {
+    // This is the code that's compiled below....
     for (var i = 0; i < 5; i++) {
 	console.log ("iter " + i);
     }
