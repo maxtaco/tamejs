@@ -8,7 +8,7 @@
 
 /* author: Max Krohn <max@m8api.com> */
 
-/* Some borred from: http://www.opensource.apple.com/source/JavaScriptCore/ */
+/* Some borrowed from: http://www.opensource.apple.com/source/JavaScriptCore/ */
 
 %start Program
 
@@ -19,7 +19,8 @@
 
 ExprFrag
      : GENERIC
-     | NestedAnything
+     | FunctionDeclaration
+     | LPAREN Expr RPAREN
      ;
 
 NestedAnything
@@ -47,18 +48,9 @@ Anything
      | NestedAnything
      ;
 
-ExprNonEmptyBody
-     : 
-     | ExprNonEmptyBody ExprFrag
-     ;
-
-ExprNonEmpty
-     : GENERIC ExprNonEmptyBody
-     ;
-
 Expr
      : 
-     | ExprNonEmpty
+     | Expr ExprFrag
      ;
 
 ExprStatement
@@ -71,6 +63,7 @@ Statement
      | ForStatement
      | WhileStatement
      | IfStatement
+     | FunctionDeclaration
      ;
 
 Block
@@ -98,6 +91,10 @@ IfStatement
 ForIter
      : Expr SEMICOLON Expr SEMICOLON Expr
      | Expr
+     ;
+
+FunctionDeclaration
+     : FUNCTION	IdOpt LPAREN ParamList RPAREN LBRACE FunctionBody RBRACE
      ;
 
 Program
