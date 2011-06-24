@@ -1,15 +1,21 @@
-/* description: partial parser and scanner for javascript in the tame
-   dialect.
+/* description: partial scanner for javascript in the tame dialect;
+   uses paren-matching so as not to have to parse the whole language
  */
 
+/* TODOS: regex in the form var x = /for/g;
+      Might not be possible, we'll have to see....
+      Maybe run the preprocessor as in v8?
+*/
+
 /* lexical grammar */
+/* author: Max Krohn <max@m8api.com> */
 
 %s ST_JS ST_QUOTE2 ST_QUOTE1 ST_COMMENT ST_EXPR_0 ST_EXPR_1
 %%
 
 /* ------------------------------------------------------------ */
 
-<ST_JS>"//".*		return 'GENERIC';
+<ST_JS>"//".*		/* skip over all space */
 <ST_JS>"for"		%{ this.begin ('ST_EXPR_0'); return 'FOR'; }
 <ST_JS>"while"		%{ this.begin ('ST_EXPR_0'); return 'WHILE'; }
 <ST_JS>"break"		return 'BREAK';
@@ -23,7 +29,8 @@
 <ST_JS>"twait"		return 'TWAIT';
 <ST_JS>"function"	return 'FUNCTION';
 <ST_JS>"mkev"		return 'MKEV';
-<ST_JS>"/*"		%{ this.begin ('ST_COMMENT'); return 'LCOMMENT'; }
+<ST_JS>"finally"	return 'FINALLY';
+<ST_JS>"/*"		%{ this.begin ('ST_COMMENT'); }
 
 <ST_JS>"{"		%{ this.begin ('ST_JS'); return 'LBRACE1'; }
 <ST_JS>"}"		%{ this.popState(); return 'RBRACE1'; }
@@ -75,9 +82,9 @@
 
 /* ------------------------------------------------------------ */
 
-<ST_COMMENT>"*/"	%{ this.popState(); return 'RCOMMENT'; }
-<ST_COMMENT>"*"		return 'COMMENT_FRAG'; 
-<ST_COMMENT>[^*]+	return 'COMMENT_FRAG'; 
+<ST_COMMENT>"*/"	%{ this.popState(); }
+<ST_COMMENT>"*"		/* ignore */
+<ST_COMMENT>[^*]+	/* ignore */
 <ST_COMMENT><<EOF>>	return 'ENDOFFILE';
 
 /* ------------------------------------------------------------ */
