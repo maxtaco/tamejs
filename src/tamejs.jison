@@ -17,46 +17,54 @@
 
 %%
 
-ExprFrag
+String
+     : String1
+     | String2
+     ;
+
+String1
+     : QUOTE1 StringAtoms QUOTE1
+     ;
+
+String2
+     : QUOTE2 StringAtoms QUOTE2
+     ;
+
+StringAtoms
+     :
+     | StringAtoms STRING_ATOM
+     ;
+
+ExprAtomLeading
      : GENERIC
-     | FunctionDeclaration
+     | COMMA
+     | COLON
+     | ID
+     | String
      | LPAREN Expr RPAREN
+     | LBRACKET Expr RBRACKET
+     | FunctionDeclaration
      ;
 
-NestedAnything
-     : LPAREN Anything RPAREN
-     | LBRACE Anything RBRACE
+ExprAtom
+     : ExprAtomLeading
+     | LBRACE ExprAtom RBRACE
      ;
 
-Anything
-     : GENERIC
-     | SEMICOLON
-     | FOR
-     | WHILE
-     | BREAK
-     | CONTINUE
-     | RETURN
-     | DO
-     | IF
-     | ELSE
-     | TRY
-     | CATCH
-     | TWAIT
-     | FUNCTION
-     | MKEV
-     | FINALLY
-     | NestedAnything
-     ;
-
-Expr
+ExprAtomList
      : 
-     | Expr ExprFrag
+     | ExprAtomList ExprAtom
+     ;     
+
+ExprAtom
+     : 
+     | ExprAtomLeading ExprAtomList
      ;
 
-ExprStatement
+ExprStatment
      : Expr SEMICOLON
      ;
-
+	
 Statement
      : Block
      | ExprStatement
@@ -94,7 +102,30 @@ ForIter
      ;
 
 FunctionDeclaration
-     : FUNCTION	IdOpt LPAREN ParamList RPAREN LBRACE FunctionBody RBRACE
+     : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN LBRACE FunctionBody RBRACE
+     ;
+
+IdOpt
+     : 
+     | ID 
+     ;
+
+ParamList
+     : Param
+     | ParamList COMMA Param
+     ;
+
+Param
+     : ID
+     ;
+
+ParamListOpt
+     :
+     | ParamList
+     ;
+
+FunctionBody
+     : SourceElements
      ;
 
 Program
