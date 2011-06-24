@@ -8,6 +8,13 @@
 
 /* author: Max Krohn <max@m8api.com> */
 
+/* Some borred from: http://www.opensource.apple.com/source/JavaScriptCore/ */
+
+%start Program
+
+%nonassoc IF_WITHOUT_ELSE
+%nonassoc ELSE
+
 %%
 
 ExprFrag
@@ -40,9 +47,18 @@ Anything
      | NestedAnything
      ;
 
+ExprNonEmptyBody
+     : 
+     | ExprNonEmptyBody ExprFrag
+     ;
+
+ExprNonEmpty
+     : GENERIC ExprNonEmptyBody
+     ;
+
 Expr
-     : ExprFrag Expr
-     |
+     : 
+     | ExprNonEmpty
      ;
 
 ExprStatement
@@ -54,6 +70,7 @@ Statement
      | ExprStatement
      | ForStatement
      | WhileStatement
+     | IfStatement
      ;
 
 Block
@@ -69,8 +86,22 @@ ForStatement
      : FOR LPAREN ForIter RPAREN Statement
      ;
 
+WhileStatement
+     : WHILE LPAREN Expr RPAREN Statement
+     ;
+
+IfStatement
+    : IF LPAREN Expr RPAREN Statement %prec IF_WITHOUT_ELSE
+    | IF LPAREN Expr RPAREN Statement ELSE Statement
+    ;
+
 ForIter
      : Expr SEMICOLON Expr SEMICOLON Expr
-     : Expr
+     | Expr
      ;
+
+Program
+     : SourceElements
+     ;
+     
 
