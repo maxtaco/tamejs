@@ -10,17 +10,17 @@
 
 %%
 
-expr_frag
+ExprFrag
      : GENERIC
-     | nested_anything
+     | NestedAnything
      ;
 
-nested_anything
-     : LPAREN anything RPAREN
-     | LBRACE anything RBRACE
+NestedAnything
+     : LPAREN Anything RPAREN
+     | LBRACE Anything RBRACE
      ;
 
-anything
+Anything
      : GENERIC
      | SEMICOLON
      | FOR
@@ -37,35 +37,40 @@ anything
      | FUNCTION
      | MKEV
      | FINALLY
-     | nested_anything
+     | NestedAnything
      ;
 
-expr
-     : expr_frag expr
+Expr
+     : ExprFrag Expr
      |
      ;
 
-statement
-     : block
-     | empty_statement
-     | expr_statement
+ExprStatement
+     : Expr SEMICOLON
      ;
 
-block
-     : LBRACE source_elements RBRACE
+Statement
+     : Block
+     | ExprStatement
+     | ForStatement
+     | WhileStatement
      ;
 
-source_elements
+Block
+     : LBRACE SourceElements RBRACE
+     ;
+
+SourceElements
      : 
-     | source_elements statement
+     | SourceElements Statement
      ;
 
-for
-     : FOR LPAREN for_iter RPAREN statement
+ForStatement
+     : FOR LPAREN ForIter RPAREN Statement
      ;
 
-for_iter
-     : expr SEMICOLON expr SEMICOLON expr
-     : expr
+ForIter
+     : Expr SEMICOLON Expr SEMICOLON Expr
+     : Expr
      ;
 
