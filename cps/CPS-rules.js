@@ -57,17 +57,20 @@ CPS[continue; k] = {
     __k_global.k_continue ();
 };
 
-CPS[ if (e1) { b1 } else { b2 } k ] =  {
+// We want to make sure not to have exponential code-explosion,
+// so only translate the continuation for the rest of the program once.
+CPS[if (e1) { b1 } else { b2 } k] =  {
 
     var __f1 = function () {
 	if (e1) {
-	    var __f2 = CPS[b1 k];
+	    var __f2 = CPS[b1 ; __f4()];
 	    __f2 ();
 	} else {
-	    var __f3 = CPS[b2 k];
+	    var __f3 = CPS[b2 ; __f4()];
 	    __f3 ();
 	}
     }
+    var __f4 = CPS[k];
     __f1 ();
 };
 
@@ -97,7 +100,7 @@ CPS[ l : for (e1; e2; e3) { b } k ] = {
 
 // Unsure of this..
 CPS[ try { b1 } catch (e) { b2 } k ] = {
-    try { CPS[b1 k] } catch (e) { CSCP[b2 k] }
+    try { CPS[b1 k] } catch (e) { CPS[b2 k] }
 };
 
 // This is a bit ugly since there's n^2 code generation.  There
@@ -112,16 +115,16 @@ CPS[ switch (e) { case e1 : b1  case e2 : b2 : default : d }  k ] =
 	default: __fn ();
 	}
     };
-    var __f1 = CPS[b1 b2 b3 ... d k];
-    var __f2 = CPS[b2 b3 ..... d k];
-    var __fn = CSC[d k];
+    var __f1 = CPS[b1; __f2() ];
+    var __f2 = CPS[b2; __f3() ];
+    var __fn = CPS[d;  __g2() ];
     var __g2 = CPS[k];
     __k_global = { k_break : __g2 };
     __g1 ();
 };
 
 // The function name [name] is optional...
-CPS[ function [name] (params) { b } k ] =
+CPS[ function [name] (params) { b } ] =
 {
     function [name] (params) {
 	__ret_global.push (null);
@@ -131,7 +134,10 @@ CPS[ function [name] (params) { b } k ] =
     }
 };
 
-CPS[ return X; k ] =
+CPS[ return X;  k ] =
 {
     __ret_global[__ret_global.length - 1] = X;
 };
+
+// If the block b doesn't match anything above, then simply:
+CPS[ b;  k] = { b; CPS[k]; };
