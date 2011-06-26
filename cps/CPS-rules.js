@@ -119,3 +119,19 @@ CPS[ switch (e) { case e1 : b1  case e2 : b2 : default : d }  k ] =
     __k_global = { k_break : __g2 };
     __g1 ();
 };
+
+// The function name [name] is optional...
+CPS[ function [name] (params) { b } k ] =
+{
+    function [name] (params) {
+	__ret_global.push (null);
+	var __f1 = CPS[b];
+	__f1 ();
+	return __ret_global.pop ();
+    }
+};
+
+CPS[ return X; k ] =
+{
+    __ret_global[__ret_global.length - 1] = X;
+};
