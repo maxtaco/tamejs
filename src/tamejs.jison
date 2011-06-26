@@ -10,6 +10,12 @@
 
 /* Some borrowed from: http://www.opensource.apple.com/source/JavaScriptCore/ */
 
+/* TODOS!
+    - switch/case/default
+    - labeled for's and while's --- how?
+    - \n's instead of ';'
+ */ 
+
 %start Program
 
 %nonassoc IF_WITHOUT_ELSE
@@ -47,12 +53,12 @@ ExprAtomLeading
      | String  { $$ = yytext; }
      | LPAREN Expr RPAREN     { $$ = [ '(', $2, ')' ]; }
      | LBRACKET Expr RBRACKET { $$ = [ '{', $2, '}' ]; }
-     | FunctionDeclaration    { $$ = $1; }
      ;
 
 ExprAtom
      : ExprAtomLeading        { $$ = $1; }
      | LBRACE ExprAtom RBRACE { $$ = [ $1, $2, $3 ]; }
+     | FunctionDeclaration    { $$ = $1; }
      ;
 
 ExprAtomList
@@ -69,8 +75,9 @@ Expr
      }
      ;
 
-ExprStatment
+ExprStatement
      : Expr SEMICOLON { $$ = $1; }
+     | FunctionDeclaration { $$ = $1; }
      ;
 	
 Statement
@@ -79,7 +86,7 @@ Statement
      | ForStatement
      | WhileStatement
      | IfStatement
-     | FunctionDeclaration
+     | TwaitStatement
      ;
 
 Block
@@ -87,48 +94,85 @@ Block
      ;
 
 SourceElements
-     : 
-     | SourceElements Statement
+     : { $$ = []; } 
+     | SourceElements Statement { $1.push ($2); $$ = $1; }
      ;
 
 ForStatement
      : FOR LPAREN ForIter RPAREN Statement
+     {
+        $$ = new ForStatement ($3, $5);
+     }
+     ;
+
+Label
+     : ID { $$ = yytext; }
+     ;
+
+LabelOpt
+     : { $$ = null; }
+     | Label COLON { $$ = $1; }
      ;
 
 WhileStatement
      : WHILE LPAREN Expr RPAREN Statement
+     {
+        $$ = new WhileStatement ($3, $5);
+     }
      ;
 
 IfStatement
-    : IF LPAREN Expr RPAREN Statement %prec IF_WITHOUT_ELSE
-    | IF LPAREN Expr RPAREN Statement ELSE Statement
-    ;
+     : IF LPAREN Expr RPAREN Statement %prec IF_WITHOUT_ELSE
+     {
+        $$ = new IfElseStatement ($3, $5, null);
+     }
+     | IF LPAREN Expr RPAREN Statement ELSE Statement
+     {
+        $$ = new IfElseStatement ($3, $5, $7);
+     }
+     ;
 
 ForIter
      : Expr SEMICOLON Expr SEMICOLON Expr
+     {
+         $$ = new ForIterClassic ($1, $2, $);
+     }
      | Expr
+     {
+         $$ = new ForIterIterator ($1); 
+     }
      ;
 
 FunctionDeclaration
      : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN LBRACE FunctionBody RBRACE
+     {
+         $$ = new FunctionDeclaration ($2, $4, $7);
+     }
+     ;
+
+TwaitStatement
+     : TWAIT Statement
+     {
+        $$ = new TwaitStatement ($2);
+     }
      ;
 
 IdOpt
      : 
-     | ID 
+     | ID { $$ = yytext; }
      ;
 
 ParamList
-     : Param
-     | ParamList COMMA Param
+     : Param { $$ = [ $1 ]; }
+     | ParamList COMMA Param { $1.push ($3); $$ = $1; }
      ;
 
 Param
-     : ID
+     : ID { $$ = yytext; }
      ;
 
 ParamListOpt
-     :
+     : { $$ = []; }
      | ParamList
      ;
 

@@ -1,6 +1,8 @@
 
 // CPS[b k] is the CPS conversion of the block b, followed by the continuation
 // k, which is the rest of the program...
+// This conversion is inspired by CPS conversion, but obviously isn't
+// a formal example of it.
 
 // l is an optional label
 CPS[ l : while (e) { b }  k ] = {
@@ -77,6 +79,7 @@ CPS[if (e1) { b1 } else { b2 } k] =  {
 CPS[ if (e1) { b1 } k ] =  CPS[ if (e1) { b1 } else {} k ];
 
 CPS[ l : for (e1; e2; e3) { b } k ] = {
+    var __labels;
     var __f1 = function () {
 	e1; 
 	var __f2 = function () { return e2; }; 
@@ -98,13 +101,23 @@ CPS[ l : for (e1; e2; e3) { b } k ] = {
     __f1 ();
 };
 
+// For now, just do the naive thing.  Realize the iteration up-front and
+// then iterate over the fixed vector.  This translation might be buggy
+// in the cases that the iteration changes the thing being iterated over.
+CPS[ l : for (i in X) { b } k ] = {
+    var __f1 = function () {
+	var _v = [];
+	for (i in X) { v.push (i); }
+	CPS[l : for (var __k = 0; __k < X.length; __k++) { b } k ];
+    };
+    __f1 ();
+};
+
 // Unsure of this..
 CPS[ try { b1 } catch (e) { b2 } k ] = {
     try { CPS[b1 k] } catch (e) { CPS[b2 k] }
 };
 
-// This is a bit ugly since there's n^2 code generation.  There
-// might be a better way.
 CPS[ switch (e) { case e1 : b1  case e2 : b2 : default : d }  k ] =
 {
     var __g1 = function () {
