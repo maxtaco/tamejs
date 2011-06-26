@@ -110,16 +110,3 @@ function Program (body) {
     this._body = body;
 };
 
-
-
-[a-zA-Z_][a-zA-Z_0-9]*([ ^]*:\)? { 
-		    var t = yytext;
-		    var l = t.length;
-		    var typ = 'ID';
-		    if (t.substring (l - 1, 1) == ':') {
-                        t = t.replace (/[\s:]/g, "");
-			typ = 'LABEL'; 
-	 	    }
-		    yytext = t;
-		    return typ;
-		}
