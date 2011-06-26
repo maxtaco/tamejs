@@ -1,9 +1,19 @@
 
+//
+// Code for making the elements of the abstract syntax tree (AST)
+// for the tamejs grammar.  Everything should inherit from a Node
+// object.  A Program object is output by the parser
+//
+
+//-----------------------------------------------------------------------
+
 function Node () {
     this._label = null;
     this.setLabel = function (x) { this._label = x; }
     this.getLabel = function () { return this._label; }
 };
+
+//-----------------------------------------------------------------------
 
 function Expr (atoms) {
     var that = new Node ();
@@ -27,6 +37,8 @@ function Expr (atoms) {
     return that;
 };
 
+//-----------------------------------------------------------------------
+
 function Block (s) {
     var that = new Node ();
     that._body = s;
@@ -43,6 +55,8 @@ function Block (s) {
     return that;
 };
 
+//-----------------------------------------------------------------------
+
 function ForStatement (forIter, statement) {
     var that = new Node ();
     that._forIter = forIter;
@@ -55,6 +69,8 @@ function ForStatement (forIter, statement) {
     return that;
 };
 
+//-----------------------------------------------------------------------
+
 function ForIterClassic (initExpr, condExpr, incExpr) {
     var that = new Node ();
     that._initExpr = initExpr;
@@ -62,6 +78,8 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
     that._incExpr = incExpr;
     return that;
 };
+
+//-----------------------------------------------------------------------
 
 function IfElseStatement (condExpr, ifStatement, elseStatement) {
     var that = new Node ();
@@ -78,6 +96,8 @@ function IfElseStatement (condExpr, ifStatement, elseStatement) {
     return that;
 };
 
+//-----------------------------------------------------------------------
+
 function FunctionDeclaration (name, params, body) {
     var that = new Node ();
     that._name = name;
@@ -91,12 +111,16 @@ function FunctionDeclaration (name, params, body) {
     return that;
 };
 
+//-----------------------------------------------------------------------
+
 function TwaitStatement (body) {
     var that = new Node ();
     that._body = body;
     that.hasTwaitStatement = function () { return true; };
     return that;
 };
+
+//-----------------------------------------------------------------------
 
 function WhileStatement (condExpr, body) {
     var that = new Node ();
@@ -106,7 +130,15 @@ function WhileStatement (condExpr, body) {
     return that;
 };
 
+//-----------------------------------------------------------------------
+
 function Program (body) {
     this._body = body;
 };
 
+//-----------------------------------------------------------------------
+
+exports.Program = Program;
+exports.WhileStatement = WhileStatement;
+exports.IfElseStatement = IfElseStatement;
+exports.Expr = Expr;

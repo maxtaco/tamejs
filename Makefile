@@ -6,3 +6,6 @@ build: src/parser.js
 
 clean:
 	rm src/parser.js
+
+default: build
+all: build

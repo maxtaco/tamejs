@@ -56,7 +56,7 @@ InnerExprAtomList
      ;
 
 InnerExpr
-     : InnerExprAtomList { $$ = new Expr ($1); }
+     : InnerExprAtomList { $$ = new ast.Expr ($1); }
      ;
 
 ParenExpr
@@ -82,11 +82,11 @@ OuterExprAtom
      ;
 
 Expr
-     : { $$ = new Expr ([]); }
+     : { $$ = new ast.Expr ([]); }
      | OuterExprAtom InnerExprAtomList
      {
          $2.unshift ($1);
-	 $$ = new Expr ($2);
+	 $$ = new ast.Expr ($2);
      }
      ;
 
@@ -114,7 +114,7 @@ LabeledStatement
      ;
 
 Block
-     : LBRACE SourceElements RBRACE  { $$ = new Block ($2); }
+     : LBRACE SourceElements RBRACE  { $$ = new ast.Block ($2); }
      ;
 
 SourceElements
@@ -125,50 +125,50 @@ SourceElements
 ForStatement
      : LabelOpt FOR LPAREN ForIter RPAREN Statement
      {
-        $$ = new ForStatement ($3, $5);
+        $$ = new ast.ForStatement ($3, $5);
      }
      ;
 
 WhileStatement
      : WHILE LPAREN Expr RPAREN Statement
      {
-        $$ = new WhileStatement ($3, $5);
+        $$ = new ast.WhileStatement ($3, $5);
      }
      ;
 
 IfStatement
      : IF LPAREN Expr RPAREN Statement %prec IF_WITHOUT_ELSE
      {
-        $$ = new IfElseStatement ($3, $5, null);
+        $$ = new ast.IfElseStatement ($3, $5, null);
      }
      | IF LPAREN Expr RPAREN Statement ELSE Statement
      {
-        $$ = new IfElseStatement ($3, $5, $7);
+        $$ = new ast.IfElseStatement ($3, $5, $7);
      }
      ;
 
 ForIter
      : Expr SEMICOLON Expr SEMICOLON Expr
      {
-         $$ = new ForIterClassic ($1, $2, $);
+         $$ = new ast.ForIterClassic ($1, $2, $);
      }
      | Expr
      {
-         $$ = new ForIterIterator ($1); 
+         $$ = new ast.ForIterIterator ($1); 
      }
      ;
 
 FunctionDeclaration
      : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN LBRACE FunctionBody RBRACE
      {
-         $$ = new FunctionDeclaration ($2, $4, $7);
+         $$ = new ast.FunctionDeclaration ($2, $4, $7);
      }
      ;
 
 TwaitStatement
      : TWAIT Statement
      {
-        $$ = new TwaitStatement ($2);
+        $$ = new ast.TwaitStatement ($2);
      }
      ;
 
@@ -196,7 +196,7 @@ FunctionBody
      ;
 
 Program
-     : SourceElements { $$ = new Program ($1); }
+     : SourceElements { $$ = new ast.Program ($1); }
      ;
      
 
