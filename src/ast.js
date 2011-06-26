@@ -1,9 +1,15 @@
 
-function Expr (atoms) {
-    this._atoms = [];
-    this.addAtomsDfs (atoms);
+function Node () {
+    this._label = null;
+    this.setLabel = function (x) { this._label = x; }
+};
 
-    this.addAtomsDfs = function (l) {
+function Expr (atoms) {
+    var that = new Node ();
+    that._atoms = [];
+    that.addAtomsDfs (atoms);
+
+    that.addAtomsDfs = function (l) {
 	if (l instanceof Array) {
 	    for (var x in l) {
 		this.addAtomsDfs(x);
@@ -13,15 +19,18 @@ function Expr (atoms) {
 	}
     };
 
-    this.hasTwaitStatement = function () {
+    that.hasTwaitStatement = function () {
 	return false;
     };
+
+    return that;
 };
 
 function Block (s) {
-    this._body = s;
+    var that = new Node ();
+    that._body = s;
 
-    this.hasTwaitStatement = function () {
+    that.hasTwaitStatement = function () {
 	for (x in this._body) {
 	    if (x.hasTwaitStatement ()) {
 		return true;
@@ -29,52 +38,70 @@ function Block (s) {
 	}
 	return false;
     };
+
+    return that;
 };
 
 function ForStatement (forIter, statement) {
-    this._forIter = forIter;
-    this._statement = statement;
+    var that = new Node ();
+    that._forIter = forIter;
+    that._statement = statement;
 
-    this.hasTwaitStatement = function () {
+    that.hasTwaitStatement = function () {
 	return this._statement.hasTwaitStatement ();
     };
+
+    return that;
 };
 
 function ForIterClassic (initExpr, condExpr, incExpr) {
-    this._initExpr = initExpr;
-    this._condExpr = condExpr;
-    this._incExpr = incExpr;
+    var that = new Node ();
+    that._initExpr = initExpr;
+    that._condExpr = condExpr;
+    that._incExpr = incExpr;
+    return that;
 };
 
 function IfElseStatement (condExpr, ifStatement, elseStatement) {
-    this._condExpr = condExpr;
-    this._ifStatement = ifStatement;
+    var that = new Node ();
+    that._condExpr = condExpr;
+    that._ifStatement = ifStatement;
     if (!elseStatement) { elseStatement = new Block([]); }
-    this._elseStatement = elseStatement;
+    that._elseStatement = elseStatement;
 
-    this.hasTwaitStatement = function () {
+    that.hasTwaitStatement = function () {
 	return this._ifStatement.hasTwaitStatement () ||
 	    this._elseStatement.hasTwaitStatement ();
     };
+
+    return that;
 };
 
 function FunctionDeclaration (name, params, body) {
-    this._name = name;
-    this._params = params;
-    this._body = new Block (body);
+    var that = new Node ();
+    that._name = name;
+    that._params = params;
+    that._body = new Block (body);
 
-    this.hasTwaitStatement = function () {
+    that.hasTwaitStatement = function () {
 	return this._body.hasTwaitStatement ();
     };
+
+    return that;
 };
 
 function TwaitStatement (body) {
-    this._body = body;
-    this.hasTwaitStatement = function () { return true; };
+    var that = new Node ();
+    that._body = body;
+    that.hasTwaitStatement = function () { return true; };
+    return that;
 };
 
 function WhileStatement (condExpr, body) {
-    this._condExpr = condExpr;
-    this._body = body ();
+    var that = new Node ();
+    that._body = body;
+    that._condExpr = condExpr;
+    that._body = body;
+    return that;
 };
 

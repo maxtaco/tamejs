@@ -45,38 +45,54 @@ StringAtoms
      | StringAtoms STRING_ATOM { $$ = $1 + $2; }
      ;
 
-ExprAtomLeading
+InnerExprAtom
+     : OuterExprAtom { $$ = $1; }
+     | LABEL         { $$ = yytext; }
+     | BraceExpr     { $$ = $1; } 
+     ;
+
+InnerExprAtomList
+     : { $$ = []; }
+     | InnerExprAtomList InnerExprAtom { $1.push ($2); $$ = $1; }
+     ;
+
+InnerExpr
+     : InnerExprAtomList { $$ = new Expr ($1); }
+     ;
+
+ParenExpr
+     : LPAREN InnerExpr RPAREN     { $$ = [ '(', $2, ')' ]; }
+     ;
+
+BracketExpr 
+     : LBRACKET InnerExpr RBRACKET { $$ = [ '[', $2, ']' ]; }
+     ;
+
+BraceExpr
+     : LBRACE InnerExpr RBRACE     { $$ = [ '{', $2, '}' ]; }
+     ;
+
+OuterExprAtom
      : GENERIC { $$ = yytext; }
      | COMMA   { $$ = yytext; }
      | COLON   { $$ = yytext; }
      | ID      { $$ = yytext; }
      | String  { $$ = yytext; }
-     | LPAREN Expr RPAREN     { $$ = [ '(', $2, ')' ]; }
-     | LBRACKET Expr RBRACKET { $$ = [ '{', $2, '}' ]; }
+     | ParenExpr   { $$ = $1; } 
+     | BracketExpr { $$ = $1; }
      ;
-
-ExprAtom
-     : ExprAtomLeading        { $$ = $1; }
-     | LBRACE ExprAtom RBRACE { $$ = [ $1, $2, $3 ]; }
-     | FunctionDeclaration    { $$ = $1; }
-     ;
-
-ExprAtomList
-     : { $$ = []; }
-     | ExprAtomList ExprAtom { $1.push ($2); $$ = $1; }
-     ;     
 
 Expr
-     : { $$ = new Expr ([]); } 
-     | ExprAtomLeading ExprAtomList 
-     { 
-         $2.unshift ($1); 
-	 $$ = new Expr ($2); 
+     : { $$ = new Expr ([]); }
+     | OuterExprAtom InnerExprAtomList
+     {
+         $2.unshift ($1);
+	 $$ = new Expr ($2);
      }
      ;
 
 ExprStatement
-     : Expr SEMICOLON { $$ = $1; }
+     : Expr SEMICOLON { $$ = [ $1, ';' ]; }
      | FunctionDeclaration { $$ = $1; }
      ;
 	
@@ -87,6 +103,15 @@ Statement
      | WhileStatement
      | IfStatement
      | TwaitStatement
+     | LabeledStatement
+     ;
+
+LabeledStatement 
+     : LABEL Statement
+     {
+         $2.setLabel ($1);
+	 $$ = $2;
+     }
      ;
 
 Block
@@ -99,19 +124,10 @@ SourceElements
      ;
 
 ForStatement
-     : FOR LPAREN ForIter RPAREN Statement
+     : LabelOpt FOR LPAREN ForIter RPAREN Statement
      {
         $$ = new ForStatement ($3, $5);
      }
-     ;
-
-Label
-     : ID { $$ = yytext; }
-     ;
-
-LabelOpt
-     : { $$ = null; }
-     | Label COLON { $$ = $1; }
      ;
 
 WhileStatement

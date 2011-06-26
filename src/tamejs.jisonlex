@@ -3,6 +3,7 @@
 %%
 
 "//".*		/* skip over all space */
+[a-zA-Z_][a-zA-Z_0-9]*[ ^]*: { yytext = yytext.slice (0,-1); return 'LABEL'; }
 [a-zA-Z_][a-zA-Z_0-9]* return 'ID';
 "for"		{ this.begin ('ST_EXPR_0'); return 'FOR'; }
 "while"		{ this.begin ('ST_EXPR_0'); return 'WHILE'; }
@@ -35,7 +36,7 @@
 "\""		{ this.begin ('ST_QUOTE2'); return 'QUOTE2'; }
 "\'"		{ this.begin ('ST_QUOTE1'); return 'QUOTE1'; }
 "/*"		{ this.begin ('ST_COMMENT'); }
-[^/bcdefimrstw{}()\[\];,:"']+    return 'GENERIC';
+[^/bcdefimrstw{}()\[\];,:"'\s]+    return 'GENERIC';
 .	 	return 'GENERIC';
 <<EOF>>		return 'ENDOFFILE';
 
