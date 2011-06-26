@@ -12,7 +12,6 @@
 
 /* TODOS!
     - switch/case/default
-    - labeled for's and while's --- how?
     - \n's instead of ';'
  */ 
 
