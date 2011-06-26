@@ -2,6 +2,7 @@
 function Node () {
     this._label = null;
     this.setLabel = function (x) { this._label = x; }
+    this.getLabel = function () { return this._label; }
 };
 
 function Expr (atoms) {
@@ -105,3 +106,20 @@ function WhileStatement (condExpr, body) {
     return that;
 };
 
+function Program (body) {
+    this._body = body;
+};
+
+
+
+[a-zA-Z_][a-zA-Z_0-9]*([ ^]*:\)? { 
+		    var t = yytext;
+		    var l = t.length;
+		    var typ = 'ID';
+		    if (t.substring (l - 1, 1) == ':') {
+                        t = t.replace (/[\s:]/g, "");
+			typ = 'LABEL'; 
+	 	    }
+		    yytext = t;
+		    return typ;
+		}

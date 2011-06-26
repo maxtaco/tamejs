@@ -196,7 +196,7 @@ FunctionBody
      ;
 
 Program
-     : SourceElements
+     : SourceElements { $$ = new Program ($1); }
      ;
      
 

@@ -1,10 +1,14 @@
 
+
 %s ST_QUOTE2 ST_QUOTE1 ST_COMMENT ST_EXPR_0 ST_EXPR_1
 %%
 
 "//".*		/* skip over all space */
-[a-zA-Z_][a-zA-Z_0-9]*[ ^]*: { yytext = yytext.slice (0,-1); return 'LABEL'; }
-[a-zA-Z_][a-zA-Z_0-9]* return 'ID';
+[a-zA-Z_][a-zA-Z_0-9]*[ ^]*: { 
+                                   yytext = yytext.replace (/[\s:]/g, ""); 
+				   return 'LABEL'; 
+                              }
+[a-zA-Z_][a-zA-Z_0-9]* { return 'ID'; }
 "for"		{ this.begin ('ST_EXPR_0'); return 'FOR'; }
 "while"		{ this.begin ('ST_EXPR_0'); return 'WHILE'; }
 "break"		return 'BREAK';
