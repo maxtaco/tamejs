@@ -1,0 +1,6 @@
+
+- Maybe LALR is the wrong way to go, what about this?
+    http://boshi.inimino.org/3box/asof/1269629763069/PEG/ECMAScript_unified.peg
+
+- List of parsers here:
+    https://github.com/joyent/node/wiki/modules#parser-generators
