@@ -55,6 +55,33 @@ function Expr (atoms) {
 		 atoms : this._atoms.map (this.dumpAtom) };
     };
 
+    that.compileAtom = function (eng, a) {
+	var out;
+	if (typeof (a) == 'string') {
+	    out = eng.Output ();
+	    out.addLine (a);
+	} else {
+	    out = a.compile (eng);
+	}
+	return out;
+    };
+
+    that.compile = function (eng) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+
+	ret.addLine ("var " + fn " = function (k) {");
+	ret.indent ();
+	for (var i in this._atoms) {
+	    var atom = this._atoms[i];
+	    var atomc = this.compileAtom (eng, x);
+	    ret.addOutput (atomc);
+	}
+	ret.unindent ();
+	ret.addLine ("};");
+	return (ret);
+    };
+
     that.addAtomsDfs (atoms);
 
     return that;
