@@ -15,7 +15,9 @@
     - \n's instead of ';'
  */ 
 
+
 %start Program
+
 
 %nonassoc IF_WITHOUT_ELSE
 %nonassoc ELSE
@@ -56,7 +58,7 @@ InnerExprAtomList
      ;
 
 InnerExpr
-     : InnerExprAtomList { $$ = new ast.Expr ($1); }
+     : InnerExprAtomList { $$ = new yy.Expr ($1); }
      ;
 
 ParenExpr
@@ -82,11 +84,11 @@ OuterExprAtom
      ;
 
 Expr
-     : { $$ = new ast.Expr ([]); }
+     : { $$ = new yy.Expr ([]); }
      | OuterExprAtom InnerExprAtomList
      {
          $2.unshift ($1);
-	 $$ = new ast.Expr ($2);
+	 $$ = new yy.Expr ($2);
      }
      ;
 
@@ -114,7 +116,7 @@ LabeledStatement
      ;
 
 Block
-     : LBRACE SourceElements RBRACE  { $$ = new ast.Block ($2); }
+     : LBRACE SourceElements RBRACE  { $$ = new yy.Block ($2); }
      ;
 
 SourceElements
@@ -125,50 +127,50 @@ SourceElements
 ForStatement
      : LabelOpt FOR LPAREN ForIter RPAREN Statement
      {
-        $$ = new ast.ForStatement ($3, $5);
+        $$ = new yy.ForStatement ($3, $5);
      }
      ;
 
 WhileStatement
      : WHILE LPAREN Expr RPAREN Statement
      {
-        $$ = new ast.WhileStatement ($3, $5);
+        $$ = new yy.WhileStatement ($3, $5);
      }
      ;
 
 IfStatement
      : IF LPAREN Expr RPAREN Statement %prec IF_WITHOUT_ELSE
      {
-        $$ = new ast.IfElseStatement ($3, $5, null);
+        $$ = new yy.IfElseStatement ($3, $5, null);
      }
      | IF LPAREN Expr RPAREN Statement ELSE Statement
      {
-        $$ = new ast.IfElseStatement ($3, $5, $7);
+        $$ = new yy.IfElseStatement ($3, $5, $7);
      }
      ;
 
 ForIter
      : Expr SEMICOLON Expr SEMICOLON Expr
      {
-         $$ = new ast.ForIterClassic ($1, $2, $);
+         $$ = new yy.ForIterClassic ($1, $2, $);
      }
      | Expr
      {
-         $$ = new ast.ForIterIterator ($1); 
+         $$ = new yy.ForIterIterator ($1); 
      }
      ;
 
 FunctionDeclaration
      : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN LBRACE FunctionBody RBRACE
      {
-         $$ = new ast.FunctionDeclaration ($2, $4, $7);
+         $$ = new yy.FunctionDeclaration ($2, $4, $7);
      }
      ;
 
 TwaitStatement
      : TWAIT Statement
      {
-        $$ = new ast.TwaitStatement ($2);
+        $$ = new yy.TwaitStatement ($2);
      }
      ;
 
@@ -196,7 +198,6 @@ FunctionBody
      ;
 
 Program
-     : SourceElements { $$ = new ast.Program ($1); }
+     : SourceElements { yy.output = new yy.Program ($1); }
      ;
      
-

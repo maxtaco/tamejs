@@ -3,17 +3,15 @@
 %s ST_QUOTE2 ST_QUOTE1 ST_COMMENT ST_EXPR_0 ST_EXPR_1
 %%
 
-"//".*		/* skip over all space */
-[a-zA-Z_][a-zA-Z_0-9]*[ ^]*: { 
-                                   yytext = yytext.replace (/[\s:]/g, ""); 
-				   return 'LABEL'; 
-                              }
-[a-zA-Z_][a-zA-Z_0-9]* { return 'ID'; }
+"//".*		/* skip over C++-style comments */
+
+\s+             /* skip space */
+
 "for"		{ this.begin ('ST_EXPR_0'); return 'FOR'; }
 "while"		{ this.begin ('ST_EXPR_0'); return 'WHILE'; }
 "break"		return 'BREAK';
 "continue"	return 'CONTINUE';
-"return"		return 'RETURN';
+"return"	return 'RETURN';
 "do"		return 'DO';
 "if"		return 'IF';
 "else"		return 'ELSE';
@@ -26,6 +24,12 @@
 "case"		return 'CASE';
 'switch'	return 'SWITCH';
 'default'	return 'DEFAULT';
+
+[a-zA-Z_][a-zA-Z_0-9]*[ ^]*[:] { 
+                                   yytext = yytext.replace (/[\s:]/g, ""); 
+				   return 'LABEL'; 
+                              }
+[a-zA-Z_][a-zA-Z_0-9]* { console.log ("ID: " + yytext); return 'ID'; }
 
 "{"		return 'LBRACE';
 "}"		return 'RBRACE';
@@ -42,7 +46,6 @@
 "/*"		{ this.begin ('ST_COMMENT'); }
 [^/bcdefimrstw{}()\[\];,:"'\s]+    return 'GENERIC';
 .	 	return 'GENERIC';
-<<EOF>>		return 'ENDOFFILE';
 
 <ST_QUOTE2>"\\".	return 'STRING_ATOM';
 <ST_QUOTE2>[^\\"]+	return 'STRING_ATOM';

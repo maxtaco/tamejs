@@ -18,7 +18,6 @@ function Node () {
 function Expr (atoms) {
     var that = new Node ();
     that._atoms = [];
-    that.addAtomsDfs (atoms);
 
     that.addAtomsDfs = function (l) {
 	if (l instanceof Array) {
@@ -33,6 +32,8 @@ function Expr (atoms) {
     that.hasTwaitStatement = function () {
 	return false;
     };
+
+    that.addAtomsDfs (atoms);
 
     return that;
 };
@@ -142,3 +143,7 @@ exports.Program = Program;
 exports.WhileStatement = WhileStatement;
 exports.IfElseStatement = IfElseStatement;
 exports.Expr = Expr;
+exports.Block = Block;
+exports.TwaitStatement = TwaitStatement;
+exports.ForStatement = ForStatement;
+exports.FunctionDeclaration = FunctionDeclaration;
