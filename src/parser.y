@@ -30,11 +30,13 @@ String
      ;
 
 String1
-     : QUOTE1 StringAtoms QUOTE1 { $$ = "'" + $2 + "'"; }
+     : QUOTE1 StringAtoms QUOTE1 
+     { $$ = new yy.String (@1.first_line, @3.last_line, "'" + $2 + "'"); }
      ;
 
 String2
-     : QUOTE2 StringAtoms QUOTE2 { $$ = '"' + $2 + '"' ; }
+     : QUOTE2 StringAtoms QUOTE2 
+     { $$ = new yy.String (@1.first_line, @3.last_line, '"' + $2 + '"'); }
      ;
 
 StringAtom
@@ -48,7 +50,7 @@ StringAtoms
 
 InnerExprAtom
      : OuterExprAtom { $$ = $1; }
-     | LABEL         { $$ = yytext; }
+     | LABEL         { $$ = new yy.Atom (@1.first_line, yytext); }
      | BraceExpr     { $$ = $1; } 
      ;
 
@@ -62,23 +64,41 @@ InnerExpr
      ;
 
 ParenExpr
-     : LPAREN InnerExpr RPAREN     { $$ = [ '(', $2, ')' ]; }
+     : LPAREN InnerExpr RPAREN     
+     { 
+         var out = [ new yy.Atom (@1.first_line, '(') ];
+	 $2.pushAtomsToArray (out);
+	 out.push (new yy.Atom (@3.first_line, ')'));
+	 $$ = out;
+     }
      ;
 
 BracketExpr 
-     : LBRACKET InnerExpr RBRACKET { $$ = [ '[', $2, ']' ]; }
+     : LBRACKET InnerExpr RBRACKET 
+     { 
+         var out = [ new yy.Atom (@1.first_line, '[') ];
+	 $2.pushAtomsToArray (out);
+	 out.push (new yy.Atom (@3.first_line, ']'));
+	 $$ = out;
+     }
      ;
 
 BraceExpr
-     : LBRACE InnerExpr RBRACE     { $$ = [ '{', $2, '}' ]; }
+     : LBRACE InnerExpr RBRACE    
+     { 
+         var out = [ new yy.Atom (@1.first_line, '{') ];
+	 $2.pushAtomsToArray (out);
+	 out.push (new yy.Atom (@3.first_line, '}'));
+	 $$ = out;
+     }
      ;
 
 OuterExprAtom
-     : GENERIC { $$ = yytext; }
-     | COMMA   { $$ = yytext; }
-     | COLON   { $$ = yytext; }
-     | ID      { $$ = yytext; }
-     | String  { $$ = yytext; }
+     : GENERIC     { $$ = new yy.Atom (@1.first_line, yytext); }
+     | COMMA       { $$ = new yy.Atom (@1.first_line, yytext); }
+     | COLON       { $$ = new yy.Atom (@1.first_line, yytext); }
+     | ID          { $$ = new yy.Atom (@1.first_line, yytext); }
+     | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      ;
@@ -93,7 +113,11 @@ Expr
      ;
 
 ExprStatement
-     : Expr SEMICOLON { $1.addString (";"); $$ = $1; }
+     : Expr SEMICOLON 
+     { 
+         $1.addAtom (new yy.Atom (@2.first_line, ";")); 
+	 $$ = $1; 
+     }
      | FunctionDeclaration { $$ = $1; }
      ;
 
@@ -108,8 +132,12 @@ Statement
      | ReturnStatement
      ;
 
+Label
+     : LABEL { $$ = new yy.Label (@1.first_line, yytext); }
+     ;
+
 LabeledStatement 
-     : LABEL Statement
+     : Label Statement
      {
          $2.setLabel ($1);
 	 $$ = $2;
@@ -119,13 +147,13 @@ LabeledStatement
 ReturnStatement
      : RETURN InnerExpr SEMICOLON
      {
-         $$ = new yy.ReturnStatement($2);
+         $$ = new yy.ReturnStatement (@1.first_line, $2);
      }
      ;
       
 
 Block
-     : LBRACE SourceElements RBRACE  { $$ = new yy.Block ($2); }
+     : LBRACE SourceElements RBRACE { $$ = new yy.Block (@1.first_line, $2); }
      ;
 
 SourceElements
@@ -134,27 +162,27 @@ SourceElements
      ;
 
 ForStatement
-     : LabelOpt FOR LPAREN ForIter RPAREN Statement
+     : FOR LPAREN ForIter RPAREN Statement
      {
-        $$ = new yy.ForStatement ($3, $5);
+        $$ = new yy.ForStatement (@1.first_line, $3, $5);
      }
      ;
 
 WhileStatement
      : WHILE LPAREN Expr RPAREN Statement
      {
-        $$ = new yy.WhileStatement ($3, $5);
+        $$ = new yy.WhileStatement (@1.first_line, $3, $5);
      }
      ;
 
 IfStatement
      : IF LPAREN Expr RPAREN Statement %prec IF_WITHOUT_ELSE
      {
-        $$ = new yy.IfElseStatement ($3, $5, null);
+        $$ = new yy.IfElseStatement (@1.first_line, $3, $5, null);
      }
      | IF LPAREN Expr RPAREN Statement ELSE Statement
      {
-        $$ = new yy.IfElseStatement ($3, $5, $7);
+        $$ = new yy.IfElseStatement (@1.first_line, $3, $5, $7);
      }
      ;
 
@@ -172,14 +200,14 @@ ForIter
 FunctionDeclaration
      : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN LBRACE FunctionBody RBRACE
      {
-         $$ = new yy.FunctionDeclaration ($2, $4, $7);
+         $$ = new yy.FunctionDeclaration (@1.first_line, $2, $4, $7);
      }
      ;
 
 TwaitStatement
      : TWAIT Statement
      {
-        $$ = new yy.TwaitStatement ($2);
+        $$ = new yy.TwaitStatement (@1.first_line, $2);
      }
      ;
 

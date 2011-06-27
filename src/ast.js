@@ -7,52 +7,140 @@
 
 //-----------------------------------------------------------------------
 
-function Node () {
+function Node (startLine) {
     this._label = null;
+    this._startLine = startLine;
     this.setLabel = function (x) { this._label = x; }
     this.getLabel = function () { return this._label; }
+    this.hasTwaitStatement = function () {
+	return false;
+    };
+    this.toAtom = function () { return null; }
+    this.getChildren = function () { return []; }
+
+    this.condense = function () {
+	var v = this.getChildren ();
+	for (var i in v) {
+	    v[i].condense ();
+	}
+    };
+};
+
+//-----------------------------------------------------------------------
+
+function String (startLine, endLine, value) {
+    var that = new Node (startLine);
+    that._endLine = endLine;
+    that._value = value;
+    return that;
+};
+
+//-----------------------------------------------------------------------
+
+function Atom (startLine, value) {
+    var that = new Node (startLine);
+    that._endLine = startLine;
+    that._value = value;
+
+    that.toAtom = function () { return this; }
+    that.addAtom = function (a) {
+	var spc = "";
+	while (this._endLine < a._startLine) {
+	    spc += "\n";
+	    this._endLine++;
+	    
+	}
+	if (spc.length == 0) { spc = " "; }
+	this._value += spc + a._value;
+    };
+
+    that.dump = function () {
+	return { type : "Atom",
+		 lines : [ this._startLine, this._endLine ],
+		 value : this._value };
+    };
+
+    return that;
+};
+
+//-----------------------------------------------------------------------
+
+function Label (startLine, value) {
+    var that = new Node (startLine);
+    that._value = value;
+    
+    that.toAtom = function () {
+	return new Atom (this._startLine, this._value);
+    };
+
+    return that;
 };
 
 //-----------------------------------------------------------------------
 
 function Expr (atoms) {
-    var that = new Node ();
-    that._atoms = [];
+    
+    // Figure out the start line if it's possible
+    var tmp = 0;
+    if (atoms.length) {
+	tmp = atoms[0]._startLength;
+    }
+	
+    var that = new Node (tmp);
+    that._atoms = atoms;
+    if (atoms.lengths) {
+	this._endLine = atoms[atoms.length - 1]._startLine;
+    }
 
-    that.addAtomsDfs = function (l) {
-	if (l instanceof Array) {
-	    for (var x in l) {
-		this.addAtomsDfs(l[x]);
-	    }
-	} else if (l) {
-	    this._atoms.push (l);
-	}
-    };
+    that.getChildren = function () { return this._atoms; }
 
-    that.hasTwaitStatement = function () {
-	return false;
-    };
-
-    that.addString = function (s) {
-	this._atoms.push (s);
+    that.addAtom = function (a) {
+	this._atoms.push (a);
     };
 
     that.setLabel = function (x) { 
-	this._atoms.unshift (":");
-	this._atoms.unshift (x);
-    };
-
-    that.dumpAtom = function (x) {
-	if (typeof (x) == 'string') {
-	    return x;
-	} else {
-	    return x.dump ();
-	}
+	this._atoms.unshift (x.toAtom ());
     };
 
     that.dump = function () {
 	return { type : "Expr",
-		 atoms : this._atoms.map (this.dumpAtom) };
+		 atoms : this._atoms.map (function (x) { return x.dump (); }) };
+    };
+
+    //
+    // Smush all of the atoms together so that we're dealing with 
+    // a list of the form:
+    //    
+    //    a1 f1 a2 f2 a3 ...
+    //  
+    that.condense = function () {
+	var l = this._atoms.length;
+	if (l) {
+	    var lastAtom = null;
+	    var newAtoms = [];
+	    for (var i = 0; i < l; i++) {
+		var x = this._atoms[i];
+		var a = x.toAtom ();
+		if (!a) {
+		    newAtoms.push (x);
+		    lastAtom = null;
+		} else if (!lastAtom) {
+		    newAtoms.push (a);
+		    lastAtom = a;
+		} else {
+		    lastAtom.addAtom (a);
+		}
+	    }
+	    this._atoms = newAtoms;
+	    this._startLine = newAtoms[0]._startLine;
+	    this._endLine = newAtoms[newAtoms.length - 1]._endLine;
+	}
+    };
+
+    that.pushAtomsToArray = function (out) {
+	for (var i in this._atoms) {
+	    out.push (this._atoms[i]);
+	}
     };
 
     that.compileAtom = function (eng, a) {
@@ -70,7 +158,7 @@ function Expr (atoms) {
 	var fn = eng.fnFresh ();
 	var ret = new eng.Output (fn);
 
-	ret.addLine ("var " + fn " = function (k) {");
+	ret.addLine ("var " + fn + " = function (k) {");
 	ret.indent ();
 	for (var i in this._atoms) {
 	    var atom = this._atoms[i];
@@ -82,16 +170,16 @@ function Expr (atoms) {
 	return (ret);
     };
 
-    that.addAtomsDfs (atoms);
-
     return that;
 };
 
 //-----------------------------------------------------------------------
 
-function Block (s) {
-    var that = new Node ();
-    that._body = s;
+function Block (startLine, body) {
+    var that = new Node (startLine);
+    that._body = body;
+
+    that.getChildren = function () { return this._body; };
 
     that.hasTwaitStatement = function () {
 	for (x in this._body) {
@@ -113,19 +201,21 @@ function Block (s) {
 
 //-----------------------------------------------------------------------
 
-function ForStatement (forIter, statement) {
-    var that = new Node ();
+function ForStatement (startLine, forIter, body) {
+    var that = new Node (startLine);
     that._forIter = forIter;
-    that._statement = statement;
+    that._body = body;
+
+    that.getChildren = function () { return [ this._forIter, this._body ]; };
 
     that.hasTwaitStatement = function () {
-	return this._statement.hasTwaitStatement ();
+	return this._body.hasTwaitStatement ();
     };
 
     that.dump = function () {
-	return { type : "For",
+	return { type : "ForStatement",
 		 iter : this._forIter.dump (),
-		 statement : this._statement.dump () };
+		 body : this._statement.dump () };
     };
 
     return that;
@@ -139,6 +229,9 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
     that._condExpr = condExpr;
     that._incExpr = incExpr;
 
+    that.getChildren = function () 
+    { return [ this._initExpr, this._condExpr, this._incExpr ]; };
+
     that.dump = function () {
 	return { type : "ForIterClassic",
 		 initExpr : this._initExpr.dump (),
@@ -150,12 +243,15 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
 
 //-----------------------------------------------------------------------
 
-function IfElseStatement (condExpr, ifStatement, elseStatement) {
-    var that = new Node ();
+function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
+    var that = new Node (startLine);
     that._condExpr = condExpr;
     that._ifStatement = ifStatement;
     if (!elseStatement) { elseStatement = new Block([]); }
     that._elseStatement = elseStatement;
+
+    that.getChildren = function () 
+    { return [ this._condExpr, this._ifStatement, this._elseStatement ]; };
 
     that.hasTwaitStatement = function () {
 	return this._ifStatement.hasTwaitStatement () ||
@@ -174,11 +270,13 @@ function IfElseStatement (condExpr, ifStatement, elseStatement) {
 
 //-----------------------------------------------------------------------
 
-function FunctionDeclaration (name, params, body) {
-    var that = new Node ();
+function FunctionDeclaration (startLine, name, params, body) {
+    var that = new Node (startLine);
     that._name = name;
     that._params = params;
     that._body = new Block (body);
+
+    that.getChildren = function () { return [ this._body ]; };
 
     that.hasTwaitStatement = function () {
 	return this._body.hasTwaitStatement ();
@@ -196,10 +294,12 @@ function FunctionDeclaration (name, params, body) {
 
 //-----------------------------------------------------------------------
 
-function TwaitStatement (body) {
-    var that = new Node ();
+function TwaitStatement (startLine, body) {
+    var that = new Node (startLine);
     that._body = body;
     that.hasTwaitStatement = function () { return true; };
+
+    that.getChildren = function () { return [ this._body ]; };
 
     that.dump = function () {
 	return { type : "TwaitStatement",
@@ -210,10 +310,12 @@ function TwaitStatement (body) {
 
 //-----------------------------------------------------------------------
 
-function WhileStatement (condExpr, body) {
-    var that = new Node ();
+function WhileStatement (startLine, condExpr, body) {
+    var that = new Node (startLine);
     that._condExpr = condExpr;
     that._body = body;
+
+    that.getChildren = function () { return [ this._condExpr, this._body ]; };
 
     that.dump = function () {
 	return { type : "WhileStatement",
@@ -226,9 +328,10 @@ function WhileStatement (condExpr, body) {
 
 //-----------------------------------------------------------------------
 
-function ReturnStatement (expr) {
-    var that = new Node ();
+function ReturnStatement (startLine, expr) {
+    var that = new Node (startLine);
     that._expr = expr;
+    that.getChildren = function () { return [ this._expr ]; } ; 
     that.dump = function () {
 	return { type : "ReturnStatement",
 		 expr : this._expr.dump () };
@@ -238,12 +341,18 @@ function ReturnStatement (expr) {
 
 //-----------------------------------------------------------------------
 
-function Program (body) {
-    this._body = body;
+function Program (statements) {
+    var that = new Node (1);
+    that._statements = statements;
 
-    this.dump = function () {
-	return { body : this._body.map (function (x) { return x.dump (); }) };
+    that.getChildren = function () { return this._statements; };
+
+    that.dump = function () {
+	return { statements : 
+		 this._statements.map (function (x) { return x.dump (); }) 
+	       };
     };
+    return that;
 };
 
 //-----------------------------------------------------------------------
@@ -257,3 +366,6 @@ exports.TwaitStatement = TwaitStatement;
 exports.ForStatement = ForStatement;
 exports.FunctionDeclaration = FunctionDeclaration;
 exports.ReturnStatement = ReturnStatement;
+exports.Atom = Atom;
+exports.Label = Label;
+exports.String = String;
