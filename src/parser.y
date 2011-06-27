@@ -198,9 +198,9 @@ ForIter
      ;
 
 FunctionDeclaration
-     : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN LBRACE FunctionBody RBRACE
+     : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN Block
      {
-         $$ = new yy.FunctionDeclaration (@1.first_line, $2, $4, $7);
+         $$ = new yy.FunctionDeclaration (@1.first_line, $2, $4, $6);
      }
      ;
 

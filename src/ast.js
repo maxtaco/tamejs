@@ -17,18 +17,19 @@ function Node (startLine) {
     };
     this.toAtom = function () { return null; }
     this.getChildren = function () { return []; }
+    this.toExpr = function () { return null; }
 
-    this.condense = function () {
+    this.compress = function () {
 	var v = this.getChildren ();
 	for (var i in v) {
-	    v[i].condense ();
+	    v[i].compress ();
 	}
     };
 };
 
 //-----------------------------------------------------------------------
 
-function String (startLine, endLine, value) {
+function MyString (startLine, endLine, value) {
     var that = new Node (startLine);
     that._endLine = endLine;
     that._value = value;
@@ -107,13 +108,16 @@ function Expr (atoms) {
 		 atoms : this._atoms.map (function (x) { return x.dump (); }) };
     };
 
+    that.toExpr = function () { return this; };
+
     //
     // Smush all of the atoms together so that we're dealing with 
     // a list of the form:
     //    
     //    a1 f1 a2 f2 a3 ...
     //  
-    that.condense = function () {
+    that.compress = function () {
+	console.log ("XXX");
 	var l = this._atoms.length;
 	if (l) {
 	    var lastAtom = null;
@@ -142,6 +146,11 @@ function Expr (atoms) {
 	    out.push (this._atoms[i]);
 	}
     };
+    
+    that.takeAtomsFrom = function (x) {
+	this._atoms = this._atoms.concat (x._atoms);
+    };
+
 
     that.compileAtom = function (eng, a) {
 	var out;
@@ -190,10 +199,41 @@ function Block (startLine, body) {
 	return false;
     };
 
+    that.compress = function () {
+
+	var l = this._body.length;
+	if (l) {
+	    var lastExpr = null;
+	    var newBody = [];
+	    for (var i = 0; i < l; i++) {
+		var e = this._body[i];
+		var x = e.toExpr ();
+		if (!x) {
+		    if (lastExpr) { 
+			lastExpr.compress (); 
+			lastExpr = null;
+		    }
+		    e.compress ();
+		    newBody.push (e);
+		} else {
+		    if (lastExpr) {
+			lastExpr.takeAtomsFrom (x);
+		    } else {
+			lastExpr = x;
+			newBody.push (x);
+		    }
+		}
+	    }
+	    if (lastExpr) { lastExpr.compress (); }
+	    this._body = newBody;
+	}
+    };
+
+
     that.dump = function () {
 	return { type : "Block",
-		 atoms : [ this._body.map (function (x) 
-					   { return x.dump (); }) ] };
+		 statements : this._body.map (function (x) 
+					      { return x.dump (); })  };
     };
 
     return that;
@@ -274,7 +314,7 @@ function FunctionDeclaration (startLine, name, params, body) {
     var that = new Node (startLine);
     that._name = name;
     that._params = params;
-    that._body = new Block (body);
+    that._body = body;
 
     that.getChildren = function () { return [ this._body ]; };
 
@@ -343,14 +383,12 @@ function ReturnStatement (startLine, expr) {
 
 function Program (statements) {
     var that = new Node (1);
-    that._statements = statements;
+    that._body = new Block (1, statements);
 
-    that.getChildren = function () { return this._statements; };
+    that.getChildren = function () { return [ this._body ]; };
 
     that.dump = function () {
-	return { statements : 
-		 this._statements.map (function (x) { return x.dump (); }) 
-	       };
+	return { statements : this._body.dump () };
     };
     return that;
 };
@@ -368,4 +406,4 @@ exports.FunctionDeclaration = FunctionDeclaration;
 exports.ReturnStatement = ReturnStatement;
 exports.Atom = Atom;
 exports.Label = Label;
-exports.String = String;
+exports.String = MyString;
