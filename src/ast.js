@@ -199,6 +199,18 @@ function WhileStatement (condExpr, body) {
 
 //-----------------------------------------------------------------------
 
+function ReturnStatement (expr) {
+    var that = new Node ();
+    that._expr = expr;
+    that.dump = function () {
+	return { type : "ReturnStatement",
+		 expr : this._expr.dump () };
+    };
+    return that;
+};
+
+//-----------------------------------------------------------------------
+
 function Program (body) {
     this._body = body;
 
@@ -217,3 +229,4 @@ exports.Block = Block;
 exports.TwaitStatement = TwaitStatement;
 exports.ForStatement = ForStatement;
 exports.FunctionDeclaration = FunctionDeclaration;
+exports.ReturnStatement = ReturnStatement;

@@ -105,6 +105,7 @@ Statement
      | IfStatement
      | TwaitStatement
      | LabeledStatement
+     | ReturnStatement
      ;
 
 LabeledStatement 
@@ -114,6 +115,14 @@ LabeledStatement
 	 $$ = $2;
      }
      ;
+
+ReturnStatement
+     : RETURN InnerExpr SEMICOLON
+     {
+         $$ = new yy.ReturnStatement($2);
+     }
+     ;
+      
 
 Block
      : LBRACE SourceElements RBRACE  { $$ = new yy.Block ($2); }
