@@ -93,10 +93,10 @@ Expr
      ;
 
 ExprStatement
-     : Expr SEMICOLON { $$ = [ $1, ';' ]; }
+     : Expr SEMICOLON { $1.addString (";"); $$ = $1; }
      | FunctionDeclaration { $$ = $1; }
      ;
-	
+
 Statement
      : Block
      | ExprStatement

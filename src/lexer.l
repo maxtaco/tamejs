@@ -29,7 +29,7 @@
                                    yytext = yytext.replace (/[\s:]/g, ""); 
 				   return 'LABEL'; 
                               }
-[a-zA-Z_][a-zA-Z_0-9]* { console.log ("ID: " + yytext); return 'ID'; }
+[a-zA-Z_][a-zA-Z_0-9]* { return 'ID'; }
 
 "{"		return 'LBRACE';
 "}"		return 'RBRACE';
