@@ -90,6 +90,10 @@ function Label (startLine, value) {
 	return new Atom (this._startLine, this._value);
     };
 
+    that.getName = function () {
+	return this._name;
+    };
+
     return that;
 };
 
@@ -425,6 +429,41 @@ function WhileStatement (startLine, condExpr, body) {
 
     that.getChildren = function () { return [ this._condExpr, this._body ]; };
 
+    that.compile = function (eng) {
+	var outer = eng.fnFresh ();
+	var ret = new eng.Output (outer);
+	ret.addLambda (outer);
+	var lbl = null;
+	if (this._label) {
+	    lbl = eng.localLabelName (self._label.getName ());
+	    ret.initLocalLabel (lbl);
+	}
+	var inner = eng.fnFresh ();
+	ret.addLambda (inner);
+	var condExpr = this._condExpr.inline (eng);
+	ret.addLine ("if (" + condExpr + ") {");
+	ret.indent ();
+
+	var body = this._body.compile (eng);
+	ret.addOutput (body);
+	ret.addCall ([ body.fnName (), inner ]);
+
+	ret.unindent ();
+	ret.addLine ("} else {");
+
+	ret.indent ();
+	ret.addCall ([]);
+
+	ret.unindent ();
+	ret.addLine ("}");
+
+	ret.closeLambda (); // inner
+	ret.populateLabels (lbl, inner, ret.genericCont ());
+	ret.addCall ([inner]);
+	ret.closeLambda (); // outer
+	return ret;
+    };
+
     that.dump = function () {
 	return { type : "WhileStatement",
 		 condExpr : this._condExpr.dump (),
@@ -463,10 +502,10 @@ function Program (statements) {
 	var out = new eng.Output (null, 1);
 
 	// Need the runtime
-	out.addLine ("var Tame = require('./tame').Tame;");
+	out.addLine ("var tame = require('./tame').tame;");
 	var body = this._body.compile (eng);
 	out.addOutput (body);
-	out.addLine (body.fnName() + " (Tame.Runtime.end);");
+	out.addLine (body.fnName() + " (tame.end);");
 	return out;
     };
 

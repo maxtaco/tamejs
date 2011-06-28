@@ -18,6 +18,9 @@ function Output (fnName, startLine) {
 	else { return []; }
     };
 
+    this.localLabelName = function (l) {
+	return "__k_local_" + l;
+    };
 
     this.addLine = function (l) {
 	this._lines.push ([this._indent, l]);
@@ -36,8 +39,29 @@ function Output (fnName, startLine) {
 	}
     };
 
+    this.initLocalLabel = function (l) {
+	this.addLine ("var " + l + " = {};");
+    };
+
+    this.populateLabels = function (lbl, k_cont, k_break) {
+	if (k_break) {
+	    this.addLine ("tame.__k_global.k_break = " + k_break + ";");
+	}
+	if (k_cont) {
+	    this.addLine ("tame.__k_global.k_continue = " + k_cont + ";");
+	}
+	if (k_break && lbl) {
+	    this.addLine (lbl + ".k_break = " + k_break + ";");
+	}
+	if (k_cont && lbl) {
+	    this.addLine (lbl + ".k_continue = " + k_cont + ";");
+	}
+
+    };
+
     this.addLambda = function (fn) {
-	this.addLine ("var " + fn + " = function (k) {");
+	this.addLine ("var " + fn + " = function (" + 
+		      this.genericCont () + ") {");
 	this.indent ();
     };
 
@@ -46,9 +70,11 @@ function Output (fnName, startLine) {
 	this.addLine ("};");
     };
 
+    this.genericCont = function () { return "k"; }
+
     this.addCall = function (calls) {
-	calls.push ("k");
-	var cc = "Tame.Runtime.callChain ([" + calls.join (", ") + "]);";
+	calls.push (this.genericCont ());
+	var cc = "tame.callChain ([" + calls.join (", ") + "]);";
 	this.addLine (cc);
     };
     

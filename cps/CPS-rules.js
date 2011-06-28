@@ -5,20 +5,18 @@
 // a formal example of it.
 
 // l is an optional label
-CPS[ l : while (e) { b }  k ] = {
+CPS[ l : while (e) { b }  ] = function (k) {
 
-    var __labels;
+    var __k_label_l = {};
     var __f1 = function () {
 	if (e) {
 	    var __f3 = CPS[b];
-	    __f3 ();
-	    __f1 ();
+	    call_chain ([__f3, __f1, k]);
 	} else {
-	    __f2 ();
+	    call_chain([k]);
 	}
     };
-    var __f2 = CPS[k];
-    __labels.l = __k_global = { k_break : __f2, k_continue : __f1 };
+    tame.setLabels (__k_label_l, { k_break : k, k_continue : __f1 });
     __f1 ();
 };
 
