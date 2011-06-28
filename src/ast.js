@@ -273,7 +273,10 @@ function Block (startLine, body, toplev) {
     //----------------------------------------
 
     that.compile = function (eng) {
-	if (!this._body) {
+
+	// Optimization -- for empty blocks, just add a call to the 
+	// currently active continuation
+	if (!this._body || !this._body.length) {
 	    return new eng.Output ();
 	}
 
@@ -416,7 +419,7 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 	ret.addOutput (elseStatement);
 	ret.addLine ("if (" + condExpr + ") {");
 	ret.indent ();
-	ret.addCall ( ifStatement.fnNameList () );
+	ret.addCall (ifStatement.fnNameList () );
 	ret.unindent ();
 	ret.addLine ("} else {");
 	ret.indent ();
@@ -454,7 +457,8 @@ function FunctionDeclaration (startLine, name, params, body) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
+
 
 function TwaitStatement (startLine, body) {
     var that = new Node (startLine);
@@ -470,7 +474,30 @@ function TwaitStatement (startLine, body) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
+
+function BreakStatement (startLine, targetLabel) {
+    var that = new Node (startLine);
+    that._targetLabel = targetLabel;
+    
+    that.dump = function () {
+	return { type : "BreakStatement",
+		 targetLabel : targetLabel };
+    };
+
+    that.compile = function (eng) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+	ret.addLambda (fn);
+	ret.callLabel (targetLabel, ret.kBreak ());
+	ret.closeLambda ();
+	return ret;
+    };
+
+    return that;
+};
+
+//=======================================================================
 
 function WhileStatement (startLine, condExpr, body) {
     var that = new Node (startLine);
@@ -577,3 +604,4 @@ exports.ReturnStatement = ReturnStatement;
 exports.Atom = Atom;
 exports.Label = Label;
 exports.String = MyString;
+exports.BreakStatement = BreakStatement;

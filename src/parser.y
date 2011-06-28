@@ -130,6 +130,7 @@ Statement
      | TwaitStatement
      | LabeledStatement
      | ReturnStatement
+     | BreakStatement
      ;
 
 Label
@@ -150,7 +151,13 @@ ReturnStatement
          $$ = new yy.ReturnStatement (@1.first_line, $2);
      }
      ;
-      
+
+BreakStatement
+     : BREAK IdOpt SEMICOLON
+     {
+         $$ = new yy.BreakStatement (@1.first_line, $2);
+     }
+     ;
 
 Block
      : LBRACE SourceElements RBRACE { $$ = new yy.Block (@1.first_line, $2); }

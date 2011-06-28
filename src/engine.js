@@ -19,7 +19,7 @@ function Output (fnName, startLine) {
     };
 
     this.localLabelName = function (l) {
-	return "__k_local_" + l;
+	return "__tame_k_local_" + l;
     };
 
     this.addLine = function (l) {
@@ -43,20 +43,35 @@ function Output (fnName, startLine) {
 	this.addLine ("var " + l + " = {};");
     };
 
+    this.kBreak = function () { return "k_break"; } ;
+    this.kContinue = function () { return "k_continue"; } ;
+    this.globalLabel = function () { return "tame.__k_global"; } ;
+
     this.populateLabels = function (lbl, k_cont, k_break) {
 	if (k_break) {
-	    this.addLine ("tame.__k_global.k_break = " + k_break + ";");
+	    this.addLine (this.globalLabel() + "." + this.kBreak () + 
+			  " = " + k_break + ";");
 	}
 	if (k_cont) {
-	    this.addLine ("tame.__k_global.k_continue = " + k_cont + ";");
+	    this.addLine (this.globalLabel() + "." + this.kContinue () +
+			  " = " + k_cont + ";");
 	}
 	if (k_break && lbl) {
-	    this.addLine (lbl + ".k_break = " + k_break + ";");
+	    this.addLine (lbl + "." + this.kBreak () + " = " + k_break + ";");
 	}
 	if (k_cont && lbl) {
-	    this.addLine (lbl + ".k_continue = " + k_cont + ";");
+	    this.addLine (lbl + "." + this.kContinue () + " = " + k_cont + ";");
 	}
+    };
 
+    this.callLabel = function (lbl, typ) {
+	var name = "";
+	if (lbl) {
+	    name = this.localLabelName (lbl);
+	} else {
+	    name = this.globalLabel ();
+	}
+	this.addLine (name + "." + typ + "();");
     };
 
     this.addLambda = function (fn) {
