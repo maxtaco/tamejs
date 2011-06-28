@@ -205,7 +205,8 @@ function Block (startLine, body, toplev) {
 
     that.compress = function () {
 
-	var l = this._body.length;
+	var l = 0;
+	if (this._body) { l = this._body.length; }
 	if (l) {
 	    var lastExpr = null;
 	    var newBody = [];
@@ -239,7 +240,7 @@ function Block (startLine, body, toplev) {
 	ret.addLambda (fn);
 	var calls = [];
 	for (var i in this._body) {
-	    var s = this._body[i].compile ();
+	    var s = this._body[i].compile (eng);
 	    ret.addOutput (s);
 	    calls.push (s.fnName ());
 	}
@@ -324,7 +325,7 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 		 elseStatement : this._elseStatement.dump () };
     };
 
-    that.compile = function () {
+    that.compile = function (eng) {
 	var fn = eng.fnFresh ();
 	var ret = eng.Output (fn);
 	ret.addLambda (fn);
@@ -432,7 +433,7 @@ function Program (statements) {
     };
 
     that.compile = function (eng) {
-	var out = eng.Output (null, 1);
+	var out = new eng.Output (null, 1);
 
 	// Need the runtime
 	out.addLine ("var Tame = require('./tame').Tame;");

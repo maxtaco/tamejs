@@ -80,6 +80,8 @@ function Output (fnName, startLine) {
     this.dump = function () {
 	console.log (this.formatOutput ());
     };
+
+    return this;
 };
 
 //-----------------------------------------------------------------------
@@ -97,8 +99,10 @@ function Engine () {
     this.run = function (node) {
 	node.compile (this);
     };
-
-    return this;
-
     this.Output = Output;
+    return this;
 };
+
+//-----------------------------------------------------------------------
+
+exports.Engine = Engine;
