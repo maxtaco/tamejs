@@ -61,6 +61,12 @@ function Atom (startLine, value) {
 		 value : this._value };
     };
 
+    that.compile = function (eng) {
+	var ret = new eng.Output ();
+	ret.addLines (this._value.split ("\n"));
+	return ret;
+    };
+
     return that;
 };
 
@@ -117,7 +123,6 @@ function Expr (atoms) {
     //    a1 f1 a2 f2 a3 ...
     //  
     that.compress = function () {
-	console.log ("XXX");
 	var l = this._atoms.length;
 	if (l) {
 	    var lastAtom = null;
@@ -166,16 +171,14 @@ function Expr (atoms) {
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
 	var ret = new eng.Output (fn);
-
-	ret.addLine ("var " + fn + " = function (k) {");
-	ret.indent ();
+	ret.addLambda (fn);
 	for (var i in this._atoms) {
 	    var atom = this._atoms[i];
-	    var atomc = this.compileAtom (eng, x);
+	    var atomc = atom.compile (eng);
 	    ret.addOutput (atomc);
 	}
-	ret.unindent ();
-	ret.addLine ("};");
+	ret.addClosingCall([]);
+	ret.closeLambda ();
 	return (ret);
     };
 
@@ -184,9 +187,10 @@ function Expr (atoms) {
 
 //-----------------------------------------------------------------------
 
-function Block (startLine, body) {
+function Block (startLine, body, toplev) {
     var that = new Node (startLine);
     that._body = body;
+    that._toplev = toplev;
 
     that.getChildren = function () { return this._body; };
 
@@ -227,6 +231,21 @@ function Block (startLine, body) {
 	    if (lastExpr) { lastExpr.compress (); }
 	    this._body = newBody;
 	}
+    };
+
+    that.compile = function (eng) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+	ret.addLambda (fn);
+	var calls = [];
+	for (var i in this._body) {
+	    var s = this._body[i].compile ();
+	    ret.addOutput (s);
+	    calls.push (s.fnName ());
+	}
+	ret.addClosingCall (calls);
+	ret.closeLambda();
+	return ret;
     };
 
 
@@ -383,13 +402,25 @@ function ReturnStatement (startLine, expr) {
 
 function Program (statements) {
     var that = new Node (1);
-    that._body = new Block (1, statements);
+    that._body = new Block (1, statements, true);
 
     that.getChildren = function () { return [ this._body ]; };
 
     that.dump = function () {
 	return { statements : this._body.dump () };
     };
+
+    that.compile = function (eng) {
+	var out = eng.Output (null, 1);
+
+	// Need the runtime
+	out.addLine ("var Tame = require('./tame').Tame;");
+	var body = this._body.compile (eng);
+	out.addOutput (body);
+	out.addClosingCall ([body.fnName ()]);
+	return out;
+    };
+
     return that;
 };
 
