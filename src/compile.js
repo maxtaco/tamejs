@@ -11,6 +11,7 @@ function parse (txt) {
     if (res) { 
 	ast = parser.yy.output;
 	ast.compress ();
+	console.log (JSON.stringify (ast.dump ()));
     }
     return ast;
 };

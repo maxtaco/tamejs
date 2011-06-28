@@ -333,7 +333,7 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
     var that = new Node (startLine);
     that._condExpr = condExpr;
     that._ifStatement = ifStatement;
-    if (!elseStatement) { elseStatement = new Block([]); }
+    if (!elseStatement) { elseStatement = new Block(startLine, []); }
     that._elseStatement = elseStatement;
 
     that.getChildren = function () 
@@ -353,7 +353,7 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
-	var ret = eng.Output (fn);
+	var ret = new eng.Output (fn);
 	ret.addLambda (fn);
 	var ifStatement = this._ifStatement.compile (eng);
 	var elseStatement = this._elseStatement.compile (eng);
