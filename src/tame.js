@@ -6,9 +6,12 @@ function callChain (l) {
     }
 };
 
+function end () {}
+
 var Tame = {
     Runtime : {
-	callChain : callChain
+	callChain : callChain,
+	end : end
     };
 };
 

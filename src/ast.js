@@ -179,6 +179,7 @@ function Expr (atoms) {
 	}
 	ret.addCall([]);
 	ret.closeLambda ();
+	console.log ("FOO " + JSON.stringify (ret));
 	return (ret);
     };
 
@@ -439,7 +440,7 @@ function Program (statements) {
 	out.addLine ("var Tame = require('./tame').Tame;");
 	var body = this._body.compile (eng);
 	out.addOutput (body);
-	out.addCall ([body.fnName ()]);
+	out.addLine (body.fnName() + " (Tame.runtime.end);");
 	return out;
     };
 

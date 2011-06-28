@@ -50,13 +50,13 @@ StringAtoms
 
 InnerExprAtom
      : OuterExprAtom { $$ = $1; }
-     | LABEL         { $$ = new yy.Atom (@1.first_line, yytext); }
+     | LABEL         { $$ = [ new yy.Atom (@1.first_line, yytext)]; }
      | BraceExpr     { $$ = $1; } 
      ;
 
 InnerExprAtomList
      : { $$ = []; }
-     | InnerExprAtomList InnerExprAtom { $1.push ($2); $$ = $1; }
+     | InnerExprAtomList InnerExprAtom { $$ = $1.concat ($2); }
      ;
 
 InnerExpr
@@ -94,10 +94,10 @@ BraceExpr
      ;
 
 OuterExprAtom
-     : GENERIC     { $$ = new yy.Atom (@1.first_line, yytext); }
-     | COMMA       { $$ = new yy.Atom (@1.first_line, yytext); }
-     | COLON       { $$ = new yy.Atom (@1.first_line, yytext); }
-     | ID          { $$ = new yy.Atom (@1.first_line, yytext); }
+     : GENERIC     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | COMMA       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
@@ -107,8 +107,8 @@ Expr
      : { $$ = new yy.Expr ([]); }
      | OuterExprAtom InnerExprAtomList
      {
-         $2.unshift ($1);
-	 $$ = new yy.Expr ($2);
+	 var lst = $1.concat ($2);
+	 $$ = new yy.Expr (lst);
      }
      ;
 

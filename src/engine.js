@@ -26,7 +26,7 @@ function Output (fnName, startLine) {
     this.addOutput = function (o) {
 	for (var i in o._lines) {
 	    var line = o._lines[i];
-	    this._lines.push (this._indent + line[0], line[1]);
+	    this._lines.push ([this._indent + line[0], line[1]]);
 	}
     };
 
@@ -41,24 +41,24 @@ function Output (fnName, startLine) {
     };
 
     this.addCall = function (calls) {
+	calls.push ("k");
 	var cc = "Tame.Runtime.callChain ([" + calls.join (", ") + "]);";
 	this.addLine (cc);
     };
-
-    this._indents = {};
-
-    this.indent = function (n) {
+    
+    this._cachedIndents = {};
+    this.outputIndent = function (n) {
 	var ret;
-	if (this._indents[n]) {
-	    ret = this._indents[n];
+	if (this._cachedIndents[n]) {
+	    ret = this._cachedIndents[n];
 	} else {
-	    var spc = "  ";
+	    var spc = "    ";
 	    var v = []
 	    for (var i = 0; i < n; i++) {
-		v.push_back (spc);
+		v.push (spc);
 	    }
 	    ret = v.join ("");
-	    this._indents[n] = ret;
+	    this._cachedIndents[n] = ret;
 	}
 	return ret;
     };
@@ -67,7 +67,7 @@ function Output (fnName, startLine) {
 	var out = [];
 	for (var i in this._lines) {
 	    var l = this._lines[i];
-	    var line = this.indent (l[0]) + l[1];
+	    var line = this.outputIndent (l[0]) + l[1];
 	    out.push (line);
 	}
 	return out;
@@ -97,7 +97,7 @@ function Engine () {
     };
 
     this.run = function (node) {
-	node.compile (this);
+	return node.compile (this);
     };
     this.Output = Output;
     return this;

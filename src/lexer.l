@@ -1,14 +1,14 @@
 
 
-%s ST_QUOTE2 ST_QUOTE1 ST_COMMENT ST_EXPR_0 ST_EXPR_1
+%s ST_QUOTE2 ST_QUOTE1 ST_COMMENT
 %%
 
 "//".*		/* skip over C++-style comments */
 
 \s+             /* skip space */
 
-"for"		{ this.begin ('ST_EXPR_0'); return 'FOR'; }
-"while"		{ this.begin ('ST_EXPR_0'); return 'WHILE'; }
+"for"		return 'FOR';
+"while"		return 'WHILE'; 
 "break"		return 'BREAK';
 "continue"	return 'CONTINUE';
 "return"	return 'RETURN';

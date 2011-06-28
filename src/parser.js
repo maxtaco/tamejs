@@ -25,13 +25,13 @@ case 7: this.$ = $$[$0-1] + $$[$0];
 break;
 case 8: this.$ = $$[$0]; 
 break;
-case 9: this.$ = new yy.Atom (_$[$0].first_line, yytext); 
+case 9: this.$ = [ new yy.Atom (_$[$0].first_line, yytext)]; 
 break;
 case 10: this.$ = $$[$0]; 
 break;
 case 11: this.$ = []; 
 break;
-case 12: $$[$0-1].push ($$[$0]); this.$ = $$[$0-1]; 
+case 12: this.$ = $$[$0-1].concat ($$[$0]); 
 break;
 case 13: this.$ = new yy.Expr ($$[$0]); 
 break;
@@ -56,13 +56,13 @@ case 16:
 	 this.$ = out;
      
 break;
-case 17: this.$ = new yy.Atom (_$[$0].first_line, yytext); 
+case 17: this.$ = [ new yy.Atom (_$[$0].first_line, yytext) ]; 
 break;
-case 18: this.$ = new yy.Atom (_$[$0].first_line, yytext); 
+case 18: this.$ = [ new yy.Atom (_$[$0].first_line, yytext) ]; 
 break;
-case 19: this.$ = new yy.Atom (_$[$0].first_line, yytext); 
+case 19: this.$ = [ new yy.Atom (_$[$0].first_line, yytext) ]; 
 break;
-case 20: this.$ = new yy.Atom (_$[$0].first_line, yytext); 
+case 20: this.$ = [ new yy.Atom (_$[$0].first_line, yytext) ]; 
 break;
 case 21: this.$ = $$[$0]; 
 break;
@@ -73,8 +73,8 @@ break;
 case 24: this.$ = new yy.Expr ([]); 
 break;
 case 25:
-         $$[$0].unshift ($$[$0-1]);
-	 this.$ = new yy.Expr ($$[$0]);
+	 var lst = $$[$0-1].concat ($$[$0]);
+	 this.$ = new yy.Expr (lst);
      
 break;
 case 26: 
@@ -455,9 +455,9 @@ case 0:/* skip over C++-style comments */
 break;
 case 1:/* skip space */
 break;
-case 2: this.begin ('ST_EXPR_0'); return 44; 
+case 2:return 44;
 break;
-case 3: this.begin ('ST_EXPR_0'); return 46; 
+case 3:return 46; 
 break;
 case 4:return 'BREAK';
 break;
@@ -528,7 +528,7 @@ case 35:return 10;
 break;
 case 36:return 10;
 break;
-case 37: this.popState (); return "QUOTE2"; 
+case 37: this.popState (); console.log ("WTF"); return "QUOTE2"; 
 break;
 case 38:return 'ENDOFFILE';
 break;
@@ -551,7 +551,7 @@ break;
 }
 };
 lexer.rules = [/^\/\/.*/,/^\s+/,/^for\b/,/^while\b/,/^break\b/,/^continue\b/,/^return\b/,/^do\b/,/^if\b/,/^else\b/,/^try\b/,/^catch\b/,/^twait\b/,/^function\b/,/^mkev\b/,/^finally\b/,/^case\b/,/^switch\b/,/^default\b/,/^[a-zA-Z_][a-zA-Z_0-9]*[ ^]*[:]/,/^[a-zA-Z_][a-zA-Z_0-9]*/,/^\{/,/^\}/,/^\(/,/^\)/,/^\[/,/^\]/,/^;/,/^,/,/^:/,/^"/,/^\\'/,/^\/\*/,/^[^/bcdefimrstw{}()\[\];,:"'\s]+/,/^./,/^\\./,/^[^\\"]+/,/^"/,/^$/,/^\\./,/^[^\\']+/,/^'/,/^$/,/^\*\//,/^\*/,/^[^*]+/,/^$/];
-lexer.conditions = {"ST_QUOTE2":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],"inclusive":true},"ST_QUOTE1":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,39,40,41,42],"inclusive":true},"ST_COMMENT":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,43,44,45,46],"inclusive":true},"ST_EXPR_0":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34],"inclusive":true},"ST_EXPR_1":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34],"inclusive":true}};return lexer;})()
+lexer.conditions = {"ST_QUOTE2":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],"inclusive":true},"ST_QUOTE1":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,39,40,41,42],"inclusive":true},"ST_COMMENT":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,43,44,45,46],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34],"inclusive":true}};return lexer;})()
 parser.lexer = lexer;
 return parser;
 })();

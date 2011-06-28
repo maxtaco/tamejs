@@ -27,7 +27,7 @@ function produce (ast) {
     return engine.run (ast);
 };
 
-function main (infile, output) {
+function main (infile, outfile) {
     var fs = require ('fs');
     fs.readFile (infile, function (err, data) {
 	if (err) throw err;

@@ -1,3 +1,2 @@
-x;
-if (b) { y; }
-else { z; }
+
+console.log ("hello");
