@@ -182,7 +182,7 @@ function Expr (atoms) {
 	return out;
     };
 
-    that.compile = function (eng) {
+    that.compile = function (eng, tailCall) {
 	var fn = eng.fnFresh ();
 	var ret = new eng.Output (fn);
 	ret.addLambda (fn);
@@ -191,7 +191,12 @@ function Expr (atoms) {
 	    var atomc = atom.compile (eng);
 	    ret.addOutput (atomc);
 	}
-	ret.addCall([]);
+	var calls = [];
+	if (tailCall) {
+	    ret.addOutput (tailCall);
+	    calls.push (tailCall.fnName ());
+	}
+	ret.addCall(calls);
 	ret.closeLambda ();
 	return (ret);
     };
@@ -262,17 +267,43 @@ function Block (startLine, body, toplev) {
 	if (!this._body) {
 	    return new eng.Output ();
 	}
+
+	// Optimization --- don't need to nest if it's a 
+	// block with only one statement....
 	if (this._body.length == 1) {
+	    console.log ("DEBUG: short-circuit");
 	    return this._body[0].compile(eng);
 	} 
+
+	// Another optimization -- no need to nest if we're
+	// going to be making a tailCall on the first guy.
+	var expr;
+	if (this._body.length > 1 && (expr = this._body[0].toExpr ())) {
+	    this._body.shift ();
+	    var tailCalls = this.compile (eng);
+	    var ret = expr.compile (eng, tailCalls);
+	    return ret;
+	}
+
 	var fn = eng.fnFresh ();
 	var ret = new eng.Output (fn);
 	ret.addLambda (fn);
 	var calls = [];
-	for (var i in this._body) {
-	    var s = this._body[i].compile (eng);
-	    ret.addOutput (s);
-	    calls.push (s.fnName ());
+
+	while (this._body.length) {
+	    var nxt = this._body.shift ();
+	    expr = nxt.toExpr ();
+	    if (expr) {
+		var tailCalls = this.compile (eng);
+		var s = nxt.compile (eng, tailCalls);
+		ret.addOutput (s);
+		calls.push (s.fnName ());
+		break;
+	    } else {
+		var s = nxt.compile (eng);
+		ret.addOutput (s);
+		calls.push (s.fnName ());
+	    }
 	}
 	ret.addCall (calls);
 	ret.closeLambda();
@@ -445,6 +476,7 @@ function WhileStatement (startLine, condExpr, body) {
 	ret.indent ();
 
 	var body = this._body.compile (eng);
+	console.log ("DEBUG: body=" + body.fnName ());
 	ret.addOutput (body);
 	ret.addCall ([ body.fnName (), inner ]);
 
