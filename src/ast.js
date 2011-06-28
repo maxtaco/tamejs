@@ -293,7 +293,7 @@ function Block (startLine, body, toplev) {
 	while (this._body.length) {
 	    var nxt = this._body.shift ();
 	    expr = nxt.toExpr ();
-	    if (expr) {
+	    if (expr && this._body.length) {
 		var tailCalls = this.compile (eng);
 		var s = nxt.compile (eng, tailCalls);
 		ret.addOutput (s);
@@ -527,7 +527,7 @@ function Program (statements) {
     that.getChildren = function () { return [ this._body ]; };
 
     that.dump = function () {
-	return { statements : this._body.dump () };
+	return { body : this._body.dump () };
     };
 
     that.compile = function (eng) {
