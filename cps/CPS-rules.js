@@ -150,5 +150,8 @@ CPS[ return X;  k ] =
     __ret_global[__ret_global.length - 1] = X;
 };
 
-// If the block b doesn't match anything above, then simply:
-CPS[ b;  k] = { b; CPS[k]; };
+// Need to fix this to handle tail calls, as in ast.js
+CPS[ s1; s2; s3; ... ] = function (k) {
+    CPS[s1; CPS[s2; .... ]];
+};
+

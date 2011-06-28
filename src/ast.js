@@ -80,7 +80,8 @@ function Atom (startLine, value) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
+
 
 function Label (startLine, value) {
     var that = new Node (startLine);
@@ -97,7 +98,7 @@ function Label (startLine, value) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
 
 function Expr (atoms) {
     
@@ -214,14 +215,18 @@ function Expr (atoms) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
 
 function Block (startLine, body, toplev) {
     var that = new Node (startLine);
     that._body = body;
     that._toplev = toplev;
 
+    //----------------------------------------
+
     that.getChildren = function () { return this._body; };
+
+    //----------------------------------------
 
     that.hasTwaitStatement = function () {
 	for (x in this._body) {
@@ -231,6 +236,8 @@ function Block (startLine, body, toplev) {
 	}
 	return false;
     };
+
+    //----------------------------------------
 
     that.compress = function () {
 
@@ -263,6 +270,8 @@ function Block (startLine, body, toplev) {
 	}
     };
 
+    //----------------------------------------
+
     that.compile = function (eng) {
 	if (!this._body) {
 	    return new eng.Output ();
@@ -292,13 +301,20 @@ function Block (startLine, body, toplev) {
 
 	while (this._body.length) {
 	    var nxt = this._body.shift ();
-	    expr = nxt.toExpr ();
-	    if (expr && this._body.length) {
+
+	    // Another optimization -- only do a nested tail call if
+	    // the first item is an expression, and there are more than
+	    // 1 items left.  Otherwise, we can do these guys serially.
+	    if ((expr = nxt.toExpr ()) && this._body.length) {
 		var tailCalls = this.compile (eng);
 		var s = nxt.compile (eng, tailCalls);
 		ret.addOutput (s);
 		calls.push (s.fnName ());
+
+		// The nested tail call does everything recursively
+		// so our work at this level is dnoe.
 		break;
+
 	    } else {
 		var s = nxt.compile (eng);
 		ret.addOutput (s);
@@ -310,6 +326,7 @@ function Block (startLine, body, toplev) {
 	return ret;
     };
 
+    //----------------------------------------
 
     that.dump = function () {
 	return { type : "Block",
@@ -317,10 +334,12 @@ function Block (startLine, body, toplev) {
 					      { return x.dump (); })  };
     };
 
+    //----------------------------------------
+
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
 
 function ForStatement (startLine, forIter, body) {
     var that = new Node (startLine);
@@ -342,7 +361,7 @@ function ForStatement (startLine, forIter, body) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
 
 function ForIterClassic (initExpr, condExpr, incExpr) {
     var that = new Node ();
@@ -362,7 +381,7 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
     return that;
 };
 
-//-----------------------------------------------------------------------
+//=======================================================================
 
 function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
     var that = new Node (startLine);
