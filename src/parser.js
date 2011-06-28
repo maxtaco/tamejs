@@ -528,7 +528,7 @@ case 35:return 10;
 break;
 case 36:return 10;
 break;
-case 37: this.popState (); console.log ("WTF"); return "QUOTE2"; 
+case 37: this.popState (); return "QUOTE2"; 
 break;
 case 38:return 'ENDOFFILE';
 break;
