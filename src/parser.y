@@ -131,6 +131,7 @@ Statement
      | LabeledStatement
      | ReturnStatement
      | BreakStatement
+     | ContinueStatement
      ;
 
 Label
@@ -149,6 +150,13 @@ ReturnStatement
      : RETURN InnerExpr SEMICOLON
      {
          $$ = new yy.ReturnStatement (@1.first_line, $2);
+     }
+     ;
+
+ContinueStatement
+     : CONTINUE IdOpt SEMICOLON
+     {
+         $$ = new yy.ContinueStatement (@1.first_line, $2);
      }
      ;
 

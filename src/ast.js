@@ -83,12 +83,12 @@ function Atom (startLine, value) {
 //=======================================================================
 
 
-function Label (startLine, value) {
+function Label (startLine, name) {
     var that = new Node (startLine);
-    that._value = value;
+    that._name= name;
     
     that.toAtom = function () {
-	return new Atom (this._startLine, this._value);
+	return new Atom (this._startLine, this._name);
     };
 
     that.getName = function () {
@@ -283,7 +283,6 @@ function Block (startLine, body, toplev) {
 	// Optimization --- don't need to nest if it's a 
 	// block with only one statement....
 	if (this._body.length == 1) {
-	    console.log ("DEBUG: short-circuit");
 	    return this._body[0].compile(eng);
 	} 
 
@@ -476,6 +475,29 @@ function TwaitStatement (startLine, body) {
 
 //=======================================================================
 
+function ContinueStatement (startLine, targetLabel) {  
+    var that = new Node (startLine);
+    that._targetLabel = targetLabel;
+    
+    that.dump = function () {
+	return { type : "ContinueStatement",
+		 targetLabel : targetLabel };
+    };
+
+    that.compile = function (eng) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+	ret.addLambda (fn);
+	ret.callLabel (targetLabel, ret.kContinue());
+	ret.closeLambda ();
+	return ret;
+    };
+
+    return that;
+};
+
+//=======================================================================
+
 function BreakStatement (startLine, targetLabel) {
     var that = new Node (startLine);
     that._targetLabel = targetLabel;
@@ -511,8 +533,8 @@ function WhileStatement (startLine, condExpr, body) {
 	var ret = new eng.Output (outer);
 	ret.addLambda (outer);
 	var lbl = null;
-	if (this._label) {
-	    lbl = eng.localLabelName (self._label.getName ());
+	if (this.getLabel ()) {
+	    lbl = ret.localLabelName (this.getLabel ().getName ());
 	    ret.initLocalLabel (lbl);
 	}
 	var inner = eng.fnFresh ();
@@ -522,7 +544,6 @@ function WhileStatement (startLine, condExpr, body) {
 	ret.indent ();
 
 	var body = this._body.compile (eng);
-	console.log ("DEBUG: body=" + body.fnName ());
 	ret.addOutput (body);
 	ret.addCall ([ body.fnName (), inner ]);
 
@@ -605,3 +626,4 @@ exports.Atom = Atom;
 exports.Label = Label;
 exports.String = MyString;
 exports.BreakStatement = BreakStatement;
+exports.ContinueStatement = ContinueStatement;
