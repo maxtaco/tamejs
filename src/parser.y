@@ -26,7 +26,7 @@
 
 String
      : String1 { $$ = $1; }
-     | String2 { $$ = $2; }
+     | String2 { $$ = $1; }
      ;
 
 String1

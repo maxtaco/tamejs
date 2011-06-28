@@ -33,6 +33,16 @@ function MyString (startLine, endLine, value) {
     var that = new Node (startLine);
     that._endLine = endLine;
     that._value = value;
+
+    that.dump = function () {
+	return { type : "String",
+		 value : this._value };
+    };
+    that.toAtom = function () { 
+	var atom = new Atom (this._startLine, this._value);
+	atom._endLine = this._endLine;
+	return atom;
+    };
     return that;
 };
 
@@ -179,8 +189,17 @@ function Expr (atoms) {
 	}
 	ret.addCall([]);
 	ret.closeLambda ();
-	console.log ("FOO " + JSON.stringify (ret));
 	return (ret);
+    };
+
+    that.inline = function (eng) {
+	var out = new eng.Output ();
+	for (var i in this._atoms) {
+	    var atom = this._atoms[i];
+	    var atomc = atom.compile (eng);
+	    out.addOutput (atomc);
+	}
+	return out.inlineOutput ();
     };
 
     return that;
@@ -236,6 +255,12 @@ function Block (startLine, body, toplev) {
     };
 
     that.compile = function (eng) {
+	if (!this._body) {
+	    return new eng.Output ();
+	}
+	if (this._body.length == 1) {
+	    return this._body[0].compile(eng);
+	} 
 	var fn = eng.fnFresh ();
 	var ret = new eng.Output (fn);
 	ret.addLambda (fn);
@@ -332,15 +357,16 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 	ret.addLambda (fn);
 	var ifStatement = this._ifStatement.compile (eng);
 	var elseStatement = this._elseStatement.compile (eng);
+	var condExpr = this._condExpr.inline (eng);
 	ret.addOutput (ifStatement);
 	ret.addOutput (elseStatement);
-	ret.addLine ("if (" + this._condExpr + ") {");
+	ret.addLine ("if (" + condExpr + ") {");
 	ret.indent ();
-	ret.addCall ([ ifStatement.fnName () ]);
+	ret.addCall ( ifStatement.fnNameList () );
 	ret.unindent ();
 	ret.addLine ("} else {");
 	ret.indent ();
-	ret.addCall ([ elseStatement.fnName () ]);
+	ret.addCall ( elseStatement.fnNameList () );
 	ret.unindent ();
 	ret.addLine ("}");
 	ret.closeLambda ();
@@ -440,7 +466,7 @@ function Program (statements) {
 	out.addLine ("var Tame = require('./tame').Tame;");
 	var body = this._body.compile (eng);
 	out.addOutput (body);
-	out.addLine (body.fnName() + " (Tame.runtime.end);");
+	out.addLine (body.fnName() + " (Tame.Runtime.end);");
 	return out;
     };
 

@@ -11,7 +11,7 @@ var $0 = $$.length - 1;
 switch (yystate) {
 case 1: this.$ = $$[$0]; 
 break;
-case 2: this.$ = $$[$01]; 
+case 2: this.$ = $$[$0]; 
 break;
 case 3: this.$ = new yy.String (_$[$0-2].first_line, _$[$0].last_line, "'" + $$[$0-1] + "'"); 
 break;
@@ -551,7 +551,7 @@ break;
 }
 };
 lexer.rules = [/^\/\/.*/,/^\s+/,/^for\b/,/^while\b/,/^break\b/,/^continue\b/,/^return\b/,/^do\b/,/^if\b/,/^else\b/,/^try\b/,/^catch\b/,/^twait\b/,/^function\b/,/^mkev\b/,/^finally\b/,/^case\b/,/^switch\b/,/^default\b/,/^[a-zA-Z_][a-zA-Z_0-9]*[ ^]*[:]/,/^[a-zA-Z_][a-zA-Z_0-9]*/,/^\{/,/^\}/,/^\(/,/^\)/,/^\[/,/^\]/,/^;/,/^,/,/^:/,/^"/,/^\\'/,/^\/\*/,/^[^/bcdefimrstw{}()\[\];,:"'\s]+/,/^./,/^\\./,/^[^\\"]+/,/^"/,/^$/,/^\\./,/^[^\\']+/,/^'/,/^$/,/^\*\//,/^\*/,/^[^*]+/,/^$/];
-lexer.conditions = {"ST_QUOTE2":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],"inclusive":true},"ST_QUOTE1":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,39,40,41,42],"inclusive":true},"ST_COMMENT":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,43,44,45,46],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34],"inclusive":true}};return lexer;})()
+lexer.conditions = {"ST_QUOTE2":{"rules":[35,36,37,38],"inclusive":true},"ST_QUOTE1":{"rules":[39,40,41,42],"inclusive":true},"ST_COMMENT":{"rules":[43,44,45,46],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34],"inclusive":true}};return lexer;})()
 parser.lexer = lexer;
 return parser;
 })();

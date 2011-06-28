@@ -13,6 +13,12 @@ function Output (fnName, startLine) {
     this.unindent = function () { this._indent--; };
     this.fnName = function () { return this._fnName; }
 
+    this.fnNameList = function () {
+	if (this._fnName) { return [ this._fnName ] ; }
+	else { return []; }
+    };
+
+
     this.addLine = function (l) {
 	this._lines.push ([this._indent, l]);
     };
@@ -75,6 +81,10 @@ function Output (fnName, startLine) {
 
     this.formatOutput = function () {
 	return this.formatOutputLines().join ("\n");
+    };
+
+    this.inlineOutput = function () {
+	return this.formatOutputLines().join (" ");
     };
 
     this.dump = function () {

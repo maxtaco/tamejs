@@ -3,49 +3,49 @@
 %s ST_QUOTE2 ST_QUOTE1 ST_COMMENT
 %%
 
-"//".*		/* skip over C++-style comments */
+<INITIAL>"//".*		/* skip over C++-style comments */
 
-\s+             /* skip space */
+<INITIAL>\s+             /* skip space */
 
-"for"		return 'FOR';
-"while"		return 'WHILE'; 
-"break"		return 'BREAK';
-"continue"	return 'CONTINUE';
-"return"	return 'RETURN';
-"do"		return 'DO';
-"if"		return 'IF';
-"else"		return 'ELSE';
-"try"		return 'TRY';
-"catch"		return 'CATCH';
-"twait"		return 'TWAIT';
-"function"	return 'FUNCTION';
-"mkev"		return 'MKEV';
-"finally"	return 'FINALLY';
-"case"		return 'CASE';
-'switch'	return 'SWITCH';
-'default'	return 'DEFAULT';
+<INITIAL>"for"		return 'FOR';
+<INITIAL>"while"	return 'WHILE'; 
+<INITIAL>"break"	return 'BREAK';
+<INITIAL>"continue"	return 'CONTINUE';
+<INITIAL>"return"	return 'RETURN';
+<INITIAL>"do"		return 'DO';
+<INITIAL>"if"		return 'IF';
+<INITIAL>"else"		return 'ELSE';
+<INITIAL>"try"		return 'TRY';
+<INITIAL>"catch"	return 'CATCH';
+<INITIAL>"twait"	return 'TWAIT';
+<INITIAL>"function"	return 'FUNCTION';
+<INITIAL>"mkev"		return 'MKEV';
+<INITIAL>"finally"	return 'FINALLY';
+<INITIAL>"case"		return 'CASE';
+<INITIAL>"switch"	return 'SWITCH';
+<INITIAL>"default"	return 'DEFAULT';
 
-[a-zA-Z_][a-zA-Z_0-9]*[ ^]*[:] { 
+<INITIAL>[a-zA-Z_][a-zA-Z_0-9]*[ ^]*[:] { 
                                    yytext = yytext.replace (/[\s:]/g, ""); 
 				   return 'LABEL'; 
                               }
-[a-zA-Z_][a-zA-Z_0-9]* { return 'ID'; }
+<INITIAL>[a-zA-Z_][a-zA-Z_0-9]* { return 'ID'; }
 
-"{"		return 'LBRACE';
-"}"		return 'RBRACE';
-"("		return 'LPAREN';
-")"		return 'RPAREN';
-"["		return 'LBRACKET';
-"]"		return 'RBRACKET';
-";"		return "SEMICOLON";
-','		return 'COMMA';
-':'		return 'COLON';
+<INITIAL>"{"		return 'LBRACE';
+<INITIAL>"}"		return 'RBRACE';
+<INITIAL>"("		return 'LPAREN';
+<INITIAL>")"		return 'RPAREN';
+<INITIAL>"["		return 'LBRACKET';
+<INITIAL>"]"		return 'RBRACKET';
+<INITIAL>";"		return "SEMICOLON";
+<INITIAL>','		return 'COMMA';
+<INITIAL>':'		return 'COLON';
 
-"\""		{ this.begin ('ST_QUOTE2'); return 'QUOTE2'; }
-"\'"		{ this.begin ('ST_QUOTE1'); return 'QUOTE1'; }
-"/*"		{ this.begin ('ST_COMMENT'); }
-[^/bcdefimrstw{}()\[\];,:"'\s]+    return 'GENERIC';
-.	 	return 'GENERIC';
+<INITIAL>"\""		{ this.begin ('ST_QUOTE2'); return 'QUOTE2'; }
+<INITIAL>"\'"		{ this.begin ('ST_QUOTE1'); return 'QUOTE1'; }
+<INITIAL>"/*"		{ this.begin ('ST_COMMENT'); }
+<INITIAL>[^/bcdefimrstw{}()\[\];,:"'\s]+    return 'GENERIC';
+<INITIAL>.	 	return 'GENERIC';
 
 <ST_QUOTE2>"\\".	return 'STRING_ATOM';
 <ST_QUOTE2>[^\\"]+	return 'STRING_ATOM';

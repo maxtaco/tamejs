@@ -1,7 +1,7 @@
 
 function callChain (l) {
     if (l.length) {
-	var first = l.pop ();
+	var first = l.shift ();
 	first (function () { callChain (l); });
     }
 };
@@ -12,7 +12,7 @@ var Tame = {
     Runtime : {
 	callChain : callChain,
 	end : end
-    };
+    }
 };
 
 exports.Tame = Tame;
