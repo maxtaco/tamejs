@@ -177,7 +177,7 @@ function Expr (atoms) {
 	    var atomc = atom.compile (eng);
 	    ret.addOutput (atomc);
 	}
-	ret.addClosingCall([]);
+	ret.addCall([]);
 	ret.closeLambda ();
 	return (ret);
     };
@@ -243,7 +243,7 @@ function Block (startLine, body, toplev) {
 	    ret.addOutput (s);
 	    calls.push (s.fnName ());
 	}
-	ret.addClosingCall (calls);
+	ret.addCall (calls);
 	ret.closeLambda();
 	return ret;
     };
@@ -322,6 +322,27 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 		 condExpr : this._condExpr.dump (),
 		 ifStatement : this._ifStatement.dump (),
 		 elseStatement : this._elseStatement.dump () };
+    };
+
+    that.compile = function () {
+	var fn = eng.fnFresh ();
+	var ret = eng.Output (fn);
+	ret.addLambda (fn);
+	var ifStatement = this._ifStatement.compile (eng);
+	var elseStatement = this._elseStatement.compile (eng);
+	ret.addOutput (ifStatement);
+	ret.addOutput (elseStatement);
+	ret.addLine ("if (" + this._condExpr + ") {");
+	ret.indent ();
+	ret.addCall ([ ifStatement.fnName () ]);
+	ret.unindent ();
+	ret.addLine ("} else {");
+	ret.indent ();
+	ret.addCall ([ elseStatement.fnName () ]);
+	ret.unindent ();
+	ret.addLine ("}");
+	ret.closeLambda ();
+	return ret;
     };
 
     return that;
@@ -417,7 +438,7 @@ function Program (statements) {
 	out.addLine ("var Tame = require('./tame').Tame;");
 	var body = this._body.compile (eng);
 	out.addOutput (body);
-	out.addClosingCall ([body.fnName ()]);
+	out.addCall ([body.fnName ()]);
 	return out;
     };
 

@@ -35,12 +35,12 @@ function Output (fnName, startLine) {
 	this.indent ();
     };
 
-    this.closeLambda = function (fn) {
+    this.closeLambda = function () {
 	this.unindent ();
 	this.addLine ("};");
     };
 
-    this.addClosingCall = function (calls) {
+    this.addCall = function (calls) {
 	var cc = "Tame.Runtime.callChain ([" + calls.join (", ") + "]);";
 	this.addLine (cc);
     };

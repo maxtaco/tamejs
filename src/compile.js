@@ -4,6 +4,8 @@ function parse (txt) {
     var astmod = require ('./ast');
     var parser = require ('./parser').parser;
 
+    console.log ("XXX " + parser);
+
     // Set the ast bindings into the parser's free yy variable
     parser.yy = astmod;
 
@@ -33,5 +35,5 @@ function main (infile, output) {
     });
 };
 
-main (process.argv[1], process.argv[2]);
+main (process.argv[2], process.argv[3]);
 
