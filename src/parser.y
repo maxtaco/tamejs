@@ -203,25 +203,36 @@ WhileStatement
 
 SwitchStatement
      : SWITCH LPAREN Expr RPAREN LBRACE CaseBlock RBRACE
+     {
+         $$ = new yy.SwitchStatement (@1.first_line, $3, $6);
+     }
      ;
 
 CaseBlock
-     : 
-     | CaseBlock Case
+     : { $$ = []; }
+     | CaseBlock Case 
+     {
+         $1.push ($2);
+	 $$ = $1;
+     }
      ;
 
 Case
      : CaseLabel CaseBody
+     {
+         $1.addBody (@1.first_line, $2);
+	 $$ = $1;
+     }
      ;
 
 CaseLabel
-     : DEFAULT COLON
-     | CASE LABEL
-     | CASE String COLON
+     : DEFAULT COLON     { $$ = yy.Case (@1.first_line); }
+     | CASE LABEL        { $$ = yy.Case (@1.first_line, $2); }
+     | CASE String COLON { $$ = yy.Case (@1.first_line, $2); }
      ;
 
 CaseBody
-     : SourceElements
+     : SourceElements { $$ = $1; }
      ;
 
 IfStatement

@@ -520,6 +520,103 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
 
 //=======================================================================
 
+function SwitchStatement (startLine, expr, cases) {
+    var that = new Node (startLine);
+    that._expr = expr;
+    that._cases = cases;
+
+    //-----------------------------------------
+
+    that.getChildren = function () { return this._cases; }
+
+    //-----------------------------------------
+
+    that.dump = function () {
+	return { type : "Switch",
+		 expr : this._expr.dump (),
+		 cases : this._cases.map (function (x) { return x.dump (); })
+	       };
+    };
+
+    //-----------------------------------------
+
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	ret.addLine ("switch (" + this._expr.inline (eng) + ") {");
+	ret.indent ();
+	for (var i in this._cases) {
+	    var c = this._cases[i].passThrough (eng);
+	    ret.addOutput (c);
+	}
+	ret.unindent ();
+	ret.addLine ("}");
+	return ret;
+    };
+
+    //-----------------------------------------
+
+    return that;
+};
+
+//=======================================================================
+
+function Case (startLine, value) {
+    var that = new Node (startLine);
+    that._value = value;
+    that._body = null;
+
+    //-----------------------------------------
+
+    that.getChildren = function () { return [ that._body ]; };
+
+    //-----------------------------------------
+
+    that.dump = function () {
+	return { type : "Case",
+		 value : this._value,
+		 body : this._body.dump ()
+	       };
+    };
+
+    //-----------------------------------------
+
+    that.addBody = function (startLine, b) {
+	this._body = new Block (startLine, b);
+    };
+
+    //-----------------------------------------
+
+    that.outputLabel = function () {
+	var out;
+	if (this._value) {
+	    out = "case " + this._value;
+	} else {
+	    out = "default";
+	}
+	out += ":";
+	return out;
+    };
+
+    //-----------------------------------------
+
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	ret.addLine (this.outputLabel ());
+	ret.indent ();
+	var c = this._body.passThrough (eng);
+	ret.addOutput (c);
+	ret.unindent ();
+	return ret;
+    };
+
+    //-----------------------------------------
+
+    return that;
+};
+
+
+//=======================================================================
+
 function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
     var that = new Node (startLine);
     that._condExpr = condExpr;
@@ -733,6 +830,16 @@ function BreakStatement (startLine, targetLabel) {
 
     //-----------------------------------------
 
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	var lbl = "";
+	if (this._targetLabel) { lbl = this._targetLabel; }
+	ret.addLine ("break " + lbl + ";");
+	return ret;
+    };
+
+    //-----------------------------------------
+
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
 	var ret = new eng.Output (fn);
@@ -910,3 +1017,6 @@ exports.String = MyString;
 exports.BreakStatement = BreakStatement;
 exports.ContinueStatement = ContinueStatement;
 exports.ForIterClassic = ForIterClassic;
+exports.Case = Case;
+exports.SwitchStatement = SwitchStatement;
+

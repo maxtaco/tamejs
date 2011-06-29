@@ -123,6 +123,30 @@ case 52:
         this.$ = new yy.WhileStatement (_$[$0-4].first_line, $$[$0-2], $$[$0]);
      
 break;
+case 53:
+         this.$ = new yy.SwitchStatement (_$[$0-6].first_line, $$[$0-4], $$[$0-1]);
+     
+break;
+case 54: this.$ = []; 
+break;
+case 55:
+         $$[$0-1].push ($$[$0]);
+	 this.$ = $$[$0-1];
+     
+break;
+case 56:
+         $$[$0-1].addBody (_$[$0-1].first_line, $$[$0]);
+	 this.$ = $$[$0-1];
+     
+break;
+case 57: this.$ = yy.Case (_$[$0-1].first_line); 
+break;
+case 58: this.$ = yy.Case (_$[$0-1].first_line, $$[$0]); 
+break;
+case 59: this.$ = yy.Case (_$[$0-2].first_line, $$[$0-1]); 
+break;
+case 60: this.$ = $$[$0]; 
+break;
 case 61:
         this.$ = new yy.IfElseStatement (_$[$0-4].first_line, $$[$0-2], $$[$0], null);
      
