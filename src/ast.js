@@ -425,13 +425,54 @@ function ForStatement (startLine, forIter, body) {
 	if (this.getLabel ()) {
 	    label = this.getLabel () + " : ";
 	}
-	var iter = this._forIter.inline (eng);
+	var iter = this._forIter.passThrough (eng);
 	ret.addLine (lbl + " for (" + iter + ") {");
 	ret.indent ();
 	var body = this._body.passThrough (eng);
 	ret.addOutput (body);
 	ret.unindent ();
 	ret.addLine ("}");
+	return ret;
+    };
+
+    that.compile = function (eng) {
+	var outer = eng.fnFresh ();
+	var ret = new eng.Output (outer);
+	ret.addLambda (outer);
+	var lbl = null;
+	if (this.getLabel ()) {
+	    lbl = ret.localLabelName (this.getLabel ().getName ());
+	    ret.initLocalLabel (lbl);
+	}
+	var iter = this._forIter.inline (eng);
+
+	ret.addLine (iter[0] + ";"); // initialization
+	
+	var inner = eng.fnFresh ();
+	ret.addLambda (inner);
+
+	var inc = eng.fnFresh ();
+	ret.addLambda (inc);
+	ret.addLine (iter[2]);
+	ret.addCall([inner]);
+	ret.closeLambda ();
+
+	ret.addLine ("if (" + iter[1] + ") {");
+	ret.indent ();
+	var body = this._body.compile (eng);
+	ret.addOutput (body);
+	ret.addCall([ body.fnName (), inc ]);
+	ret.unindent ();
+	ret.addLine ("} else {");
+	ret.indent ();
+	ret.addCall ([]);
+	ret.unindent ();
+	ret.addLine ("}");
+
+	ret.populateLabels (lbl, inc, ret.genericCont ());
+	ret.closeLambda (); // inner
+	ret.addCall ([ inner ]);
+	ret.closeLambda (); // outer
 	return ret;
     };
 
@@ -456,7 +497,7 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
 		 incExpr : this._incExpr.dump () };
     };
 
-    that.inline = function (eng) {
+    that.passThrough = function (eng) {
 	var out = new eng.Output ();
 	var a = this._initExpr.passThrough (eng);
 	out.addOutput (a); out.addLine (";");
@@ -466,6 +507,14 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
 	out.addOutput (c);
 	return out.inlineOutput ();
     };
+
+    that.inline = function (eng) {
+	var a = this._initExpr.inline (eng);
+	var b = this._condExpr.inline (eng);
+	var c = this._incExpr.inline (eng);
+	return [ a, b, c];
+    };
+
     return that;
 };
 
