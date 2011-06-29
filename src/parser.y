@@ -142,6 +142,7 @@ Statement
      | ReturnStatement
      | BreakStatement
      | ContinueStatement
+     | SwitchStatement
      ;
 
 Label
@@ -198,6 +199,29 @@ WhileStatement
      {
         $$ = new yy.WhileStatement (@1.first_line, $3, $5);
      }
+     ;
+
+SwitchStatement
+     : SWITCH LPAREN Expr RPAREN LBRACE CaseBlock RBRACE
+     ;
+
+CaseBlock
+     : 
+     | CaseBlock Case
+     ;
+
+Case
+     : CaseLabel CaseBody
+     ;
+
+CaseLabel
+     : DEFAULT COLON
+     | CASE LABEL
+     | CASE String COLON
+     ;
+
+CaseBody
+     : SourceElements
      ;
 
 IfStatement

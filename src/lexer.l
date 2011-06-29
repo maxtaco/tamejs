@@ -25,7 +25,7 @@
 <INITIAL>"switch"	return 'SWITCH';
 <INITIAL>"default"	return 'DEFAULT';
 
-<INITIAL>[a-zA-Z_][a-zA-Z_0-9]*[ ^]*[:] { 
+<INITIAL>[a-zA-Z_0-9]+[ ^]*[:] { 
                                    yytext = yytext.replace (/[\s:]/g, ""); 
 				   return 'LABEL'; 
                               }

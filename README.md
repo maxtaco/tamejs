@@ -34,7 +34,6 @@ Usage Examples
 
 ToDos (Basic Functionality)
 ---------------------------
-* for loops (standard)
 * foreach loops
 * switch/cahse
 * try/catch
