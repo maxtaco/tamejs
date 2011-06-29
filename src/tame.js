@@ -20,10 +20,16 @@ function Event (k) {
 	    this._continuation ();
 	}
     };
-    this.mkevent = function () {
+    this.mkevent = function (dest) {
 	this._count++;
 	var x = this;
-	return (function () { x.trigger (); });
+	var ret = function trigfn () { 
+	    for (var i = 0; dest && i < trigfn.arguments.length; i++) {
+		dest[i] = trigfn.arguments[i];
+	    }
+	    x.trigger (); 
+	};
+	return ret;
     };
     return this;
 };

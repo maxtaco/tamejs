@@ -123,7 +123,6 @@ ExprStatement
      | FunctionDeclaration 
      {
          $$ = yy.Expr ([ $1 ] );
-	 console.log (JSON.stringify ($$.dump ()));
      }
      ;
 

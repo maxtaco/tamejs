@@ -327,7 +327,6 @@ function Block (startLine, body, toplev) {
     that.passThrough = function (eng) {
 	var ret = new eng.Output ();
 	for (var i in this._body) {
-	    console.log ("block " + i);
 	    var s = this._body[i].passThrough (eng);
 	    ret.addOutput (s);
 	}
@@ -347,7 +346,6 @@ function Block (startLine, body, toplev) {
 	// Optimization --- don't need to nest if it's a 
 	// block with only one statement....
 	if (this._body.length == 1) {
-	    console.log ("FOOO " + JSON.stringify (this._body[0].dump ()));
 	    return this._body[0].compile(eng, tailCall, skipFn);
 	} 
 

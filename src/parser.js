@@ -88,7 +88,6 @@ case 28:
 break;
 case 29:
          this.$ = yy.Expr ([ $$[$0] ] );
-	 console.log (JSON.stringify (this.$.dump ()));
      
 break;
 case 42: this.$ = new yy.Label (_$[$0].first_line, yytext); 

@@ -34,12 +34,13 @@ Usage Examples
 
 ToDos (Basic Functionality)
 ---------------------------
-* return statements
 * for loops (standard)
 * foreach loops
 * switch/cahse
 * try/catch
 * support unterminated expressions (might not be possible without PEG)
+* regtest suite
+* with statements?
 
 ToDos (Optimizations)
 ---------------------
