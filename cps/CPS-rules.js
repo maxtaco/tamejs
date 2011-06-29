@@ -31,13 +31,7 @@ CPS[ twait { b } k ] = {
     __ev._trigger (); 
 };
 
-CPS[mkev(obj, slot)] = {
-    __ev.mkev_slot(obj, slot);
-};
-
-CPS[mkev()] = {
-    __ev.mkev();
-};
+CPS[mkev] = { __ev.mkev };
 
 // break to the given label l
 CPS[break l; k] = {

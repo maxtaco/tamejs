@@ -39,6 +39,7 @@ ToDos (Basic Functionality)
 * foreach loops
 * switch/cahse
 * try/catch
+* support unterminated expressions (might not be possible without PEG)
 
 ToDos (Optimizations)
 ---------------------

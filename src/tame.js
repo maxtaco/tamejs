@@ -28,10 +28,21 @@ function Event (k) {
     return this;
 };
 
+function ReturnStack () {
+    this._stack = [];
+    this.push = function (x) { this._stack.push (x); }
+    this.setBack = function (x) {
+	this._stack[this._stack.length - 1] = x;
+    }
+    this.pop = function () { return this._stack.pop (); }
+    return this;
+};
+
 var tame = {
     callChain : callChain,
     end : end,
     Event : Event,
+    returnStack : new ReturnStack (),
 
     // Global labels for unadorned 'continue' and 'break' calls
     __k_global : { k_break : null, k_continue : null }

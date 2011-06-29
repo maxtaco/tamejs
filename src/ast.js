@@ -25,6 +25,10 @@ function Node (startLine) {
 	    v[i].compress ();
 	}
     };
+
+    this.passThrough = function (eng) {
+	return this.compile (eng);
+    };
 };
 
 //-----------------------------------------------------------------------
@@ -114,22 +118,34 @@ function Expr (atoms) {
 	this._endLine = atoms[atoms.length - 1]._startLine;
     }
 
+    //-----------------------------------------
+
     that.getChildren = function () { return this._atoms; }
+
+    //-----------------------------------------
 
     that.addAtom = function (a) {
 	this._atoms.push (a);
     };
 
+    //-----------------------------------------
+
     that.setLabel = function (x) { 
 	this._atoms.unshift (x.toAtom ());
     };
+
+    //-----------------------------------------
 
     that.dump = function () {
 	return { type : "Expr",
 		 atoms : this._atoms.map (function (x) { return x.dump (); }) };
     };
 
+    //-----------------------------------------
+
     that.toExpr = function () { return this; };
+
+    //-----------------------------------------
 
     //
     // Smush all of the atoms together so that we're dealing with 
@@ -164,16 +180,21 @@ function Expr (atoms) {
 	}
     };
 
+    //-----------------------------------------
+
     that.pushAtomsToArray = function (out) {
 	for (var i in this._atoms) {
 	    out.push (this._atoms[i]);
 	}
     };
     
+    //-----------------------------------------
+
     that.takeAtomsFrom = function (x) {
 	this._atoms = this._atoms.concat (x._atoms);
     };
 
+    //-----------------------------------------
 
     that.compileAtom = function (eng, a) {
 	var out;
@@ -186,9 +207,11 @@ function Expr (atoms) {
 	return out;
     };
 
+    //-----------------------------------------
+
     that.compile = function (eng, tailCall, skipFn) {
 
-	var ret
+	var ret;
 	
 	if (skipFn) {
 	    ret = new eng.Output ();
@@ -214,6 +237,19 @@ function Expr (atoms) {
 	}
 	return (ret);
     };
+
+    //-----------------------------------------
+
+    that.passThrough = function (eng) { 
+	var out = new eng.Output ();
+	for (var i in this._atoms) {
+	    var a = this._atoms[i].compile (eng);
+	    out.addOutput (a);
+	}
+	return out;
+    };
+
+    //-----------------------------------------
 
     that.inline = function (eng) {
 	var out = new eng.Output ();
@@ -243,7 +279,7 @@ function Block (startLine, body, toplev) {
 
     that.hasTwaitStatement = function () {
 	for (x in this._body) {
-	    if (x.hasTwaitStatement ()) {
+	    if (this._body[x].hasTwaitStatement ()) {
 		return true;
 	    }
 	}
@@ -285,6 +321,18 @@ function Block (startLine, body, toplev) {
 
     //----------------------------------------
 
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	for (var i in this._body) {
+	    console.log ("block " + i);
+	    var s = this._body[i].passThrough (eng);
+	    ret.addOutput (s);
+	}
+	return ret;
+    }
+
+    //----------------------------------------
+
     that.compile = function (eng, tailCall, skipFn) {
 
 	// Optimization -- for empty blocks, just add a call to the 
@@ -296,6 +344,7 @@ function Block (startLine, body, toplev) {
 	// Optimization --- don't need to nest if it's a 
 	// block with only one statement....
 	if (this._body.length == 1) {
+	    console.log ("FOOO " + JSON.stringify (this._body[0].dump ()));
 	    return this._body[0].compile(eng, tailCall, skipFn);
 	} 
 
@@ -405,13 +454,19 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
     if (!elseStatement) { elseStatement = new Block(startLine, []); }
     that._elseStatement = elseStatement;
 
+    //-----------------------------------------
+
     that.getChildren = function () 
     { return [ this._condExpr, this._ifStatement, this._elseStatement ]; };
+
+    //-----------------------------------------
 
     that.hasTwaitStatement = function () {
 	return this._ifStatement.hasTwaitStatement () ||
 	    this._elseStatement.hasTwaitStatement ();
     };
+
+    //-----------------------------------------
 
     that.dump = function () {
 	return { type : "IfElseStatement",
@@ -419,6 +474,8 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 		 ifStatement : this._ifStatement.dump (),
 		 elseStatement : this._elseStatement.dump () };
     };
+
+    //-----------------------------------------
 
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
@@ -442,6 +499,27 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 	return ret;
     };
 
+    //-----------------------------------------
+
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	var ifStatement = this._ifStatement.passThrough (eng);
+	var elseStatement = this._elseStatement.passThrough (eng);
+	var condExpr = this._condExpr.inline (eng);
+	ret.addLine ("if (" + condExpr + ") {");
+	ret.indent ();
+	ret.addOutput (ifStatement);
+	ret.unindent ();
+	ret.addLine ("} else {");
+	ret.indent ();
+	ret.addOutput (elseStatement);
+	ret.unindent ();
+	ret.addLine ("}");
+	return ret;
+    };
+
+    //-----------------------------------------
+
     return that;
 };
 
@@ -453,13 +531,19 @@ function FunctionDeclaration (startLine, name, params, body) {
     that._params = params;
     that._body = body;
 
+    //-----------------------------------------
+
     that.getChildren = function () { 
 	return [ this._body ]; 
     };
 
+    //-----------------------------------------
+
     // Don't propogate down, since we don't need to tame the
     // surrounding block when the inner block is tamed. 
     that.hasTwaitStatement = function () { return false; };
+
+    //-----------------------------------------
 
     that.dump = function () {
 	return { type : "FunctionDeclaration",
@@ -468,19 +552,30 @@ function FunctionDeclaration (startLine, name, params, body) {
 		 body : this._body.dump () };
     };
 
+    //-----------------------------------------
+
     that.compile = function (eng) {
+
 	var ret = new eng.Output ();
 	var nm = this._name;
 	if (!nm) { nm = ""; }
 	var pl = this._params.join (", ");
 	ret.addLine ("function " + nm + " (" + pl + ") {");
 	ret.indent ();
-	var bod = this._body.compile (eng, null, true);
+	var bod;
+	if (this._body.hasTwaitStatement ()) {
+	    bod = this._body.compile (eng, null, true);
+	} else {
+	    bod = this._body.passThrough (eng);
+	}
+	    
 	ret.addOutput (bod);
 	ret.unindent ();
 	ret.addLine ("}");
 	return ret;
     };
+
+    //-----------------------------------------
 
     return that;
 };
@@ -493,12 +588,18 @@ function TwaitStatement (startLine, body) {
     that._body = body;
     that.hasTwaitStatement = function () { return true; };
 
+    //-----------------------------------------
+
     that.getChildren = function () { return [ this._body ]; };
+
+    //-----------------------------------------
 
     that.dump = function () {
 	return { type : "TwaitStatement",
 		 body : this._body.dump () };
     };
+
+    //-----------------------------------------
 
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
@@ -515,6 +616,8 @@ function TwaitStatement (startLine, body) {
 	return ret;
     };
 
+    //-----------------------------------------
+
     return that;
 };
 
@@ -524,10 +627,14 @@ function ContinueStatement (startLine, targetLabel) {
     var that = new Node (startLine);
     that._targetLabel = targetLabel;
     
+    //-----------------------------------------
+
     that.dump = function () {
 	return { type : "ContinueStatement",
 		 targetLabel : targetLabel };
     };
+
+    //-----------------------------------------
 
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
@@ -538,6 +645,8 @@ function ContinueStatement (startLine, targetLabel) {
 	return ret;
     };
 
+    //-----------------------------------------
+
     return that;
 };
 
@@ -547,10 +656,14 @@ function BreakStatement (startLine, targetLabel) {
     var that = new Node (startLine);
     that._targetLabel = targetLabel;
     
+    //-----------------------------------------
+
     that.dump = function () {
 	return { type : "BreakStatement",
 		 targetLabel : targetLabel };
     };
+
+    //-----------------------------------------
 
     that.compile = function (eng) {
 	var fn = eng.fnFresh ();
@@ -571,7 +684,11 @@ function WhileStatement (startLine, condExpr, body) {
     that._condExpr = condExpr;
     that._body = body;
 
+    //-----------------------------------------
+
     that.getChildren = function () { return [ this._condExpr, this._body ]; };
+
+    //-----------------------------------------
 
     that.compile = function (eng) {
 	var outer = eng.fnFresh ();
@@ -608,6 +725,8 @@ function WhileStatement (startLine, condExpr, body) {
 	return ret;
     };
 
+    //-----------------------------------------
+
     that.dump = function () {
 	return { type : "WhileStatement",
 		 condExpr : this._condExpr.dump (),
@@ -622,11 +741,37 @@ function WhileStatement (startLine, condExpr, body) {
 function ReturnStatement (startLine, expr) {
     var that = new Node (startLine);
     that._expr = expr;
+
+    //-----------------------------------------
+
     that.getChildren = function () { return [ this._expr ]; } ; 
+
+    //-----------------------------------------
+
     that.dump = function () {
 	return { type : "ReturnStatement",
 		 expr : this._expr.dump () };
     };
+
+    //-----------------------------------------
+
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	var expr = this._expr
+	ret.addLine ("return " + expr.inline (eng) + ";");
+	return ret;
+    };
+
+    //-----------------------------------------
+
+    that.compile = function (eng, tailCall, skipFn) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+	ret.addLambda (fn);
+	ret.closeLambda ();
+	return ret;
+    };
+
     return that;
 };
 
@@ -638,9 +783,13 @@ function Program (statements) {
 
     that.getChildren = function () { return [ this._body ]; };
 
+    //-----------------------------------------
+
     that.dump = function () {
 	return { body : this._body.dump () };
     };
+
+    //-----------------------------------------
 
     that.compile = function (eng) {
 	var out = new eng.Output (null, 1);
@@ -652,6 +801,8 @@ function Program (statements) {
 	out.addLine (body.fnName() + " (tame.end);");
 	return out;
     };
+
+    //-----------------------------------------
 
     return that;
 };
