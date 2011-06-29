@@ -146,6 +146,8 @@ function Expr (atoms) {
 		var x = this._atoms[i];
 		var a = x.toAtom ();
 		if (!a) {
+		    // If it's a function, we need to compress it, so 
+		    // that its atoms are in the right form
 		    x.compress ();
 		    newAtoms.push (x);
 		    lastAtom = null;
