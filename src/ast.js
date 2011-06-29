@@ -563,7 +563,6 @@ function SwitchStatement (startLine, expr, cases) {
 	ret.addLine ("var " + x + " = " + this._expr.inline (eng) + ";");
 	var calls = [];
 	for (i in this._cases) {
-	    console.log ("FOO " + JSON.stringify (this._cases[i].dump ()));
 	    var c = this._cases[i].getBody ().compile (eng);
 	    ret.addOutput (c);
 	    calls.push (c.fnName ());
