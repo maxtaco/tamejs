@@ -31,11 +31,14 @@ the two timers are fired in parallel, and only when both have returned
 Usage Examples
 --------------
 
+Critical Bugs
+-------------
+* Switch Statements: (1) need to figure out empty bodies, (2) need to 
+  set up break labels.
 
 ToDos (Basic Functionality)
 ---------------------------
 * foreach loops
-* switch/cahse
 * try/catch
 * support unterminated expressions (might not be possible without PEG)
 * regtest suite
