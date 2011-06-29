@@ -419,6 +419,22 @@ function ForStatement (startLine, forIter, body) {
 		 body : this._statement.dump () };
     };
 
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	var lbl = "";
+	if (this.getLabel ()) {
+	    label = this.getLabel () + " : ";
+	}
+	var iter = this._forIter.inline (eng);
+	ret.addLine (lbl + " for (" + iter + ") {");
+	ret.indent ();
+	var body = this._body.passThrough (eng);
+	ret.addOutput (body);
+	ret.unindent ();
+	ret.addLine ("}");
+	return ret;
+    };
+
     return that;
 };
 
@@ -438,6 +454,17 @@ function ForIterClassic (initExpr, condExpr, incExpr) {
 		 initExpr : this._initExpr.dump (),
 		 condExpr : this._condExpr.dump (),
 		 incExpr : this._incExpr.dump () };
+    };
+
+    that.inline = function (eng) {
+	var out = new eng.Output ();
+	var a = this._initExpr.passThrough (eng);
+	out.addOutput (a); out.addLine (";");
+	var b = this._condExpr.passThrough (eng);
+	out.addOutput (b); out.addLine (";");
+	var c = this._incExpr.passThrough (eng); 
+	out.addOutput (c);
+	return out.inlineOutput ();
     };
     return that;
 };
@@ -833,3 +860,4 @@ exports.Label = Label;
 exports.String = MyString;
 exports.BreakStatement = BreakStatement;
 exports.ContinueStatement = ContinueStatement;
+exports.ForIterClassic = ForIterClassic;

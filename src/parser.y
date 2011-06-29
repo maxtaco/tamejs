@@ -214,7 +214,7 @@ IfStatement
 ForIter
      : Expr SEMICOLON Expr SEMICOLON Expr
      {
-         $$ = new yy.ForIterClassic ($1, $2, $);
+         $$ = new yy.ForIterClassic ($1, $3, $5);
      }
      | Expr
      {

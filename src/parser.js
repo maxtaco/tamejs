@@ -132,7 +132,7 @@ case 53:
      
 break;
 case 54:
-         this.$ = new yy.ForIterClassic ($$[$0-4], $$[$0-3], $);
+         this.$ = new yy.ForIterClassic ($$[$0-4], $$[$0-2], $$[$0]);
      
 break;
 case 55:
