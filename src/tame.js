@@ -11,6 +11,10 @@ function callChain (l) {
 
 function end () {}
 
+function copy (from, to) {
+    for (var i in from) { to[i] = from[i]; }
+}
+
 function Event (k) {
     this._count = 1;
     this._continuation = k;
@@ -23,13 +27,7 @@ function Event (k) {
     this.mkevent = function (dest) {
 	this._count++;
 	var x = this;
-	var ret = function trigfn () { 
-	    for (var i = 0; dest && i < trigfn.arguments.length; i++) {
-		dest[i] = trigfn.arguments[i];
-	    }
-	    x.trigger (); 
-	};
-	return ret;
+	return (function () { copy (arguments, dest); x.trigger (); });
     };
     return this;
 };
