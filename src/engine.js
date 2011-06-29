@@ -125,12 +125,18 @@ function Output (fnName, startLine) {
 
     //----------------------------------------
 
+    this.callChain = function (arg) {
+	return "tame.callChain(" + arg + ");";
+    };
+
+    //----------------------------------------
+
     this.addCall = function (calls, skipGenericCall) {
 	if (!skipGenericCall) {
 	    calls.push (this.genericCont ());
 	}
 	if (calls.length) {
-	    var cc = "tame.callChain ([" + calls.join (", ") + "]);";
+	    var cc = this.callChain ("[" + calls.join (", ") + "]");
 	    this.addLine (cc);
 	}
     };

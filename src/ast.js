@@ -555,6 +555,51 @@ function SwitchStatement (startLine, expr, cases) {
 
     //-----------------------------------------
 
+    that.compile = function (eng) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+	ret.addLambda (fn);
+	var x = "__tame_switch_x";
+	ret.addLine ("var " + x + " = " + this._expr.inline (eng) + ";");
+	var calls = [];
+	for (i in this._cases) {
+	    console.log ("FOO " + JSON.stringify (this._cases[i].dump ()));
+	    var c = this._cases[i].getBody ().compile (eng);
+	    ret.addOutput (c);
+	    calls.push (c.fnName ());
+	}
+	calls.push (ret.genericCont ());
+	var l = "__tame_switch_calls";
+	ret.addLine ("var " + l + " = [" + calls.join (", ") + "];");
+	var n_open = 0;
+	for (i in this._cases) {
+	    var c = this._cases[i];
+	    var v = c.getValue ();
+	    if (v) {
+		ret.addLine ("if (" + x + " == " + v + ") {");
+		ret.indent ();
+	    }
+	    ret.addLine (ret.callChain(l));
+	    if (v) {
+		ret.unindent ();
+		ret.addLine ("} else {");
+		ret.indent ();
+		ret.addLine (l + ".shift();");
+		n_open++;
+	    }
+	}
+
+	while (n_open) {
+	    ret.unindent ();
+	    ret.addLine ("}");
+	    n_open--;
+	}
+	ret.closeLambda ();
+	return ret;
+    };
+
+    //-----------------------------------------
+
     return that;
 };
 
@@ -564,6 +609,11 @@ function Case (startLine, value) {
     var that = new Node (startLine);
     that._value = value;
     that._body = null;
+
+    //-----------------------------------------
+
+    that.getBody = function () { return this._body; }
+    that.getValue = function () { return this._value; }
 
     //-----------------------------------------
 
@@ -848,6 +898,8 @@ function BreakStatement (startLine, targetLabel) {
 	ret.closeLambda ();
 	return ret;
     };
+
+    //-----------------------------------------
 
     return that;
 };
