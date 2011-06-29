@@ -3,14 +3,16 @@
 function main (x) {
 
     var action = function (ev) {
-	twait { setTimeout (mkevent (), 100); }
-	ev();
+	var timeout = 100;
+	twait { setTimeout (mkevent (), timeout); }
+	ev(timeout);
     };
 
     var iter = function (ev, i) {
 	console.log ("+ " + i);
-	twait { action (mkevent ()); }
-	console.log ("- " + i);
+	var res = [];
+	twait { action (mkevent (res)); }
+	console.log ("- " + i + " (slept " + res[0] + ")");
 	ev();
     };
 
