@@ -52,6 +52,7 @@ InnerExprAtom
      : OuterExprAtom { $$ = $1; }
      | LABEL         { $$ = [ new yy.Atom (@1.first_line, yytext)]; }
      | BraceExpr     { $$ = $1; }
+     | FunctionDeclaration { $$ = [ $1 ]; }
      ;
 
 InnerExprAtomList
@@ -102,7 +103,6 @@ OuterExprAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | MKEVENT     { $$ = [ new yy.Atom (@1.first_line, "__ev.mkevent") ] ; }
-     | FunctionDeclaration { $$ = [ $1 ]; }
      ;
 
 Expr
@@ -119,6 +119,11 @@ ExprStatement
      { 
          $1.addAtom (new yy.Atom (@2.first_line, ";")); 
 	 $$ = $1; 
+     }
+     | FunctionDeclaration 
+     {
+         $$ = yy.Expr ([ $1 ] );
+	 console.log (JSON.stringify ($$.dump ()));
      }
      ;
 
