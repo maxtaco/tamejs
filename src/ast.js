@@ -470,6 +470,22 @@ function TwaitStatement (startLine, body) {
 	return { type : "TwaitStatement",
 		 body : this._body.dump () };
     };
+
+    that.compile = function (eng) {
+	var fn = eng.fnFresh ();
+	var ret = new eng.Output (fn);
+	ret.addLambda (fn);
+	var ev = ret.twaitEv ();
+	ret.addLine ("var " + ev + " = new tame.Event (" 
+		     + ret.genericCont() +");");
+	body = this._body.compile (eng);
+	ret.addOutput (body);
+	ret.addLine (body.fnName() + "(tame.end);");
+	ret.addLine (ev + ".trigger();");
+	ret.closeLambda ();
+	return ret;
+    };
+
     return that;
 };
 

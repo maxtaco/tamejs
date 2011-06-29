@@ -51,7 +51,8 @@ StringAtoms
 InnerExprAtom
      : OuterExprAtom { $$ = $1; }
      | LABEL         { $$ = [ new yy.Atom (@1.first_line, yytext)]; }
-     | BraceExpr     { $$ = $1; } 
+     | BraceExpr     { $$ = $1; }
+     | FunctionDeclaration { $$ = [ $1 ]; }
      ;
 
 InnerExprAtomList
@@ -101,6 +102,7 @@ OuterExprAtom
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
+     | MKEVENT     { $$ = [ new yy.Atom (@1.first_line, "__ev.mkevent") ] ; }
      ;
 
 Expr

@@ -46,6 +46,7 @@ function Output (fnName, startLine) {
     this.kBreak = function () { return "k_break"; } ;
     this.kContinue = function () { return "k_continue"; } ;
     this.globalLabel = function () { return "tame.__k_global"; } ;
+    this.twaitEv = function () { return "__ev"; }
 
     this.populateLabels = function (lbl, k_cont, k_break) {
 	if (k_break) {

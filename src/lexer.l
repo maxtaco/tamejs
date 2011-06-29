@@ -19,7 +19,7 @@
 <INITIAL>"catch"	return 'CATCH';
 <INITIAL>"twait"	return 'TWAIT';
 <INITIAL>"function"	return 'FUNCTION';
-<INITIAL>"mkev"		return 'MKEV';
+<INITIAL>"mkevent"	return 'MKEVENT';
 <INITIAL>"finally"	return 'FINALLY';
 <INITIAL>"case"		return 'CASE';
 <INITIAL>"switch"	return 'SWITCH';
