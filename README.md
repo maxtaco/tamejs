@@ -1,6 +1,5 @@
 tamejs
 ======
-
 This package is a source-to-source translator that outputs JavaScript. The
 input dialect looks a lot like JavaScript, but introduces the `twait` 
 primitive, which allows asynchronous callback style code to work more
@@ -8,7 +7,6 @@ like straight-line threaded code.  __tamejs__ is written in JavaScript.
 
 Examples
 --------
-
 Here is a simple example that prints "hello" 10 times, with 100ms delay
 slots in between:
 
