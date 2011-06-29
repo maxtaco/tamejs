@@ -27,3 +27,23 @@ the two timers are fired in parallel, and only when both have returned
         }
         console.log ("hello");
     }
+
+Usage Examples
+--------------
+
+
+ToDos (Basic Functionality)
+---------------------------
+* return statements
+* for loops (standard)
+* foreach loops
+* switch/cahse
+* try/catch
+
+ToDos (Optimizations)
+---------------------
+* only translate tamed functions
+
+ToDos (Future)
+--------------
+* Switch from Bison/Lex style grammar to PEG/Packrat style.
