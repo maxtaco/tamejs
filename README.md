@@ -5,7 +5,7 @@ input dialect looks a lot like JavaScript, but introduces the `twait`
 primitive, which allows asynchronous callback style code to work more
 like straight-line threaded code.  __tamejs__ is written in JavaScript.
 
-Examples
+Code Examples
 --------
 Here is a simple example that prints "hello" 10 times, with 100ms delay
 slots in between:
@@ -49,3 +49,18 @@ ToDos (Future)
 * Support output that preserves line numbering ; and/or switch to debug mode
 only if asked for on the command line.
 * Switch from Bison/Lex style grammar to PEG/Packrat style.
+
+
+How It's Implemented In JavaScript
+----------------------------------
+
+
+Also Available In C++!
+----------------------
+
+The tame source-to-source translator was original written for
+asynchronous code, for C++.  It's an actively maintained project, and
+it widespread use at [OkCupid.com](http://www.okcupid.com).  See the
+(sfslite/tame Wiki)[http://okws.org/doku.php?id=sfslite] for more
+information, or read the (2007 Usenix ATC
+paper)[http://pdos.csail.mit.edu/~max/docs/tame.pdf].
