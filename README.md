@@ -55,12 +55,16 @@ How It's Implemented In JavaScript
 ----------------------------------
 
 
+What About the Rendezvous?
+--------------------------
+
+
 Also Available In C++!
 ----------------------
 
 The tame source-to-source translator was original written for
 asynchronous code, for C++.  It's an actively maintained project, and
 it widespread use at [OkCupid.com](http://www.okcupid.com).  See the
-[sfslite/tame Wiki](http://okws.org/doku.php?id=sfslite) for more
+[sfslite/tame Wiki](http://okws.org/doku.php?id=sfslite:tame2) for more
 information, or read the [2007 Usenix ATC
 paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
