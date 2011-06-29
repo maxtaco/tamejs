@@ -88,10 +88,14 @@ function Output (fnName, startLine) {
 
     this.genericCont = function () { return "k"; }
 
-    this.addCall = function (calls) {
-	calls.push (this.genericCont ());
-	var cc = "tame.callChain ([" + calls.join (", ") + "]);";
-	this.addLine (cc);
+    this.addCall = function (calls, skipGenericCall) {
+	if (!skipGenericCall) {
+	    calls.push (this.genericCont ());
+	}
+	if (calls.length) {
+	    var cc = "tame.callChain ([" + calls.join (", ") + "]);";
+	    this.addLine (cc);
+	}
     };
     
     this._cachedIndents = {};
@@ -151,7 +155,6 @@ function Engine () {
     this.run = function (node) {
 	return node.compile (this);
     };
-
 
     this.Output = Output;
     return this;

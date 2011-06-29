@@ -14,7 +14,7 @@ function parse (txt) {
 
 	// dump the compressed AST to the terminal, in case we're
 	// curious as to what it is.
-	//console.log (JSON.stringify (ast.dump ()));
+	console.log (JSON.stringify (ast.dump ()));
     }
     return ast;
 };

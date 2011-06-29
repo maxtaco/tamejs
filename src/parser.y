@@ -120,7 +120,16 @@ ExprStatement
          $1.addAtom (new yy.Atom (@2.first_line, ";")); 
 	 $$ = $1; 
      }
-     | FunctionDeclaration { $$ = $1; }
+     | FunctionDeclaration
+     {
+         console.log ("HERE!");
+         $$ = new yy.Expr ( [ $1 ] );
+     }
+     ;
+
+SemicolonOpt
+     : 
+     | SEMICOLON
      ;
 
 Statement

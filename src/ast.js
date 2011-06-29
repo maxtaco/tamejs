@@ -146,6 +146,7 @@ function Expr (atoms) {
 		var x = this._atoms[i];
 		var a = x.toAtom ();
 		if (!a) {
+		    x.compress ();
 		    newAtoms.push (x);
 		    lastAtom = null;
 		} else if (!lastAtom) {
@@ -183,10 +184,18 @@ function Expr (atoms) {
 	return out;
     };
 
-    that.compile = function (eng, tailCall) {
-	var fn = eng.fnFresh ();
-	var ret = new eng.Output (fn);
-	ret.addLambda (fn);
+    that.compile = function (eng, tailCall, skipFn) {
+
+	var ret
+	
+	if (skipFn) {
+	    ret = new eng.Output ();
+	} else {
+	    var fn = eng.fnFresh ();
+	    ret = new eng.Output (fn);
+	    ret.addLambda (fn);
+	}
+
 	for (var i in this._atoms) {
 	    var atom = this._atoms[i];
 	    var atomc = atom.compile (eng);
@@ -197,8 +206,10 @@ function Expr (atoms) {
 	    ret.addOutput (tailCall);
 	    calls.push (tailCall.fnName ());
 	}
-	ret.addCall(calls);
-	ret.closeLambda ();
+	ret.addCall(calls, skipFn);
+	if (!skipFn) {
+	    ret.closeLambda ();
+	}
 	return (ret);
     };
 
@@ -272,7 +283,7 @@ function Block (startLine, body, toplev) {
 
     //----------------------------------------
 
-    that.compile = function (eng) {
+    that.compile = function (eng, tailCall, skipFn) {
 
 	// Optimization -- for empty blocks, just add a call to the 
 	// currently active continuation
@@ -283,7 +294,7 @@ function Block (startLine, body, toplev) {
 	// Optimization --- don't need to nest if it's a 
 	// block with only one statement....
 	if (this._body.length == 1) {
-	    return this._body[0].compile(eng);
+	    return this._body[0].compile(eng, tailCall, skipFn);
 	} 
 
 	// Another optimization -- no need to nest if we're
@@ -440,17 +451,33 @@ function FunctionDeclaration (startLine, name, params, body) {
     that._params = params;
     that._body = body;
 
-    that.getChildren = function () { return [ this._body ]; };
-
-    that.hasTwaitStatement = function () {
-	return this._body.hasTwaitStatement ();
+    that.getChildren = function () { 
+	return [ this._body ]; 
     };
+
+    // Don't propogate down, since we don't need to tame the
+    // surrounding block when the inner block is tamed. 
+    that.hasTwaitStatement = function () { return false; };
 
     that.dump = function () {
 	return { type : "FunctionDeclaration",
 		 name : name,
 		 params : params,
 		 body : this._body.dump () };
+    };
+
+    that.compile = function (eng) {
+	var ret = new eng.Output ();
+	var nm = this._name;
+	if (!nm) { nm = ""; }
+	var pl = this._params.join (", ");
+	ret.addLine ("function " + nm + " (" + pl + ") {");
+	ret.indent ();
+	var bod = this._body.compile (eng, null, true);
+	ret.addOutput (bod);
+	ret.unindent ();
+	ret.addLine ("}");
+	return ret;
     };
 
     return that;
