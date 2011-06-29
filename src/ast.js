@@ -25,6 +25,20 @@ function Node (startLine) {
 	    v[i].compress ();
 	}
     };
+    
+    //----------------------------------------
+
+    this.hasTwaitStatement = function () {
+	var v = this.getChildren ();
+	for (i in v) {
+	    if (v[i].hasTwaitStatement ()) {
+		return true;
+	    }
+	}
+	return false;
+    };
+
+    //----------------------------------------
 
     this.passThrough = function (eng) {
 	return this.compile (eng);
@@ -277,17 +291,6 @@ function Block (startLine, body, toplev) {
 
     //----------------------------------------
 
-    that.hasTwaitStatement = function () {
-	for (x in this._body) {
-	    if (this._body[x].hasTwaitStatement ()) {
-		return true;
-	    }
-	}
-	return false;
-    };
-
-    //----------------------------------------
-
     that.compress = function () {
 
 	var l = 0;
@@ -412,10 +415,6 @@ function ForStatement (startLine, forIter, body) {
 
     that.getChildren = function () { return [ this._forIter, this._body ]; };
 
-    that.hasTwaitStatement = function () {
-	return this._body.hasTwaitStatement ();
-    };
-
     that.dump = function () {
 	return { type : "ForStatement",
 		 iter : this._forIter.dump (),
@@ -458,13 +457,6 @@ function IfElseStatement (startLine, condExpr, ifStatement, elseStatement) {
 
     that.getChildren = function () 
     { return [ this._condExpr, this._ifStatement, this._elseStatement ]; };
-
-    //-----------------------------------------
-
-    that.hasTwaitStatement = function () {
-	return this._ifStatement.hasTwaitStatement () ||
-	    this._elseStatement.hasTwaitStatement ();
-    };
 
     //-----------------------------------------
 
@@ -565,11 +557,13 @@ function FunctionDeclaration (startLine, name, params, body) {
 	var bod;
 	if (this._body.hasTwaitStatement ()) {
 	    bod = this._body.compile (eng, null, true);
+	    ret.addOutput (bod);
+	    ret.addCall ([bod.fnName()]);
 	} else {
 	    bod = this._body.passThrough (eng);
+	    ret.addOutput (bod);
 	}
 	    
-	ret.addOutput (bod);
 	ret.unindent ();
 	ret.addLine ("}");
 	return ret;
@@ -610,7 +604,7 @@ function TwaitStatement (startLine, body) {
 		     + ret.genericCont() +");");
 	body = this._body.compile (eng);
 	ret.addOutput (body);
-	ret.addLine (body.fnName() + "(tame.end);");
+	ret.addLine (body.fnName() + "(" + ret.endFn () + ");");
 	ret.addLine (ev + ".trigger();");
 	ret.closeLambda ();
 	return ret;
@@ -727,12 +721,33 @@ function WhileStatement (startLine, condExpr, body) {
 
     //-----------------------------------------
 
+    that.passThrough = function (eng) {
+	var ret = new eng.Output ();
+	var lbl = "";
+	if (this.getLabel ()) {
+	    label = this.getLabel () + " : ";
+	}
+	var condExpr = this._condExpr.inline (eng);
+	ret.addLine (lbl + "while (" + condExpr + ") {");
+	ret.indent ();
+	var body = this._body.passThrough (eng);
+	ret.addOutput (body);
+	ret.unindent ();
+	ret.addLine ("}");
+	return ret;
+    };
+
+
+    //-----------------------------------------
+
     that.dump = function () {
 	return { type : "WhileStatement",
 		 condExpr : this._condExpr.dump (),
 		 body : this._body.dump () };
     };
 		 
+    //-----------------------------------------
+
     return that;
 };
 
@@ -765,10 +780,7 @@ function ReturnStatement (startLine, expr) {
     //-----------------------------------------
 
     that.compile = function (eng, tailCall, skipFn) {
-	var fn = eng.fnFresh ();
-	var ret = new eng.Output (fn);
-	ret.addLambda (fn);
-	ret.closeLambda ();
+	var ret = new eng.Output (eng.endFn ());
 	return ret;
     };
 
@@ -798,7 +810,7 @@ function Program (statements) {
 	out.addLine ("var tame = require('./tame').tame;");
 	var body = this._body.compile (eng);
 	out.addOutput (body);
-	out.addLine (body.fnName() + " (tame.end);");
+	out.addLine (body.fnName() + " (" + out.endFn() + ");");
 	return out;
     };
 

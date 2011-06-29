@@ -1,4 +1,6 @@
 
+function endFn () { return "tame.end"; }
+
 //-----------------------------------------------------------------------
 //
 //  A piece of output as output by the compilation engine
@@ -47,6 +49,7 @@ function Output (fnName, startLine) {
     this.kContinue = function () { return "k_continue"; } ;
     this.globalLabel = function () { return "tame.__k_global"; } ;
     this.twaitEv = function () { return "__ev"; }
+    this.endFn = endFn;
 
     this.populateLabels = function (lbl, k_cont, k_break) {
 	if (k_break) {
@@ -155,6 +158,8 @@ function Engine () {
     this.run = function (node) {
 	return node.compile (this);
     };
+
+    this.endFn = endFn;
 
     this.Output = Output;
     return this;
