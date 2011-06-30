@@ -134,9 +134,9 @@ to tell which event fired.
 Installing and Using
 --------------------
 
-   npm install -g tamejs
-   tamejs <infile> <outfile>
-   node <outfile> # or whatever you want
+    npm install -g tamejs
+    tamejs <infile> <outfile>
+    node <outfile> # or whatever you want
 
 
 Bugs
