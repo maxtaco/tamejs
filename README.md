@@ -156,10 +156,6 @@ How It's Implemented In JavaScript
 ----------------------------------
 
 
-What About the Rendezvous?
---------------------------
-
-
 Also Available In C++!
 ----------------------
 
