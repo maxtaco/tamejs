@@ -10,10 +10,12 @@ Code Examples
 Here is a simple example that prints "hello" 10 times, with 100ms delay
 slots in between:
 
+```javascript  
     for (var i = 0; i < 10; i++) {
         twait { setTimeout (mkevent (), 100); }
         console.log ("hello");
     }
+```
 
 The way to read this is: "wait in the `twait{..}` block until all
 events made by `mkevent` have been fired.  In this case, there is only
@@ -28,6 +30,7 @@ This next example does the same, while showcasing power of the
 are fired in parallel, and only when both have returned (after 100ms),
 does progress continue...
 
+```javascript
     for (var i = 0; i < 10; i++) {
         twait { 
 		setTimeout (mkevent (), 100); 
@@ -35,10 +38,12 @@ does progress continue...
         }
         console.log ("hello");
     }
+```
 
 To do something more useful, here is a parallel DNS resolver that will
-ll exit as soon as the last of your resolutions completes:
+exit as soon as the last of your resolutions completes:
 
+```javascript
 	var dns = require("dns");
 
 	function do_one (ev, host) {
@@ -57,6 +62,7 @@ ll exit as soon as the last of your resolutions completes:
 	};
 
 	do_all (process.argv.slice (2));
+```
 
 You can run this on the command line like so:
 
@@ -74,6 +80,7 @@ If you want to run these DNS resolutions in serial (rather than
 parallel), then the change from above is trivial: just switch the
 order of the twait and for statements above:
 
+```javascript  
 	function do_all (lst) {
 		for (var i = 0; i < lst.length; i++) {
 			twait {
@@ -81,6 +88,7 @@ order of the twait and for statements above:
 			}
 		}
 	};
+```
 
 
 Slightly More Advanced Example
@@ -95,7 +103,7 @@ A rendezvous is in implemented in tamejs as a pure JS construct (no rewriting
 involved), which allows a program to continue as soon as the first 
 event fires (rather than the last):
 
-
+```javascript  
 	function do_all (lst, windowsz) {
 	    var rv = new tame.Rendezvous ();
 	    var nsent = 0;
@@ -113,6 +121,7 @@ event fires (rather than the last):
 		}
 	    }
 	};
+```
 
 The way to read this code is that there are two counters maintained:
 the number of requests sent, and the number received.  We keep looping
