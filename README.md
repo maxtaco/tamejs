@@ -28,7 +28,7 @@ the two timers are fired in parallel, and only when both have returned
         console.log ("hello");
     }
 
-Here is a parallel DNS resolver that'll exit as soon as the last of 
+Here is a parallel DNS resolver that will ll exit as soon as the last of 
 your resolutions completes:
 
 
@@ -55,13 +55,24 @@ You can run this on the command line like so:
 
     node src/13out.js yahoo.com google.com nytimes.com okcupid.com tinyurl.com
 
-And you'll get a response:
+And you will get a response:
 
     yahoo.com -> 72.30.2.43,98.137.149.56,209.191.122.70,67.195.160.76,69.147.125.65
     google.com -> 74.125.93.105,74.125.93.99,74.125.93.104,74.125.93.147,74.125.93.106,74.125.93.103
     nytimes.com -> 199.239.136.200
     okcupid.com -> 66.59.66.6
     tinyurl.com -> 195.66.135.140,195.66.135.139
+
+If you want to run these DNS resolutions in serial (rather than parallel), then the change from above is trivial:
+just switch the order of the twait and for statements above:
+
+	function do_all (lst) {
+		for (var i = 0; i < lst.length; i++) {
+			twait {
+				do_one (mkevent (), lst[i]);
+			}
+		}
+	};
 
 
 Usage Examples
