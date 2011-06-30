@@ -134,6 +134,11 @@ to tell which event fired.
 Usage Examples
 --------------
 
+Bugs
+----
+* Single quotes are wonky!
+
+
 ToDos (Basic Functionality)
 ---------------------------
 * foreach loops
