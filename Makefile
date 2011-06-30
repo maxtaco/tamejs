@@ -1,11 +1,11 @@
 
-src/parser.js: src/parser.y src/lexer.l
+lib/parser.js: lib/parser.y lib/lexer.l
 	jison -o $@ $^
 
-build: src/parser.js
+build: lib/parser.js
 
 clean:
-	rm src/parser.js
+	rm lib/parser.js
 
 default: build
 all: build

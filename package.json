@@ -26,10 +26,6 @@
 	"node" : "0.4 || 0.5"
     },
     
-    "devDependencies" : {
-	"jison" : "*"
-    },
-
     "directories" : {
 	"lib" : "lib",
 	"bin" : "./bin"
