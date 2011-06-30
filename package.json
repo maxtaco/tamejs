@@ -1,0 +1,46 @@
+{
+    "author" : "Max Krohn <max@okcupid.com> (http://maxk.org)",
+    "name" : "tamejs",
+    "description" : "JavaScript-to-JavaScript code rewriter for taming async-callback-style code",
+    "version" : "0.0.1",
+    "keywords" : [
+	"tame",
+	"libasync",
+	"okws",
+	"sfslite"
+    ],
+    "preferGlobal" : true,
+    "repository" : {
+	"type" : "git",
+	"url" : "git://github.com/maxtaco/tamejs.git",
+    },
+    "bugs" : {
+	"email" : "max@okcupid.com",
+	"url" : "http://github.com/maxtaco/tamejs/issues"
+    },
+    "main" : "lib",
+    "bin" : {
+	"tamejs" : "lib/compiler.js"
+    },
+    "engines" : {
+	"node" : "0.4 || 0.5"
+    },
+    
+    "devDependencies" : {
+	"jison" : "*"
+    },
+
+    "directories" : {
+	"lib" : "lib",
+	"bin" : "./bin"
+    },
+
+    "modules" : {
+	"tame/runtime.js" : "lib/runtime.js",
+	"tame/engine.js" : "lib/engine.js",
+	"tame/ast.js" : "lib/ast.js",
+	"tame/compile.js" : "lib/compile.js"
+    },
+    "homepage": "http://github.com/maxtaco/tamejs"
+
+}
