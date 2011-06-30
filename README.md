@@ -22,8 +22,8 @@ the two timers are fired in parallel, and only when both have returned
 
     for (var i = 0; i < 10; i++) {
         twait { 
-	    setTimeout (mkevent (), 100); 
-	    setTimeout (mkevent (), 10); 
+		setTimeout (mkevent (), 100); 
+		setTimeout (mkevent (), 10); 
         }
         console.log ("hello");
     }
