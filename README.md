@@ -146,13 +146,13 @@ ToDos (Basic Functionality)
 ---------------------------
 * foreach loops, plan is as follows:
 ** Indentify the iterator variable via regex
-** Populate a vector of IDs called __tame_foreach_ids but going through the
+   * Populate a vector of IDs called __tame_foreach_ids but going through the
 original foreach, and pushing on the back of our new array.
-** Make a ForIterClass with the conditions `(var __tame_i = 0; 
+   * Make a ForIterClass with the conditions `(var __tame_i = 0; 
 __tame_i < __tame_foreach_ids.length; __tame_i++)`
-** Prepend a statement to the body: `var v = __tame_foreach_ids[__tame_i];`
+   * Prepend a statement to the body: `var v = __tame_foreach_ids[__tame_i];`
 where `v` is the indetifier found in the first step.
-** Output this new `for` loop as in the classic case.
+   * Output this new `for` loop as in the classic case.
 * try/catch
 * support unterminated expressions (might not be possible without PEG)
 * regtest suite
