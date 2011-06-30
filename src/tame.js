@@ -32,10 +32,13 @@ function Event (k) {
     return this;
 };
 
+function noop (k) { k(); };
+
 var tame = {
     callChain : callChain,
     end : end,
     Event : Event,
+    noop : noop,
 
     // Global labels for unadorned 'continue' and 'break' calls
     __k_global : { k_break : null, k_continue : null }

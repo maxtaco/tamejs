@@ -1,4 +1,6 @@
 
+function blah (ev) { ev(); };
+
 function tostr (x) {
 
     twait { blah (mkevent ()); }
@@ -12,6 +14,9 @@ function tostr (x) {
 	ret = "ONE";
 	break;
     case 2:
+	console.log ("fall through!");
+    case 3:
+	console.log ("and again!");
     default:
 	ret = "don't know";
 	break;
@@ -19,3 +24,9 @@ function tostr (x) {
 
     console.log (ret);
 }
+
+tostr (0);
+tostr (1);
+tostr (2);
+tostr (3);
+tostr (4);

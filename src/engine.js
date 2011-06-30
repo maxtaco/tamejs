@@ -17,6 +17,16 @@ function Output (fnName, startLine) {
 
     //----------------------------------------
 
+    this.fnNameRequired = function () {
+	var ret = this._fnName;
+	if (!ret) {
+	    ret = "tame.noop";
+	}
+	return ret;
+    };
+
+    //----------------------------------------
+
     this.fnNameList = function () {
 	if (this._fnName) { return [ this._fnName ] ; }
 	else { return []; }

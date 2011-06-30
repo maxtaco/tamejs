@@ -561,11 +561,12 @@ function SwitchStatement (startLine, expr, cases) {
 	ret.addLambda (fn);
 	var x = "__tame_switch_x";
 	ret.addLine ("var " + x + " = " + this._expr.inline (eng) + ";");
+	ret.populateLabels (null, null, ret.genericCont ());
 	var calls = [];
 	for (i in this._cases) {
 	    var c = this._cases[i].getBody ().compile (eng);
 	    ret.addOutput (c);
-	    calls.push (c.fnName ());
+	    calls.push (c.fnNameRequired ());
 	}
 	calls.push (ret.genericCont ());
 	var l = "__tame_switch_calls";
