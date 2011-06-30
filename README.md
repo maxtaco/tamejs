@@ -145,7 +145,7 @@ Bugs
 ToDos (Basic Functionality)
 ---------------------------
 * foreach loops, plan is as follows:
-** Indentify the iterator variable via regex
+   * Indentify the iterator variable via regex
    * Populate a vector of IDs called __tame_foreach_ids but going through the
 original foreach, and pushing on the back of our new array.
    * Make a ForIterClass with the conditions `(var __tame_i = 0; 
