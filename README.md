@@ -114,9 +114,9 @@ function do_all (lst, windowsz) {
             do_one (rv.mkev (nsent), lst[nsent]);
             nsent++;
         } else {
-            var res = [];
-            twait { rv.wait (mkevent (res)); }
-            console.log ("got back lookup #" + res[0]);
+            var evid = [];
+            twait { rv.wait (mkevent (evid)); }
+            console.log ("got back lookup nsent=" + evid[0]);
             nrecv++;
         }
     }
@@ -130,7 +130,7 @@ in the window and there are more to send, then we send; otherwise, we
 wait and harvest.  `Rendezvous.mkev` makes an event much like the
 `mkevent`, but it also takes a first argument that associates an
 idenitifer with the event fired.  This way, the waiter can know which
-event he's getting back.  In the case we use the variable `nsent` as
+event he's getting back.  In this case we use the variable `nsent` as
 the event ID --- it's the ID of this event in launch order.  When we
 harvest the event, `rv.wait` fires its callback with the ID of the
 event that's harvested.

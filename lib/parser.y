@@ -254,7 +254,7 @@ ForIter
      }
      | Expr
      {
-         $$ = new yy.ForIterIterator ($1); 
+         $$ = new yy.ForIterEach ($1); 
      }
      ;
 
