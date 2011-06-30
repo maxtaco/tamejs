@@ -15,10 +15,18 @@ slots in between:
         console.log ("hello");
     }
 
-This example does the same.  A `twait` block will block all progress
-until all events made inside via `mkevent` have fired. In the example below,
-the two timers are fired in parallel, and only when both have returned 
-(after 100ms), does progress continue...
+The way to read this is: "wait in the `twait{..}` block until all
+events made by `mkevent` have been fired.  In this case, there is only
+one event, so after that's fired (in 100ms), control continues past
+the `twait` block, onto the log line, and back to the start of the
+loop.  The code looks and feels like threaded code, but is still in
+the asynchronous idiom (if you look at the rewritten code output by the 
+*tamejs* compiler).
+
+This next example does the same, while showcasing power of the
+`twait{..}` language addition.  In the example below, the two timers
+are fired in parallel, and only when both have returned (after 100ms),
+does progress continue...
 
     for (var i = 0; i < 10; i++) {
         twait { 
@@ -28,9 +36,8 @@ the two timers are fired in parallel, and only when both have returned
         console.log ("hello");
     }
 
-Here is a parallel DNS resolver that will ll exit as soon as the last of 
-your resolutions completes:
-
+To do something more useful, here is a parallel DNS resolver that will
+ll exit as soon as the last of your resolutions completes:
 
 	var dns = require("dns");
 
@@ -63,8 +70,9 @@ And you will get a response:
     okcupid.com -> 66.59.66.6
     tinyurl.com -> 195.66.135.140,195.66.135.139
 
-If you want to run these DNS resolutions in serial (rather than parallel), then the change from above is trivial:
-just switch the order of the twait and for statements above:
+If you want to run these DNS resolutions in serial (rather than
+parallel), then the change from above is trivial: just switch the
+order of the twait and for statements above:
 
 	function do_all (lst) {
 		for (var i = 0; i < lst.length; i++) {
@@ -74,6 +82,45 @@ just switch the order of the twait and for statements above:
 		}
 	};
 
+
+Slightly More Advanced Example
+-----------------------------
+
+We've already shown how parallel and serial network flows works, what about
+something in between?  For instance, we might want to make progress in
+parallel on our DNS lookups, but not smash the server all at once. A compromise
+is windowing, which can be achieved in *tamejs* conveniently in a number of 
+different ways.  In the 2007 paper, the technique suggested is a *rendezvous*. 
+A rendezvous is in implemented in tamejs as a pure JS construct (no rewriting
+involved), which allows a program to continue as soon as the first 
+event fires (rather than the last):
+
+
+	function do_all (lst, windowsz) {
+	    var rv = new tame.Rendezvous ();
+	    var nsent = 0;
+	    var nrecv = 0;
+
+	    while (nrecv < lst.length) {
+		if (nsent - nrecv < windowsz && nsent < n) {
+		    do_one (rv.mkev (nsent), lst[nsent]);
+		    nsent++;
+		} else {
+		    var res = [];
+		    twait { rv.wait (mkevent (res)); }
+		    console.log ("got back lookup #" + res[0]);
+		    nrecv++;
+		}
+	    }
+	};
+
+The way to read this code is that there are two counters maintained:
+the number of requests sent, and the number received.  We keep looping
+until the last lookup is received.  Inside the loop, if there is room
+in the window and there are more to send, then we send; otherwise, we 
+wait and harvest.  `Rendezvous.mkev` makes an event much like the
+`mkevent`, but it also takes first argument that allows the waiter
+to tell which event fired. 
 
 Usage Examples
 --------------
