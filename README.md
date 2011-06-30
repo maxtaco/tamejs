@@ -152,7 +152,6 @@ ToDos (Basic Functionality)
 * support unterminated expressions (might not be possible without PEG)
 * regtest suite
 * with statements?
-* Make the tamejs compiler a lot more robust and featureful
 
 ToDos (Optimizations)
 ---------------------
