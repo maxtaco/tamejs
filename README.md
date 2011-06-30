@@ -104,23 +104,23 @@ involved), which allows a program to continue as soon as the first
 event fires (rather than the last):
 
 ```javascript  
-	function do_all (lst, windowsz) {
-	    var rv = new tame.Rendezvous ();
-	    var nsent = 0;
-	    var nrecv = 0;
+function do_all (lst, windowsz) {
+    var rv = new tame.Rendezvous ();
+    var nsent = 0;
+    var nrecv = 0;
 
-	    while (nrecv < lst.length) {
-		if (nsent - nrecv < windowsz && nsent < n) {
-		    do_one (rv.mkev (nsent), lst[nsent]);
-		    nsent++;
-		} else {
-		    var res = [];
-		    twait { rv.wait (mkevent (res)); }
-		    console.log ("got back lookup #" + res[0]);
-		    nrecv++;
-		}
-	    }
-	};
+    while (nrecv < lst.length) {
+        if (nsent - nrecv < windowsz && nsent < n) {
+            do_one (rv.mkev (nsent), lst[nsent]);
+            nsent++;
+        } else {
+            var res = [];
+            twait { rv.wait (mkevent (res)); }
+            console.log ("got back lookup #" + res[0]);
+            nrecv++;
+        }
+    }
+};
 ```
 
 The way to read this code is that there are two counters maintained:
