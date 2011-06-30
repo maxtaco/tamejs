@@ -3,7 +3,7 @@ tamejs
 This package is a source-to-source translator that outputs JavaScript. The
 input dialect looks a lot like JavaScript, but introduces the `twait` 
 primitive, which allows asynchronous callback style code to work more
-like straight-line threaded code.  __tamejs__ is written in JavaScript.
+like straight-line threaded code.  *tamejs* is written in JavaScript.
 
 Code Examples
 --------
@@ -11,10 +11,10 @@ Here is a simple example that prints "hello" 10 times, with 100ms delay
 slots in between:
 
 ```javascript  
-    for (var i = 0; i < 10; i++) {
-        twait { setTimeout (mkevent (), 100); }
-        console.log ("hello");
-    }
+for (var i = 0; i < 10; i++) {
+    twait { setTimeout (mkevent (), 100); }
+    console.log ("hello");
+}
 ```
 
 The way to read this is: "wait in the `twait{..}` block until all
@@ -31,37 +31,37 @@ are fired in parallel, and only when both have returned (after 100ms),
 does progress continue...
 
 ```javascript
-    for (var i = 0; i < 10; i++) {
-        twait { 
-		setTimeout (mkevent (), 100); 
-		setTimeout (mkevent (), 10); 
-        }
-        console.log ("hello");
+for (var i = 0; i < 10; i++) {
+    twait { 
+        setTimeout (mkevent (), 100); 
+        setTimeout (mkevent (), 10); 
     }
+    console.log ("hello");
+}
 ```
 
 To do something more useful, here is a parallel DNS resolver that will
 exit as soon as the last of your resolutions completes:
 
 ```javascript
-	var dns = require("dns");
+var dns = require("dns");
 
-	function do_one (ev, host) {
-		var res = [];
-		twait { dns.resolve (host, "A", mkevent (res));}
-		console.log (host + " -> " + res[1]);
-		ev();
-	};
+function do_one (ev, host) {
+    var res = [];
+    twait { dns.resolve (host, "A", mkevent (res));}
+    console.log (host + " -> " + res[1]);
+    ev();
+};
 
-	function do_all (lst) {
-		twait {
-			for (var i = 0; i < lst.length; i++) {
-				do_one (mkevent (), lst[i]);
-			}
-		}
-	};
+function do_all (lst) {
+    twait {
+        for (var i = 0; i < lst.length; i++) {
+            do_one (mkevent (), lst[i]);
+        }
+    }
+};
 
-	do_all (process.argv.slice (2));
+do_all (process.argv.slice (2));
 ```
 
 You can run this on the command line like so:
@@ -81,15 +81,14 @@ parallel), then the change from above is trivial: just switch the
 order of the twait and for statements above:
 
 ```javascript  
-	function do_all (lst) {
-		for (var i = 0; i < lst.length; i++) {
-			twait {
-				do_one (mkevent (), lst[i]);
-			}
-		}
-	};
+function do_all (lst) {
+    for (var i = 0; i < lst.length; i++) {
+        twait {
+            do_one (mkevent (), lst[i]);
+        }
+    }
+};
 ```
-
 
 Slightly More Advanced Example
 -----------------------------
