@@ -102,7 +102,8 @@ OuterExprAtom
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
-     | MKEVENT     { $$ = [ new yy.Atom (@1.first_line, "__ev.mkevent") ] ; }
+     | MKEVENT     
+     { $$ = [ new yy.Atom (@1.first_line, "__tame_ev.mkevent") ] ; }
      ;
 
 Expr

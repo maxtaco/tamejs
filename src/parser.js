@@ -72,7 +72,7 @@ case 23: this.$ = $$[$0];
 break;
 case 24: this.$ = $$[$0]; 
 break;
-case 25: this.$ = [ new yy.Atom (_$[$0].first_line, "__ev.mkevent") ] ; 
+case 25: this.$ = [ new yy.Atom (_$[$0].first_line, "__tame_ev.mkevent") ] ; 
 break;
 case 26: this.$ = new yy.Expr ([]); 
 break;

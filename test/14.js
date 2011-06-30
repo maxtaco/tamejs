@@ -11,6 +11,7 @@ function window (n, window) {
     var rv = new tame.Rendezvous ();
     var nsent = 0;
     var nrecv = 0;
+    var forlorn = 10;
 
     while (nrecv < n) {
 	if (nsent - nrecv < window && nsent < n) {

@@ -72,7 +72,7 @@ function Output (fnName, startLine) {
     this.kBreak = function () { return "k_break"; } ;
     this.kContinue = function () { return "k_continue"; } ;
     this.globalLabel = function () { return "tame.__k_global"; } ;
-    this.twaitEv = function () { return "__ev"; }
+    this.twaitEv = function () { return "__tame_ev"; }
     this.endFn = endFn;
 
     //----------------------------------------
@@ -131,7 +131,7 @@ function Output (fnName, startLine) {
 
     //----------------------------------------
 
-    this.genericCont = function () { return "k"; }
+    this.genericCont = function () { return "__tame_k"; }
 
     //----------------------------------------
 
