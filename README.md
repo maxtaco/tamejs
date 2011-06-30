@@ -149,10 +149,11 @@ ToDos (Basic Functionality)
 * support unterminated expressions (might not be possible without PEG)
 * regtest suite
 * with statements?
-* install script
 
 ToDos (Optimizations)
 ---------------------
+* Can passThrough blocks in a tamed function that don't have twaits,
+  so can get more aggressive here.
 
 ToDos (Future)
 --------------
@@ -163,6 +164,8 @@ only if asked for on the command line.
 
 How It's Implemented In JavaScript
 ----------------------------------
+
+Mumble mumble CPS-conversion yadda yadda yadda.
 
 
 Also Available In C++!
