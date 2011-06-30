@@ -131,12 +131,16 @@ wait and harvest.  `Rendezvous.mkev` makes an event much like the
 `mkevent`, but it also takes first argument that allows the waiter
 to tell which event fired. 
 
-Usage Examples
---------------
+Installing and Using
+--------------------
+
+   npm install -g tamejs
+   tamejs <infile> <outfile>
+   node <outfile> # or whatever you want
+
 
 Bugs
----
-
+----
 
 ToDos (Basic Functionality)
 ---------------------------
