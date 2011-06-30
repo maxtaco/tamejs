@@ -135,8 +135,7 @@ Usage Examples
 --------------
 
 Bugs
-----
-* Single quotes are wonky!
+---
 
 
 ToDos (Basic Functionality)
