@@ -170,3 +170,11 @@ it widespread use at [OkCupid.com](http://www.okcupid.com).  See the
 [sfslite/tame Wiki](http://okws.org/doku.php?id=sfslite:tame2) for more
 information, or read the [2007 Usenix ATC
 paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
+
+Authors
+-------
+Max Krohn <max@okcupid.com> or <max@m8api.com>
+
+License
+-------
+Copyright (c) 2011 Max Krohn for HumorRainbow, Inc., under the MIT license
