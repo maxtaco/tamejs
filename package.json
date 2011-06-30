@@ -12,13 +12,13 @@
     "preferGlobal" : true,
     "repository" : {
 	"type" : "git",
-	"url" : "git://github.com/maxtaco/tamejs.git",
+	"url" : "git://github.com/maxtaco/tamejs.git"
     },
     "bugs" : {
 	"email" : "max@okcupid.com",
 	"url" : "http://github.com/maxtaco/tamejs/issues"
     },
-    "main" : "lib",
+    "main" : "lib/tamejs.js",
     "bin" : {
 	"tamejs" : "lib/compiler.js"
     },
@@ -34,13 +34,5 @@
 	"lib" : "lib",
 	"bin" : "./bin"
     },
-
-    "modules" : {
-	"tame/runtime.js" : "lib/runtime.js",
-	"tame/engine.js" : "lib/engine.js",
-	"tame/ast.js" : "lib/ast.js",
-	"tame/compile.js" : "lib/compile.js"
-    },
     "homepage": "http://github.com/maxtaco/tamejs"
-
 }
