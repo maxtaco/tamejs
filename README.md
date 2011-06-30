@@ -152,12 +152,12 @@ ToDos (Basic Functionality)
 * support unterminated expressions (might not be possible without PEG)
 * regtest suite
 * with statements?
+* Make the tamejs compiler a lot more robust and featureful
 
 ToDos (Optimizations)
 ---------------------
 * Can passThrough blocks in a tamed function that don't have twaits,
   so can get more aggressive here.
-* Memoize recursion on the AST if just asking questions about AST structure.
 
 ToDos (Future)
 --------------
