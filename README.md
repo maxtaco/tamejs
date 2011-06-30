@@ -18,9 +18,9 @@ for (var i = 0; i < 10; i++) {
 ```
 
 The way to read this is: "wait in the `twait{..}` block until all
-events made by `mkevent` have been fired.  In this case, there is only
+events made by `mkevent` have been fired."  In this case, there is only
 one event, so after that's fired (in 100ms), control continues past
-the `twait` block, onto the log line, and back to the start of the
+the `twait` block, onto the log line, and back to the next iteration of the
 loop.  The code looks and feels like threaded code, but is still in
 the asynchronous idiom (if you look at the rewritten code output by the 
 *tamejs* compiler).
@@ -40,8 +40,8 @@ for (var i = 0; i < 10; i++) {
 }
 ```
 
-To do something more useful, here is a parallel DNS resolver that will
-exit as soon as the last of your resolutions completes:
+Now for something more useful. Here is a parallel DNS resolver that
+will exit as soon as the last of your resolutions completes:
 
 ```javascript
 var dns = require("dns");
@@ -49,7 +49,8 @@ var dns = require("dns");
 function do_one (ev, host) {
     var res = [];
     twait { dns.resolve (host, "A", mkevent (res));}
-    console.log (host + " -> " + res[1]);
+    if (res[0]) { console.log ("ERROR! " + res[0]); } 
+    else { console.log (host + " -> " + res[1]); }
     ev();
 };
 
@@ -98,7 +99,7 @@ something in between?  For instance, we might want to make progress in
 parallel on our DNS lookups, but not smash the server all at once. A compromise
 is windowing, which can be achieved in *tamejs* conveniently in a number of 
 different ways.  In the 2007 paper, the technique suggested is a *rendezvous*. 
-A rendezvous is in implemented in tamejs as a pure JS construct (no rewriting
+A rendezvous is implemented in tamejs as a pure JS construct (no rewriting
 involved), which allows a program to continue as soon as the first 
 event fires (rather than the last):
 

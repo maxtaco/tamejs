@@ -3,7 +3,11 @@ var dns = require("dns");
 function do_one (ev, host) {
     var res = [];
     twait { dns.resolve (host, "A", mkevent (res));}
-    console.log (host + " -> " + res[1]);
+    if (res[0]) {
+	console.log ("ERROR! " + res[0]);
+    } else {
+	console.log (host + " -> " + res[1]);
+    }
     ev();
 };
 
