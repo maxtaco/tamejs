@@ -35,18 +35,18 @@ your resolutions completes:
 	var dns = require("dns");
 
 	function do_one (ev, host) {
-	    var res = [];
-	    twait { dns.resolve (host, "A", mkevent (res));}
-	    console.log (host + " -> " + res[1]);
-	    ev();
+		var res = [];
+		twait { dns.resolve (host, "A", mkevent (res));}
+		console.log (host + " -> " + res[1]);
+		ev();
 	};
 
 	function do_all (lst) {
-	    twait {
-		for (var i = 0; i < lst.length; i++) {
-		    do_one (mkevent (), lst[i]);
+		twait {
+			for (var i = 0; i < lst.length; i++) {
+				do_one (mkevent (), lst[i]);
+			}
 		}
-	    }
 	};
 
 	do_all (process.argv.slice (2));
