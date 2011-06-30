@@ -126,10 +126,14 @@ function do_all (lst, windowsz) {
 The way to read this code is that there are two counters maintained:
 the number of requests sent, and the number received.  We keep looping
 until the last lookup is received.  Inside the loop, if there is room
-in the window and there are more to send, then we send; otherwise, we 
+in the window and there are more to send, then we send; otherwise, we
 wait and harvest.  `Rendezvous.mkev` makes an event much like the
-`mkevent`, but it also takes first argument that allows the waiter
-to tell which event fired. 
+`mkevent`, but it also takes a first argument that associates an
+idenitifer with the event fired.  This way, the waiter can know which
+event he's getting back.  In the case we use the variable `nsent` as
+the event ID --- it's the ID of this event in launch order.  When we
+harvest the event, `rv.wait` fires its callback with the ID of the
+event that's harvested.
 
 Installing and Using
 --------------------
@@ -162,6 +166,7 @@ ToDos (Optimizations)
 ---------------------
 * Can passThrough blocks in a tamed function that don't have twaits,
   so can get more aggressive here.
+* Memoize recursion on the AST if just asking questions about AST structure.
 
 ToDos (Future)
 --------------
