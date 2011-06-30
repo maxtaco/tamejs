@@ -10,11 +10,13 @@ function tostr (x) {
     case 0:
 	ret = "ZED";
 	break;
+    case 17:
     case 1:
 	ret = "ONE";
 	break;
     case 2:
 	console.log ("fall through!");
+    case 18:
     case 3:
 	console.log ("and again!");
     default:
@@ -30,3 +32,5 @@ tostr (1);
 tostr (2);
 tostr (3);
 tostr (4);
+tostr (18);
+tostr (17);
