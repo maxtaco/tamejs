@@ -145,6 +145,7 @@ ToDos (Basic Functionality)
 * support unterminated expressions (might not be possible without PEG)
 * regtest suite
 * with statements?
+* install script
 
 ToDos (Optimizations)
 ---------------------
