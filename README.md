@@ -236,6 +236,35 @@ The *tamejs* implementation uses other CPS-conversions for `while` and
 are curious to learn more, examine the output of the *tamejs* compiler
 to see what your favorite JavaScript control flow is translated to.
 
+As you might guess, the output code is less efficient than the input
+code.  All of the anonymous functions add bloat, and also make
+interpretation slower.  This unfortunately side-effect of our approach
+is mitigated, however, by skipping CPS compilation when at all possible.
+Functions with no `twait` blocks are passed through unmolested. 
+Similarly, blocks within tamed functions that don't call `twait` can
+also pass through.
+
+Another concern is that the use of tail recursion in translated for
+loops might overflow the runtime callstack.  That is certainly true
+for programs like the following:
+
+```javascript
+while (true) { twait { i++; } }
+```
+
+...but you should never write programs like these!  That is, there's no
+reason to have a `twait` block unless your program needs to wait for
+some asynchronous event, like a timer fired, a packet arrival, or a 
+user action.  Programs like these:
+
+```javascript
+while (true) { twait { setTimeout (mkevent (), 1); i++; } }
+```
+
+will **not** overflow the runtime stack, since the stack is unwound every
+iteration through the loop (via `setTimeout`). And these are the types
+of programs that you should be using `twait` for.
+
 
 Also Available In C++!
 ----------------------
