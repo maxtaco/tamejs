@@ -107,10 +107,12 @@ We've shown parallel and serial work flows, what about something in
 between?  For instance, we might want to make progress in parallel on
 our DNS lookups, but not smash the server all at once. A compromise is
 windowing, which can be achieved in *tamejs* conveniently in a number
-of different ways.  In the 2007 paper (see below), the technique
-suggested is a *rendezvous*.  A rendezvous is implemented in *tamejs*
-as a pure JS construct (no rewriting involved), which allows a program
-to continue as soon as the first event fires (rather than the last):
+of different ways.  The [2007 academic paper on
+tame](http://pdos.csail.mit.edu/~max/docs/tame.pdf) suggests a
+technique called a *rendezvous*.  A rendezvous is implemented in
+*tamejs* as a pure JS construct (no rewriting involved), which allows
+a program to continue as soon as the first event fires (rather than
+the last):
 
 ```javascript  
 function do_all (lst, windowsz) {
