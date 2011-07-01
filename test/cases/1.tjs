@@ -1,0 +1,46 @@
+var assert = require ("assert");
+
+exports["rendezvous & windowing example"] = function (ev) {
+
+    var utils = {};
+    var slots = {}; 
+    
+    function call (i, ev) {
+	slots[i] = 1;
+	console.log ("+call " + i);
+	twait { setTimeout (mkevent (), 100*Math.random()); }
+	slots[i] |= 2;
+	ev();
+    };
+    
+    function window (n, window, ev) {
+	var rv = new tame.Rendezvous ();
+	var nsent = 0;
+	var nrecv = 0;
+	
+	while (nrecv < n) {
+	    if (nsent - nrecv < window && nsent < n) {
+		call (nsent, rv.mkev (nsent));
+		nsent++;
+	    } else {
+		var res = [];
+		twait { rv.wait (mkevent (res)); }
+		slots[res[0]] |= 4;
+		nrecv++;
+	    }
+	}
+	ev();
+    };
+
+    var n = 100;
+    twait { window (n, 10, mkevent ()); }
+
+    function check () {
+	for (var i in n) {
+	    assert.equal (slots[i], 7, "all 3 events make bitwise 7");
+	}
+    };
+
+    check ();
+    ev ();
+};

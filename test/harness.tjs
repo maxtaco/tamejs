@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+var fs = require ('fs');
+
+function TamedCase (infile, outfile) {
+    this._infile = infile;
+    this._outfile = outfile;
+
+    this.compile = function (ev) {
+        var fs = require ('fs');
+        var Engine = require ('./engine').Engine;
+        var engine = new Engine (infile);
+        twait { engine.readInput (mkevent ()); }
+	    engine.parse ();
+	    var outdat = engine.compile ().formatOutput ();
+        var res = [];
+        twait { fs.writeFile (outfile, outdata, mkevent (res)); }
+	    if (res[0]) throw res[0];
+        ev();
+    };
+
+    return this;
+};
+
+function JsCase (file) {
+    this._file = file;
+    this.compile = function (ev) { ev(); };
+    return this;
+};
+
+function read_cases (ev) {
+    var tests = [];
+    var res = [];
+    twait { fs.readdir ('test/cases/', mkevent (res)); }
+    var err = res[0];
+    var files = res[1];
+	if (err) throw err;
+	var rxx = new RegExp ('^(.*)\.(t)?js$');
+	for (f in files) {
+        var file = files[f];
+	    var m =  file.match(rxx);
+	    if (m) {
+            if (m[2]) {
+		        tests.push (new TamedCase (file, m[1] + ".js"));
+            } else {
+                tests.push (new JsCase (file));
+            }
+	    }
+	}
+	ev(tests);
+};
+
+

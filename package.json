@@ -25,7 +25,9 @@
     "engines" : {
 	"node" : "0.4 || 0.5"
     },
-    
+    "scripts": {
+    	"test": "node test/harness.js"
+    },	       	       
     "directories" : {
 	"lib" : "lib",
 	"bin" : "./bin"
