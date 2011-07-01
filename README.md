@@ -160,12 +160,13 @@ Installing and Using
 
 Bugs
 ----
+* we need to handle #!/usr/bin/env node first lines properly
 
 ToDos (Basic Functionality)
 ---------------------------
+* regtest suite (in progress)
 * try/catch
 * support unterminated expressions (might not be possible without PEG)
-* regtest suite
 * with statements?
 
 ToDos (Optimizations)

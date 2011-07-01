@@ -3,7 +3,7 @@ lib/parser.js: lib/parser.y lib/lexer.l
 	jison -o $@ $^
 
 test/harness.js: test/harness.tjs
-	tamejs 
+	node lib/main.js -o $@ $<
 
 build: lib/parser.js test/harness.js
 
