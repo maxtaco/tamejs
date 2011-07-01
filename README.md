@@ -103,14 +103,14 @@ function do_all (lst) {
 Slightly More Advanced Example
 -----------------------------
 
-We've already shown how parallel and serial network flows works, what about
-something in between?  For instance, we might want to make progress in
-parallel on our DNS lookups, but not smash the server all at once. A compromise
-is windowing, which can be achieved in *tamejs* conveniently in a number of 
-different ways.  In the 2007 paper, the technique suggested is a *rendezvous*. 
-A rendezvous is implemented in *tamejs* as a pure JS construct (no rewriting
-involved), which allows a program to continue as soon as the first 
-event fires (rather than the last):
+We've shown parallel and serial work flows, what about something in
+between?  For instance, we might want to make progress in parallel on
+our DNS lookups, but not smash the server all at once. A compromise is
+windowing, which can be achieved in *tamejs* conveniently in a number
+of different ways.  In the 2007 paper (see below), the technique
+suggested is a *rendezvous*.  A rendezvous is implemented in *tamejs*
+as a pure JS construct (no rewriting involved), which allows a program
+to continue as soon as the first event fires (rather than the last):
 
 ```javascript  
 function do_all (lst, windowsz) {
@@ -132,17 +132,21 @@ function do_all (lst, windowsz) {
 };
 ```
 
-The way to read this code is that there are two counters maintained:
-the number of requests sent, and the number received.  We keep looping
-until the last lookup is received.  Inside the loop, if there is room
-in the window and there are more to send, then we send; otherwise, we
-wait and harvest.  `Rendezvous.mkev` makes an event much like the
-`mkevent`, but it also takes a first argument that associates an
-idenitifer with the event fired.  This way, the waiter can know which
-event he's getting back.  In this case we use the variable `nsent` as
-the event ID --- it's the ID of this event in launch order.  When we
-harvest the event, `rv.wait` fires its callback with the ID of the
-event that's harvested.
+This code maintains two counters: the number of requests sent, and the
+number received.  It keeps looping until the last lookup is received.
+Inside the loop, if there is room in the window and there are more to
+send, then send; otherwise, wait and harvest.  `Rendezvous.mkev` makes
+an event much like the `mkevent` primitive, but it also takes a first
+argument that associates an idenitifer with the event fired.  This
+way, the waiter can know which event he's getting back.  In this case
+we use the variable `nsent` as the event ID --- it's the ID of this
+event in launch order.  When we harvest the event, `rv.wait` fires its
+callback with the ID of the event that's harvested.
+
+Note that with windowing, the arrival order might not be the same as
+the issue order. In this example, a slower DNS lookup might arrive
+after faster ones, even if issued before them.
+
 
 Installing and Using
 --------------------
