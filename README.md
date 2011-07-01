@@ -5,13 +5,14 @@ input dialect looks a lot like JavaScript, but introduces the `twait`
 primitive, which allows asynchronous callback style code to work more
 like straight-line threaded code.  *tamejs* is written in JavaScript.
 
-One of the core powers of the *tamejs* rewriting idea is that it's fully
-compatible with existing vanilla-JS code (like `node.js`'s libraries).
-That is, existing `node.js` can call code that's been output by the
-*tamejs* rewriter, and conversely, code output by the *tamejs*
-rewriter can call existing `node.js` code.  This means that *tamejs*
-is incrementally deployable --- you can keep all of your old code and
-just write the new bits in *tamejs*!
+One of the core powers of the *tamejs* rewriting idea is that it's
+fully compatible with existing vanilla-JS code (like `node.js`'s
+libraries).  That is, existing `node.js` can call code that's been
+output by the *tamejs* rewriter, and conversely, code output by the
+*tamejs* rewriter can call existing `node.js` code.  Thus, *tamejs* is
+incrementally deployable --- you can keep all of your old code and
+just write the new bits in *tamejs*!  So try it out and let me 
+know what you think.
  
 Code Examples
 --------
