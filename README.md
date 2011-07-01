@@ -5,13 +5,13 @@ input dialect looks a lot like JavaScript, but introduces the `twait`
 primitive, which allows asynchronous callback style code to work more
 like straight-line threaded code.  *tamejs* is written in JavaScript.
 
-One of the core powers of the `tamejs` rewriting idea is that it's fully
+One of the core powers of the *tamejs* rewriting idea is that it's fully
 compatible with existing vanilla-JS code (like `node.js`'s libraries).
 That is, existing `node.js` can call code that's been output by the
-`tamejs` rewriter, and conversely, code output by the `tamejs`
-rewriter can call existing `node.js` code.  This means that `tamejs`
-is incrementally deployable --- you can slowly move your existing
-project over to it!
+*tamejs* rewriter, and conversely, code output by the *tamejs*
+rewriter can call existing `node.js` code.  This means that *tamejs*
+is incrementally deployable --- you can keep all of your old code and
+just write the new bits in *tamejs*!
  
 Code Examples
 --------
@@ -107,7 +107,7 @@ something in between?  For instance, we might want to make progress in
 parallel on our DNS lookups, but not smash the server all at once. A compromise
 is windowing, which can be achieved in *tamejs* conveniently in a number of 
 different ways.  In the 2007 paper, the technique suggested is a *rendezvous*. 
-A rendezvous is implemented in tamejs as a pure JS construct (no rewriting
+A rendezvous is implemented in *tamejs* as a pure JS construct (no rewriting
 involved), which allows a program to continue as soon as the first 
 event fires (rather than the last):
 
@@ -176,7 +176,60 @@ only if asked for on the command line.
 How It's Implemented In JavaScript
 ----------------------------------
 
-Mumble mumble CPS-conversion yadda yadda yadda.
+The key idea behind the *tamejs* implementation is
+[Continuation-Passing Style
+(CPS)](http://en.wikipedia.org/wiki/Continuation-passing_style)
+compilation.  That is, elements of code like `for`, `while` and `if`
+statements are converted to anonymous JavaScript functions written
+in continuation-passing style.  Then, `twait` blocks just grab
+those continuations, store them away, and call them when the
+time is right (i.e., when all relevant events have completed).
+
+For example, the simple program:
+
+```javascript
+if (true) { twait { setTimeout (mkevent (), 100); } }
+```
+
+Is rewritten to something like the following (which has been hand-simplified
+for demonstration purposes):
+
+```javscript
+var tame = require('tamejs').runtime;
+var f0 = function (k) {
+    var f1 = function (k) {
+        var __ev = new tame.Event (k);
+        setTimeout ( __ev.mkevent(), 100 ) ;
+    };
+    if (true) {
+        f1 (k);
+    } else {
+        k();
+    }
+};
+f0 (tame.end);
+
+```
+
+That is, the function `f0` is the rewrite of the `if` statement.
+Function `f0` takes as a parameter the continuation `k`, which
+signifies "the rest of the program".  In the case of this trivial
+program, the rest of the program is just a call to the exit function
+`tame.end`.  Inside the `if` statement, there are two branches.  In
+the `true` branch, we call into `f1`, the rewrite of the `twait`
+block, and in the `false` branch, it's just go on with the rest of the
+program by calling the continuation `k`.  Function `f1` is doing
+something a little bit different --- it's passing its continuation
+into the pure JavaScript class `tame.Event`, which will hold onto it
+until all associated events (like the one passed to `setTimeout`) have
+been called.  When the last event is fired (here after 100ms), then
+the `tame.Event` class calls the continuation `k`, which in this case
+just the end of the program.
+
+The *tamejs* implementation uses other CPS-conversions for `while` and
+`for` loops, turning standard iteration into tail-recursion.  If you
+want to see for yourself, just examine the output of the *tamejs* compiler
+to see what your favorite JavaScript control flow is translated to.
 
 
 Also Available In C++!
