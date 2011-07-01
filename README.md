@@ -223,23 +223,23 @@ something a little bit different --- it's passing its continuation
 into the pure JavaScript class `tame.Event`, which will hold onto it
 until all associated events (like the one passed to `setTimeout`) have
 been called.  When the last event is fired (here after 100ms), then
-the `tame.Event` class calls the continuation `k`, which in this case
-just the end of the program.
+the `tame.Event` class calls the continuation `k`, which here refers
+to `tame.end`.
 
 The *tamejs* implementation uses other CPS-conversions for `while` and
 `for` loops, turning standard iteration into tail-recursion.  If you
-want to see for yourself, just examine the output of the *tamejs* compiler
+are curious to learn more, examine the output of the *tamejs* compiler
 to see what your favorite JavaScript control flow is translated to.
 
 
 Also Available In C++!
 ----------------------
 
-The tame source-to-source translator was original written for
-asynchronous code, for C++.  It's an actively maintained project, and
-it widespread use at [OkCupid.com](http://www.okcupid.com).  See the
-[sfslite/tame Wiki](http://okws.org/doku.php?id=sfslite:tame2) for more
-information, or read the [2007 Usenix ATC
+The tame source-to-source translator was originally written for
+asynchronous C++ code.  It's an actively maintained project, and it is
+in widespread use at [OkCupid.com](http://www.okcupid.com).  See the
+[sfslite/tame Wiki](http://okws.org/doku.php?id=sfslite:tame2) for
+more information, or read the [2007 Usenix ATC
 paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
 Authors
