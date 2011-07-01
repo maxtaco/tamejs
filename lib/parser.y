@@ -295,7 +295,12 @@ FunctionBody
      : SourceElements
      ;
 
+ShbangOpt
+     : { $$ = null; }
+     | SHBANG { $$ = $1; }
+     ;
+
 Program
-     : SourceElements { yy.output = new yy.Program ($1); }
+     : ShbangOpt SourceElements { yy.output = new yy.Program ($1, $2); }
      ;
      
