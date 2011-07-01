@@ -20,7 +20,7 @@
     },
     "main" : "lib/tamejs.js",
     "bin" : {
-	"tamejs" : "lib/compiler.js"
+	"tamejs" : "lib/main.js"
     },
     "engines" : {
 	"node" : "0.4 || 0.5"
