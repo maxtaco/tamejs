@@ -152,7 +152,7 @@ Installing and Using
 --------------------
 
     npm install -g tamejs
-    tamejs <infile> <outfile>
+    tamejs -o <outfile> <infile>
     node <outfile> # or whatever you want
 
 
