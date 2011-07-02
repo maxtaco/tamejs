@@ -12,11 +12,11 @@ function TamedCase (infile, outfile) {
         var Engine = require ('./engine').Engine;
         var engine = new Engine (infile);
         twait { engine.readInput (mkevent ()); }
-	    engine.parse ();
-	    var outdat = engine.compile ().formatOutput ();
+	engine.parse ();
+	var outdat = engine.compile ().formatOutput ();
         var res = [];
         twait { fs.writeFile (outfile, outdata, mkevent (res)); }
-	    if (res[0]) throw res[0];
+	if (res[0]) throw res[0];
         ev();
     };
 
@@ -35,20 +35,20 @@ function read_cases (ev) {
     twait { fs.readdir ('test/cases/', mkevent (res)); }
     var err = res[0];
     var files = res[1];
-	if (err) throw err;
-	var rxx = new RegExp ('^(.*)\.(t)?js$');
-	for (f in files) {
+    if (err) throw err;
+    var rxx = new RegExp ('^(.*)\.(t)?js$');
+    for (f in files) {
         var file = files[f];
-	    var m =  file.match(rxx);
-	    if (m) {
-            if (m[2]) {
-		        tests.push (new TamedCase (file, m[1] + ".js"));
-            } else {
-                tests.push (new JsCase (file));
-            }
+	var m =  file.match(rxx);
+	if (m) {
+	    if (m[2]) {
+		tests.push (new TamedCase (file, m[1] + ".js"));
+	    } else {
+		tests.push (new JsCase (file));
 	    }
 	}
-	ev(tests);
+    }
+    ev(tests);
 };
 
 

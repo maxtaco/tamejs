@@ -160,7 +160,6 @@ Installing and Using
 
 Bugs
 ----
-* we need to handle #!/usr/bin/env node first lines properly
 
 ToDos (Basic Functionality)
 ---------------------------
