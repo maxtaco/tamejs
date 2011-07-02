@@ -51,4 +51,16 @@ function read_cases (ev) {
     ev(tests);
 };
 
+function do_cases (ev) {
+    var res = [];
+    twait { read_cases (mkevent (res)); }
+    var cases = res[0];
+    for (var i in cases) {
+	twait { cases[i].compile (mkevent ()); }
+    }
+    ev ();
+};
+
+twait { do_cases (mkevent ());}
+
 
