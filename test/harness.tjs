@@ -3,30 +3,45 @@
 
 var fs = require ('fs');
 
-function TamedCase (prfx, infile, outfile) {
-    this._infile = prfx +infile;
-    this._outfile = prfx +outfile;
+function Case (file) {
+    this._file = file;
 
-    this.compile = function (ev) {
-        var fs = require ('fs');
-        var Engine = require ('../lib/engine').Engine;
-        var engine = new Engine (self._infile);
-        twait { engine.readInput (mkevent ()); }
-	engine.parse ();
-	var outdat = engine.compile ().formatOutput ();
-        var res = [];
-        twait { fs.writeFile (self._outfile, outdata, mkevent (res)); }
-	if (res[0]) throw res[0];
-        ev();
+    this.run = function () {
+	var x = require ("./" + self._file);
+	for (var c in x) {
+	    twait { x[c].run (mkevent ());}
+	    x.check ();
+	}
     };
 
     return this;
 };
 
+function TamedCase (prfx, infile, outfile) {
+    var that = new Case (prfx + outfile);
+    that._infile = prfx + infile;
+
+    that.compile = function (ev) {
+        var fs = require ('fs');
+        var Engine = require ('../lib/engine').Engine;
+        var engine = new Engine (self._infile);
+	console.log ("f: "+ self._infile);
+        twait { engine.readInput (mkevent ()); }
+	engine.parse ();
+	var outdat = engine.compile ().formatOutput ();
+        var res = [];
+        twait { fs.writeFile (self._file, outdat, mkevent (res)); }
+	if (res[0]) throw res[0];
+        ev();
+    };
+
+    return that ;
+};
+
 function JsCase (file) {
-    this._file = file;
-    this.compile = function (ev) { ev(); };
-    return this;
+    var that = new Case (prfx + file);
+    that.compile = function (ev) { ev(); };
+    return that;
 };
 
 function read_cases (ev) {
@@ -58,6 +73,7 @@ function do_cases (ev) {
     var cases = res[0];
     for (var i in cases) {
 	twait { cases[i].compile (mkevent ()); }
+	twait { cases[i].run (mkevent()); }
     }
     ev ();
 };
