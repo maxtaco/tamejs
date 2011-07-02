@@ -24,7 +24,7 @@
 <INITIAL>"case"		return 'CASE';
 <INITIAL>"switch"	return 'SWITCH';
 <INITIAL>"default"	return 'DEFAULT';
-<INITIAL>"#!"[ ]*[/].*     { console.log ("XXX "+ yytext); return 'SHBANG'; }
+<INITIAL>"#!"[ ]*[/].*  return 'SHBANG'; 
 
 <INITIAL>[a-zA-Z_0-9]+[ ^]*[:] { 
                                    yytext = yytext.replace (/[\s:]/g, ""); 
