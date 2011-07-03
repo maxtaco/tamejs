@@ -163,8 +163,6 @@ Bugs
 
 ToDos (Basic Functionality)
 ---------------------------
-* regtest suite (in progress)
-* try/catch
 * support unterminated expressions (might not be possible without PEG)
 * with statements?
 
