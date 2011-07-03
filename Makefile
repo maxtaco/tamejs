@@ -10,6 +10,6 @@ test/harness.js: test/harness.tjs lib/parser.js
 build: lib/parser.js test/harness.js
 
 clean:
-	rm lib/parser.js test/harness.js
+	rm lib/parser.js test/harness.js test/cases/*.out.js
 
 all: build

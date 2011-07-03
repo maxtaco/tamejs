@@ -16,7 +16,7 @@ function Case (nm, file) {
 		x[c].check ();
 		console.log (self._nm + ": passed");
 	    } catch (e) {
-		console.log (self._nm + ": regtest failed: " + e);
+		console.log (self._nm + ": " + c + ": regtest failed: " + e);
 		ret = false;
 	    }
 	}
