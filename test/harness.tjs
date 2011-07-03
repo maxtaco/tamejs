@@ -3,29 +3,37 @@
 
 var fs = require ('fs');
 
-function Case (file) {
+function Case (nm, file) {
+    this._nm = nm;
     this._file = file;
 
-    this.run = function () {
-	var x = require ("./" + self._file);
+    this.run = function (cb) {
+	var ret = true;
+	var x = require ("../" + self._file);
 	for (var c in x) {
 	    twait { x[c].run (mkevent ());}
-	    x.check ();
+	    try { 
+		x[c].check ();
+		console.log (self._nm + ": passed");
+	    } catch (e) {
+		console.log (self._nm + ": regtest failed: " + e);
+		ret = false;
+	    }
 	}
+	cb (ret);
     };
 
     return this;
 };
 
 function TamedCase (prfx, infile, outfile) {
-    var that = new Case (prfx + outfile);
+    var that = new Case (prfx + infile, prfx + outfile);
     that._infile = prfx + infile;
 
     that.compile = function (ev) {
         var fs = require ('fs');
         var Engine = require ('../lib/engine').Engine;
         var engine = new Engine (self._infile);
-	console.log ("f: "+ self._infile);
         twait { engine.readInput (mkevent ()); }
 	engine.parse ();
 	var outdat = engine.compile ().formatOutput ();
@@ -39,7 +47,7 @@ function TamedCase (prfx, infile, outfile) {
 };
 
 function JsCase (file) {
-    var that = new Case (prfx + file);
+    var that = new Case (file, file);
     that.compile = function (ev) { ev(); };
     return that;
 };
@@ -53,13 +61,15 @@ function read_cases (ev) {
     var files = res[1];
     if (err) throw err;
     var rxx = new RegExp ('^(.*)\\.(t)?js$');
+    var bad_rxx = new RegExp ('\.out\.js$');
     for (f in files) {
         var file = files[f];
 	var m =  file.match(rxx);
 	if (m) {
 	    if (m[2]) {
-		tests.push (new TamedCase (prfx, file, m[1] + ".js"));
-	    } else {
+		tests.push (new TamedCase (prfx, file, m[1] + ".out.js"));
+	    } else if (!file.match (bad_rxx)) {
+		// Don't run cases that were output by the tamejs compiler
 		tests.push (new JsCase (prfx + file));
 	    }
 	}
@@ -71,11 +81,24 @@ function do_cases (ev) {
     var res = [];
     twait { read_cases (mkevent (res)); }
     var cases = res[0];
+    var tot = 0;
+    var good = 0;
     for (var i in cases) {
 	twait { cases[i].compile (mkevent ()); }
-	twait { cases[i].run (mkevent()); }
+	var res = [];
+	tot++;
+	twait { cases[i].run (mkevent(res)); }
+	if (res[0]) {
+	    good ++;
+	}
     }
-    ev ();
+    if (tot == good) {
+	console.log ("All " + tot + " tests passed! YES!");
+    } else{
+	console.log ("XXX only " + good + "/" + tot + " tessed pased. BOO!");
+    }
+	
+    ev();
 };
 
 twait { do_cases (mkevent ()); }

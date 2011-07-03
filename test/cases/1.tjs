@@ -1,19 +1,21 @@
 // -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 var assert = require ("assert");
 
+var slots = {};
+
 exports["rendezvous & windowing example"] = {
+
+
     run : function (ev) {
-	
-	var utils = {};
-	var slots = {}; 
 	
 	function call (i, ev) {
 	    slots[i] = 1;
-	    console.log ("+call " + i);
-	    twait { setTimeout (mkevent (), 100*Math.random()); }
+	    twait { setTimeout (mkevent (), 10*Math.random()); }
 	    slots[i] |= 2;
 	    ev();
 	};
+
+    
 	
 	function window (n, window, ev) {
 	    var rv = new tame.Rendezvous ();
@@ -40,7 +42,7 @@ exports["rendezvous & windowing example"] = {
     },
 	
     check : function () {
-	for (var i in n) {
+	for (var i in slots) {
 	    assert.equal (slots[i], 7, "all 3 events make bitwise 7");
 	}
     }

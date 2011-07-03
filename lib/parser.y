@@ -50,7 +50,7 @@ StringAtoms
 
 InnerExprAtom
      : OuterExprAtom { $$ = $1; }
-     | LABEL         { $$ = [ new yy.Atom (@1.first_line, yytext)]; }
+     | LABEL         { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
      | BraceExpr     { $$ = $1; }
      | FunctionDeclaration { $$ = [ $1 ]; }
      ;
@@ -144,6 +144,7 @@ Statement
      | BreakStatement
      | ContinueStatement
      | SwitchStatement
+     | TryStatement
      ;
 
 Label
@@ -157,6 +158,30 @@ LabeledStatement
 	 $$ = $2;
      }
      ;
+
+TryStatement
+     : TRY Block CatchStatementOpt FinallyStatementOpt
+     {
+	  $$ = new yy.TryStatement (@1.first_line, $2, $3, $4);
+     }
+     ;
+
+CatchStatementOpt
+     : { $$ = null; }
+     | CATCH LPAREN Expr RPAREN Block
+     {
+         $$ = new yy.CatchStatement (@1.first_line, $3, $5);
+     }
+     ;
+
+FinallyStatementOpt
+     : { $$ = null; }
+     | FINALLY Block
+     {
+         $$ = $2;
+     }
+     ;
+
 
 ReturnStatement
      : RETURN InnerExpr SEMICOLON
