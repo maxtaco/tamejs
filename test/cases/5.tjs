@@ -1,0 +1,44 @@
+var n = 30;
+var skip = 20;
+var slots = {};
+var assert = require ("assert");
+
+exports["break and continue"] = {
+
+    run : function (cb) {
+	var i = 0;
+	foo : while (1) {
+	    slots[i] = 0;
+	    twait { setTimeout (mkevent (), 1); }
+
+	    for (var j = 0; j < 10; j++) {
+		if (i == skip) {
+		    i++;
+		    continue foo;
+		}
+		slots[i] = 1;
+		i++;
+		if (i == n) {
+		    break foo;
+		}
+		break;
+	    }
+	}
+	cb ();
+    },
+    
+    check : function () {
+	var i = 0;
+	for (i = 0; i < n; i++) {
+	    if (i != skip) {
+		assert.ok (slots[i], "iter " + i + 
+			   ": all slots but skip=" + skip);
+	    } else {
+		assert.ok (!slots[i], "iter " + i + 
+			   ":  all slots but skip=" + skip);
+	    }
+	}
+	assert.ok (!slots[i], "stop at slot=" + n);
+    }
+
+};
