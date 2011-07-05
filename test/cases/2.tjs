@@ -3,24 +3,25 @@
 var slots = {};
 var n = 40;
 var assert = require ("assert");
+
 exports["simple parallel twait"] = {
-
+    
     run : function (cb) {
-	var i = 0;	
-	while (i < n) {
-	    twait { 
-		setTimeout (mkevent (), 1); 
-		setTimeout (mkevent (), 2); 
+	    var i = 0;	
+	    while (i < n) {
+	        twait { 
+		        setTimeout (mkevent (), 1); 
+		        setTimeout (mkevent (), 2); 
+	        }
+	        slots[i] = 1;
+	        i++;
 	    }
-	    slots[i] = 1;
-	    i++;
-	}
-	cb();
+	    cb();
     },
-
+    
     check : function () {
-	for (var i = 0; i < n; i++) {
-	    assert.ok (slots[i], "slot[" + i + "] is set");
-	}
+	    for (var i = 0; i < n; i++) {
+	        assert.ok (slots[i], "slot[" + i + "] is set");
+	    }
     }
 };

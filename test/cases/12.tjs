@@ -1,0 +1,24 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+var i = 0;
+var n = 11;
+
+exports["a test of return"] = {
+
+    run : function (cb) {
+	
+	while (i < n + 4) {
+	    twait { setTimeout (mkevent (), 10 * Math.random ()); }
+	    i++;
+	    if (i == n) {
+		cb ();
+		return;
+	    }
+	}
+    },
+    
+    check : function () {
+	assert.equal (i, n, "return at right moment");
+    }
+
+};
