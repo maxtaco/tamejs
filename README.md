@@ -169,7 +169,8 @@ ToDos (Basic Functionality)
 ToDos (Optimizations)
 ---------------------
 * Can passThrough blocks in a tamed function that don't have twaits,
-  so can get more aggressive here.
+  so can get more aggressive here --- in progress, but can still
+  seek out some more optimizations....
 
 ToDos (Future)
 --------------

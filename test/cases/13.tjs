@@ -1,0 +1,31 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+var ok = false;
+
+exports["passThrough/compile test"] = {
+
+    run : function (cb) {
+
+        function make_dict () {
+            for (var i = 0; i < 100; i++);
+            var d = { cat : function (n, cb) {
+                for (var i = 0; i < n; i++) {
+                    twait { setTimeout (mkevent (), 5 * Math.random ()); }
+                }
+                cb ();
+            }, n : 10 };
+            for (var i = 0; i < 100; i++);
+            return d;
+        };
+
+        var d = make_dict ();
+        twait { d.cat (d.n, mkevent ()); }
+        ok = true;
+        cb ();
+    },
+    
+    check : function () {
+	    assert.ok (ok, "ok was set");
+    }
+
+};
