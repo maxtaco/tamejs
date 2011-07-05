@@ -17,11 +17,19 @@ exports["for..in iteration"] = {
 	for ( ; i < 20; i++) {
 	    listA.push (i);
 	}
+	for ( ; i < 30; i++) {
+	    twait { setTimeout (mkevent (), 10* Math.random ()); }
+	    listA.push (i);
+	}
+	while (i < 40) {
+	    listA.push (i);
+	    i++;
+	}
 	cb ();
     },
 
     check : function () {
-	for (var i = 0; i < 20; i++) { listB.push (i); }
+	for (var i = 0; i < 40; i++) { listB.push (i); }
 	assert.deepEqual (listA, listB, "list equivalence");
     }
 
