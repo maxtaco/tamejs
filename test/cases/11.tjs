@@ -1,0 +1,42 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+
+var res = 0;
+var i = 0;
+
+exports["another test of continue and break"] = {
+
+    run : function (cb) {
+
+	foo : while (i < 100) {
+
+	    twait { setTimeout (mkevent (), 10*Math.random()); }
+	    
+	    if (i == 10) {
+		i += 2;
+		res |= (1 << 20);
+		continue foo;
+	    }
+
+	    res |= (1 << i);
+
+	    if (i == 3) {
+		i++;
+		res |= (1 << 21);
+	    }
+
+	    if (i == 13) {
+		res |= (1 << 22);
+		break foo;
+	    }
+	    i++;
+	}
+	res |= (1 << 23);
+	cb();
+    },
+
+    check : function () {
+	assert.ok ((res == 15741935 && i == 13), "all bits set!");
+    }
+
+};
