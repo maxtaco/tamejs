@@ -3,31 +3,38 @@
 
 var fs = require ('fs');
 
-function Case (nm, file) {
+function caseCmp (a, b) {
+    return a.index () - b.index ();
+};
+
+function Case (index, nm, file) {
     this._nm = nm;
     this._file = file;
+    this._index = index;
+
+    this.index = function () { return this._index; }
 
     this.run = function (cb) {
-	var ret = true;
-	var x = require ("../" + self._file);
-	for (var c in x) {
-	    twait { x[c].run (mkevent ());}
-	    try { 
-		x[c].check ();
-		console.log (self._nm + ": passed");
-	    } catch (e) {
-		console.log (self._nm + ": " + c + ": regtest failed: " + e);
-		ret = false;
+	    var ret = true;
+	    var x = require ("../" + self._file);
+	    for (var c in x) {
+	        twait { x[c].run (mkevent ());}
+	        try { 
+		        x[c].check ();
+		        console.log (self._nm + ": passed");
+	        } catch (e) {
+		        console.log (self._nm + ": " + c + ": regtest failed: " + e);
+		        ret = false;
+	        }
 	    }
-	}
-	cb (ret);
+	    cb (ret);
     };
-
+    
     return this;
 };
 
-function TamedCase (prfx, infile, outfile) {
-    var that = new Case (prfx + infile, prfx + outfile);
+function TamedCase (index, prfx, infile, outfile) {
+    var that = new Case (index, prfx + infile, prfx + outfile);
     that._infile = prfx + infile;
 
     that.compile = function (ev) {
@@ -35,19 +42,19 @@ function TamedCase (prfx, infile, outfile) {
         var Engine = require ('../lib/engine').Engine;
         var engine = new Engine (self._infile);
         twait { engine.readInput (mkevent ()); }
-	engine.parse ();
-	var outdat = engine.compile ().formatOutput ();
+	    engine.parse ();
+	    var outdat = engine.compile ().formatOutput ();
         var res = [];
         twait { fs.writeFile (self._file, outdat, mkevent (res)); }
-	if (res[0]) throw res[0];
+	    if (res[0]) throw res[0];
         ev();
     };
 
     return that ;
 };
 
-function JsCase (file) {
-    var that = new Case (file, file);
+function JsCase (index, file) {
+    var that = new Case (index, file, file);
     that.compile = function (ev) { ev(); };
     return that;
 };
@@ -60,20 +67,22 @@ function read_cases (ev) {
     var err = res[0];
     var files = res[1];
     if (err) throw err;
-    var rxx = new RegExp ('^(.*)\\.(t)?js$');
-    var bad_rxx = new RegExp ('\.out\.js$');
+    var rxx = new RegExp ('^(\\d+)([^.]*)\\.(t)?js$');
     for (f in files) {
         var file = files[f];
-	var m =  file.match(rxx);
-	if (m) {
-	    if (m[2]) {
-		tests.push (new TamedCase (prfx, file, m[1] + ".out.js"));
-	    } else if (!file.match (bad_rxx)) {
-		// Don't run cases that were output by the tamejs compiler
-		tests.push (new JsCase (prfx + file));
+	    var m = file.match(rxx);
+	    if (m) {
+            var index = m[1];
+	        if (m[3]) {
+		        tests.push (new TamedCase (index, prfx, file, 
+                                           m[1] + ".out.js"));
+	        } else if (!file.match (bad_rxx)) {
+		        // Don't run cases that were output by the tamejs compiler
+		        tests.push (new JsCase (index, prfx + file));
+	        }
 	    }
-	}
     }
+    tests.sort (caseCmp);
     ev(tests);
 };
 
@@ -84,20 +93,19 @@ function do_cases (ev) {
     var tot = 0;
     var good = 0;
     for (var i in cases) {
-	twait { cases[i].compile (mkevent ()); }
-	var res = [];
-	tot++;
-	twait { cases[i].run (mkevent(res)); }
-	if (res[0]) {
-	    good ++;
-	}
+	    twait { cases[i].compile (mkevent ()); }
+	    var res = [];
+	    tot++;
+	    twait { cases[i].run (mkevent(res)); }
+	    if (res[0]) {
+	        good ++;
+	    }
     }
     if (tot == good) {
-	console.log ("All " + tot + " tests passed! YES!");
-    } else{
-	console.log ("XXX only " + good + "/" + tot + " tessed pased. BOO!");
+	    console.log ("All " + tot + " tests passed! YES!");
+    } else {
+	    console.log ("XXX only " + good + "/" + tot + " tessed pased. BOO!");
     }
-	
     ev();
 };
 
