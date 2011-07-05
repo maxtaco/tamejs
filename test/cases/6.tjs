@@ -1,0 +1,52 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+
+var results = [];
+
+function blah (ev) { 
+    twait { setTimeout (mkevent (), 10*Math.random ()); }
+    ev(); 
+};
+
+function runsw (x, cb) {
+
+    switch (x) {
+    case 0:
+	twait { blah (mkevent ()); }
+	results.push (0);
+	break;
+    case 17:
+    case 1:
+	twait { blah (mkevent ()); }
+	results.push (1);
+	break;
+    case 2:
+	twait { blah (mkevent ()); }
+	results.push (2);
+    case 18:
+    case 3:
+	twait { blah (mkevent ()); }
+	results.push (3);
+    default:
+	twait { blah (mkevent ()); }
+	results.push (4);
+	break;
+    }
+    cb ();
+}
+
+exports["switch & case statement"] = {
+
+    run : function (cb) {
+	var lst = [ 0, 1, 2, 3, 4, 18, 17];
+	for (var i in lst) {
+	    twait { runsw (lst[i], mkevent ()); }
+	}
+	cb ();
+    },
+
+    check : function () {
+	assert.deepEqual (results, [0,1,2,3,4,3,4,4,3,4,1], "cascade check");
+    }
+
+};
