@@ -238,7 +238,7 @@ to see what your favorite JavaScript control flow is translated to.
 
 As you might guess, the output code is less efficient than the input
 code.  All of the anonymous functions add bloat, and also make
-interpretation slower.  This unfortunately side-effect of our approach
+interpretation slower.  This unfortunate side-effect of our approach
 is mitigated, however, by skipping CPS compilation when at all possible.
 Functions with no `twait` blocks are passed through unmolested. 
 Similarly, blocks within tamed functions that don't call `twait` can
