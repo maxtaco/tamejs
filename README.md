@@ -280,7 +280,7 @@ paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
 Authors
 -------
-Max Krohn <max@okcupid.com> or <max@m8api.com>
+Max Krohn <max@okcupid.com>
 
 License
 -------

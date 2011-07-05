@@ -6,12 +6,11 @@
 */
 
 
-/* author: Max Krohn <max@m8api.com> */
+/* author: Max Krohn <max@okcupid.com> */
 
 /* Some borrowed from: http://www.opensource.apple.com/source/JavaScriptCore/ */
 
 /* TODOS!
-    - switch/case/default
     - \n's instead of ';'
  */ 
 
