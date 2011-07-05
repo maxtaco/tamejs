@@ -1,0 +1,28 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+
+var listA = [];
+var listB = [];
+
+
+exports["for..in iteration"] = {
+
+    run : function (cb) {
+
+	var i = 0;
+	for (i = 0; i < 10; i++) {
+	    twait { setTimeout (mkevent (), 10* Math.random ()); }
+	    listA.push (i);
+	}
+	for ( ; i < 20; i++) {
+	    listA.push (i);
+	}
+	cb ();
+    },
+
+    check : function () {
+	for (var i = 0; i < 20; i++) { listB.push (i); }
+	assert.deepEqual (listA, listB, "list equivalence");
+    }
+
+};
