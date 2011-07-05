@@ -17,11 +17,18 @@ exports["for..in iteration"] = {
 	for ( ; i < 20; i++) {
 	    listA.push (i);
 	}
-	for ( ; i < 30; i++) {
+	while (true) {
+	    if (i >= 30) {
+		break;
+	    }
 	    twait { setTimeout (mkevent (), 10* Math.random ()); }
 	    listA.push (i);
+	    i++;
 	}
-	while (i < 40) {
+	while (true) {
+	    if (i >= 40) {
+		break;
+	    }
 	    listA.push (i);
 	    i++;
 	}
