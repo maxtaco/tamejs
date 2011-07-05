@@ -237,18 +237,18 @@ The *tamejs* implementation uses other CPS-conversions for `while` and
 `for` loops, turning standard iteration into tail-recursion.  If you
 are curious to learn more, examine the output of the *tamejs* compiler
 to see what your favorite JavaScript control flow is translated to.
+The translation of `switch` is probably the trickiest.
 
 As you might guess, the output code is less efficient than the input
-code.  All of the anonymous functions add bloat, and also make
-interpretation slower.  This unfortunate side-effect of our approach
-is mitigated, however, by skipping CPS compilation when at all possible.
-Functions with no `twait` blocks are passed through unmolested. 
-Similarly, blocks within tamed functions that don't call `twait` can
-also pass through.
+code.  All of the anonymous functions add bloat.  This unfortunate
+side-effect of our approach is mitigated by skipping CPS compilation
+when possible.  Functions with no `twait` blocks are passed through
+unmolested.  Similarly, blocks within tamed functions that don't call
+`twait` can also pass through.
 
-Another concern is that the use of tail recursion in translated for
-loops might overflow the runtime callstack.  That is certainly true
-for programs like the following:
+Another concern is that the use of tail recursion in translated loops
+might overflow the runtime callstack.  That is certainly true for
+programs like the following:
 
 ```javascript
 while (true) { twait { i++; } }
