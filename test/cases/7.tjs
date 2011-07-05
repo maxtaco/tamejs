@@ -1,0 +1,20 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+var inlist = [ "dog", "cat", "bird", "seal", "donkey" ];
+var outlist = [];
+
+exports["for..in iteration"] = {
+
+    run : function (cb) {
+	for (var animal in inlist) {
+	    twait { setTimeout (mkevent (), 10 * Math.random ()); }
+	    outlist.push (inlist[animal]);
+	}
+	cb ();
+    },
+
+    check : function () {
+	assert.deepEqual (inlist, outlist, "zoo equivalence");
+    }
+
+};
