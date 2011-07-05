@@ -1,0 +1,23 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+
+var res = 0;
+
+function foo (cb) {
+    twait { setTimeout (mkevent (), 10 * Math.random ()); }
+    res++;
+    cb();
+};
+
+exports["parser variations"] = {
+
+    run : function (cb) {
+	if (true) twait foo (mkevent ());
+	res++;
+	cb();
+    },
+    check : function () {
+	assert.equal (res, 2, "both increments fired");
+    }
+
+};
