@@ -16,3 +16,5 @@ test: test/harness.js
 	./test/harness.js
 
 all: build
+
+.PHONY: test
