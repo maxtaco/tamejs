@@ -88,7 +88,7 @@ And you will get a response:
 
 If you want to run these DNS resolutions in serial (rather than
 parallel), then the change from above is trivial: just switch the
-order of the twait and for statements above:
+order of the `twait` and `for` statements above:
 
 ```javascript  
 function do_all (lst) {
@@ -160,6 +160,7 @@ Installing and Using
 
 Bugs
 ----
+* none active at current
 
 ToDos (Basic Functionality)
 ---------------------------
