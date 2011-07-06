@@ -178,6 +178,7 @@ ToDos (Future)
 * Support output that preserves line numbering ; and/or switch to debug mode
 only if asked for on the command line.
 * Switch from Bison/Lex style grammar to PEG/Packrat style.
+* Clean up the compile/passThrough/inline mess!
 
 
 How It's Implemented In JavaScript
