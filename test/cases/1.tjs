@@ -23,27 +23,27 @@ exports["rendezvous & windowing example"] = {
 	    var nrecv = 0;
 	    
 	    while (nrecv < n) {
-		if (nsent - nrecv < window && nsent < n) {
-		    call (nsent, rv.mkev (nsent));
-		    nsent++;
-		} else {
-		    var res = [];
-		    twait { rv.wait (mkevent (res)); }
-		    slots[res[0]] |= 4;
-		    nrecv++;
-		}
+		    if (nsent - nrecv < window && nsent < n) {
+		        call (nsent, rv.mkev (nsent));
+		        nsent++;
+		    } else {
+		        var res = [];
+		        twait { rv.wait (mkevent (res)); }
+		        slots[res[0]] |= 4;
+		        nrecv++;
+		    }
 	    }
 	    ev();
 	};
-	
-	var n = 100;
-	twait { window (n, 10, mkevent ()); }
-	ev ();
+	    
+	    var n = 100;
+	    twait { window (n, 10, mkevent ()); }
+	    ev ();
     },
 	
     check : function () {
-	for (var i in slots) {
-	    assert.equal (slots[i], 7, "all 3 events make bitwise 7");
-	}
+	    for (var i in slots) {
+	        assert.equal (slots[i], 7, "all 3 events make bitwise 7");
+	    }
     }
 };

@@ -6,15 +6,15 @@ var outlist = [];
 exports["for..in iteration"] = {
 
     run : function (cb) {
-	for (var animal in inlist) {
-	    twait { setTimeout (mkevent (), 10 * Math.random ()); }
-	    outlist.push (inlist[animal]);
-	}
-	cb ();
+	    for (var animal in inlist) {
+	        twait { setTimeout (mkevent (), 10 * Math.random ()); }
+	        outlist.push (inlist[animal]);
+	    }
+	    cb ();
     },
-
+    
     check : function () {
-	assert.deepEqual (inlist, outlist, "zoo equivalence");
+	    assert.deepEqual (inlist, outlist, "zoo equivalence");
     }
 
 };

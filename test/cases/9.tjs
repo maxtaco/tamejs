@@ -10,14 +10,14 @@ function foo (cb) {
 };
 
 exports["parser variations"] = {
-
+    
     run : function (cb) {
-	if (true) twait foo (mkevent ());
-	res++;
-	cb();
+	    if (true) twait foo (mkevent ());
+	    res++;
+	    cb();
     },
     check : function () {
-	assert.equal (res, 2, "both increments fired");
+	    assert.equal (res, 2, "both increments fired");
     }
 
 };

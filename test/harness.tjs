@@ -16,14 +16,14 @@ function Case (index, nm, file) {
 
     this.run = function (cb) {
 	    var ret = true;
-	    var x = require ("../" + self._file);
+	    var x = require ("../" + this._file);
 	    for (var c in x) {
 	        twait { x[c].run (mkevent ());}
 	        try { 
 		        x[c].check ();
-		        console.log (self._nm + ": passed");
+		        console.log (this._nm + ": passed");
 	        } catch (e) {
-		        console.log (self._nm + ": " + c + ": regtest failed: " + e);
+		        console.log (this._nm + ": " + c + ": regtest failed: " + e);
 		        ret = false;
 	        }
 	    }
@@ -40,12 +40,12 @@ function TamedCase (index, prfx, infile, outfile) {
     that.compile = function (ev) {
         var fs = require ('fs');
         var Engine = require ('../lib/engine').Engine;
-        var engine = new Engine (self._infile);
+        var engine = new Engine (this._infile);
         twait { engine.readInput (mkevent ()); }
 	    engine.parse ();
 	    var outdat = engine.compile ().formatOutput ();
         var res = [];
-        twait { fs.writeFile (self._file, outdat, mkevent (res)); }
+        twait { fs.writeFile (this._file, outdat, mkevent (res)); }
 	    if (res[0]) throw res[0];
         ev();
     };
