@@ -14,7 +14,6 @@ incrementally deployable --- you can keep all of your old code and
 just write the new bits in *tamejs*!  So try it out and let me 
 know what you think.
 
- 
 Code Examples
 --------
 Here is a simple example that prints "hello" 10 times, with 100ms delay
