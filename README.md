@@ -27,12 +27,12 @@ for (var i = 0; i < 10; i++) {
 ```
 
 The way to read this is: "wait in the `twait{..}` block until all
-events made by `mkevent` have been fired."  In this case, there is only
-one event, so after that's fired (in 100ms), control continues past
-the `twait` block, onto the log line, and back to the next iteration of the
-loop.  The code looks and feels like threaded code, but is still in
-the asynchronous idiom (if you look at the rewritten code output by the 
-*tamejs* compiler).
+events made by `mkevent` have fired."  In this case, there is only one
+event, so after it's fired (in 100ms), control continues past the
+`twait` block, onto the log line, and back to the next iteration of
+the loop.  The code looks and feels like threaded code, but is still
+in the asynchronous idiom (if you look at the rewritten code output by
+the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
 `twait{..}` language addition.  In the example below, the two timers
