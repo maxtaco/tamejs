@@ -272,17 +272,17 @@ of programs that you should be using `twait` for.
 History
 -------
 
-The genesis of the Tame rewriting idea dates back to 2006. The author
-(Max Krohn) was a founder of (OkCupid)[http://www.okcupid.com], which
-was until that time writtne in an entirely asynchronous-callback-based
-style with (OKWS)[http://www.okws.org] in C++.  This serving
-technology was extremely fast, and saved a lot of money on hardware
-purchases, but as the Web site's code grew, the code became
-increasingly unmanageable. Simple serial loops with network access,
-like the sequential DNS example above, required "stack-ripping" into
-multiple mutually recursive calls.  As more employees began to work
-the code, and editted code that they didn't write, development slowed to
-a crawl.
+The Tame rewriting idea dates back to 2006. The author (Max Krohn) was
+a founder of [OkCupid](http://www.okcupid.com), which was until that
+time written in an entirely asynchronous-callback-based style with
+[OKWS](http://www.okws.org) in C++.  This serving technology was
+extremely fast, and saved a lot of money on hardware purchases, but as
+the Web site's code grew, the code became increasingly
+unmanageable. Simple serial loops with network access, like the
+sequential DNS example above, required "stack-ripping" into multiple
+mutually recursive calls.  As more employees began to work the code,
+and editted code that they didn't write, development slowed to a
+crawl.
 
 Chris Coyne, OkCupid's director of product, demanded that something be
 done.  The requirements were manifold.  The new solution had to be
