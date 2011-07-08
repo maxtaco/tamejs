@@ -158,10 +158,6 @@ Installing and Using
     node <outfile> # or whatever you want
 
 
-Bugs
-----
-* none active at current
-
 ToDos (Basic Functionality)
 ---------------------------
 * support unterminated expressions (might not be possible without PEG)
