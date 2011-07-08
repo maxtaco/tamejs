@@ -287,16 +287,19 @@ crawl.
 Chris Coyne, OkCupid's director of product, demanded that something be
 done.  The requirements were manifold.  The new solution had to be
 compatible with existing code; it had to be incrementally deployable,
-so that the whole codebase would't need to be rewritten at once; it
+so that the whole codebase wouldn't need to be rewritten at once; it
 had to be nearly as fast as the status quo; it had to clean the code
 up, so that it was readable; it had to speed up and simplify
 development.
 
 The answer that emerged was Tame for C++.  It's a source-to-source
 translator that mapped C++ with a few language additions into regular
-C++, which is then compiled with a standard compiler (like `gcc`).
-Once Tame was brought to bear on OkCupid's code, it offered almost all
-of the flexibilty and performance of hand-crafted
+C++, which is then compiled with a standard compiler (like `gcc`). The
+key ideas behind Tame C++ were: (1) generate a heap-allocated
+"closure" for each tamed function; (2) use labels and `goto` to jump
+back into tamed function as asynchronous events fired.  Once Tame was
+brought to bear on OkCupid's code, it offered almost all of the
+flexibilty and performance of hand-crafted
 asynchronous-callback-passing code without any of the stack-ripping
 headaches.  New employees picked it right up, and even contributed to
 the incremental effort to modernize OkCupid's code to the Tame
@@ -311,11 +314,12 @@ these benefits to JavaScript and the `node.js` platform.
 Also Available In C++!
 ----------------------
 
-The tame source-to-source translator was originally written for
-asynchronous C++ code.  It's an actively maintained project, and it is
-in widespread use at [OkCupid.com](http://www.okcupid.com).  See the
-[sfslite/tame Wiki](http://okws.org/doku.php?id=sfslite:tame2) for
-more information, or read the [2007 Usenix ATC
+As described above, the T ame source-to-source translator was
+originally written for asynchronous C++ code.  It's an actively
+maintained project, and it is in widespread use at
+[OkCupid.com](http://www.okcupid.com).  See the [sfslite/tame
+Wiki](http://okws.org/doku.php?id=sfslite:tame2) for more information,
+or read the [2007 Usenix ATC
 paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
 Authors
