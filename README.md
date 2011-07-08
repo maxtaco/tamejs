@@ -179,6 +179,7 @@ ToDos (Future)
 only if asked for on the command line.
 * Switch from Bison/Lex style grammar to PEG/Packrat style.
 * Clean up the compile/passThrough/inline mess!
+* allow on-the-fly compilation in environments like express
 
 
 How It's Implemented In JavaScript
@@ -268,6 +269,44 @@ will **not** overflow the runtime stack, since the stack is unwound every
 iteration through the loop (via `setTimeout`). And these are the types
 of programs that you should be using `twait` for.
 
+History
+-------
+
+The genesis of the Tame rewriting idea dates back to 2006. The author
+(Max Krohn) was a founder of (OkCupid)[http://www.okcupid.com], which
+was until that time writtne in an entirely asynchronous-callback-based
+style with (OKWS)[http://www.okws.org] in C++.  This serving
+technology was extremely fast, and saved a lot of money on hardware
+purchases, but as the Web site's code grew, the code became
+increasingly unmanageable. Simple serial loops with network access,
+like the sequential DNS example above, required "stack-ripping" into
+multiple mutually recursive calls.  As more employees began to work
+the code, and editted code that they didn't write, development slowed to
+a crawl.
+
+Chris Coyne, OkCupid's director of product, demanded that something be
+done.  The requirements were manifold.  The new solution had to be
+compatible with existing code; it had to be incrementally deployable,
+so that the whole codebase would't need to be rewritten at once; it
+had to be nearly as fast as the status quo; it had to clean the code
+up, so that it was readable; it had to speed up and simplify
+development.
+
+The answer that emerged was Tame for C++.  It's a source-to-source
+translator that mapped C++ with a few language additions into regular
+C++, which is then compiled with a standard compiler (like `gcc`).
+Once Tame was brought to bear on OkCupid's code, it offered almost all
+of the flexibilty and performance of hand-crafted
+asynchronous-callback-passing code without any of the stack-ripping
+headaches.  New employees picked it right up, and even contributed to
+the incremental effort to modernize OkCupid's code to the Tame
+dialect.
+
+OkCupid to this day runs Tame and OKWS in C++ to churn out high-performance,
+massively parallel applications, without worrying about traditional thread-based
+headaches, like deadlock and race-conditions.  Our goal with *tamejs* is to bring
+these benefits to JavaScript and the `node.js` platform.
+
 
 Also Available In C++!
 ----------------------
@@ -281,7 +320,8 @@ paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
 Authors
 -------
-Max Krohn <max@okcupid.com>
+* Max Krohn <max@okcupid.com>
+* Chris Coyne <chris@okcupid.com>
 
 License
 -------
