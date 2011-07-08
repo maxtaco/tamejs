@@ -295,7 +295,7 @@ development.
 The answer that emerged was Tame for C++.  It's a source-to-source
 translator that mapped C++ with a few language additions into regular
 C++, which is then compiled with a standard compiler (like `gcc`). The
-key ideas behind Tame C++ were: (1) generate a heap-allocated
+key implementation ideas behind Tame C++ are: (1) generate a heap-allocated
 "closure" for each tamed function; (2) use labels and `goto` to jump
 back into tamed function as asynchronous events fired.  Once Tame was
 brought to bear on OkCupid's code, it offered almost all of the
