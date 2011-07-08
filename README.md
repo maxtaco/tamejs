@@ -158,24 +158,21 @@ Installing and Using
     node <outfile> # or whatever you want
 
 
-ToDos (Basic Functionality)
----------------------------
-* support unterminated expressions (might not be possible without PEG)
-* with statements?
-
-ToDos (Optimizations)
----------------------
-* Can passThrough blocks in a tamed function that don't have twaits,
-  so can get more aggressive here --- in progress, but can still
-  seek out some more optimizations....
-
-ToDos (Future)
---------------
-* Support output that preserves line numbering ; and/or switch to debug mode
+ToDos
+------
+* Basic Functionality 
+     * support unterminated expressions (might not be possible without PEG)
+     * with statements?
+* Optimizations
+     * Can passThrough blocks in a tamed function that don't have twaits,
+so can get more aggressive here --- in progress, but can still
+seek out some more optimizations....
+* One Can Dream
+     * Support output that preserves line numbering ; and/or switch to debug mode
 only if asked for on the command line.
-* Switch from Bison/Lex style grammar to PEG/Packrat style.
-* Clean up the compile/passThrough/inline mess!
-* allow on-the-fly compilation in environments like express
+     * Switch from Bison/Lex style grammar to PEG/Packrat style.
+     * Clean up the compile/passThrough/inline mess!
+     * allow on-the-fly compilation in environments like express
 
 
 How It's Implemented In JavaScript
