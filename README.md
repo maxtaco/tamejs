@@ -176,6 +176,9 @@ require ("mylib.tjs");          // then use node.js's import as normal
 
 ToDos
 ------
+* Documentation
+     * Event? Callback?  Try to clean it up?
+     * Change mkevent to something else?
 * Basic Functionality 
      * support unterminated expressions (might not be possible without PEG)
      * with statements?
