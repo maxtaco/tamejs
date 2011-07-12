@@ -164,7 +164,7 @@ You can their either use the *tamejs* compiler on the command line:
 
 Or as an extension to node's module import system:
 
-```javscript
+```javascript
 require ('tamejs').register (); // register the *.tjs suffix
 require ("mylib.tjs");          // then use node.js's import as normal
 ```
