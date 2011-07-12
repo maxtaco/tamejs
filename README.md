@@ -183,7 +183,6 @@ seek out some more optimizations....
 only if asked for on the command line.
      * Switch from Bison/Lex style grammar to PEG/Packrat style.
      * Clean up the compile/passThrough/inline mess!
-     * allow on-the-fly compilation in environments like express
 
 
 How It's Implemented In JavaScript
