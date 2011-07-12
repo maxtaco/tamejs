@@ -29,15 +29,15 @@ for (var i = 0; i < 10; i++) {
 There is one new language addition here, the `twait { ... }` block,
 and also one new primitive function, `mkevent`.  The two of them work
 in concert.  Within the context of a `twait` block, `mkevent` returns
-anonymous functions associated with that block.  A function must
-"wait" at the close of a `twait` block until all callbacks made by
-`mkevent` in that `twait` block are called.  In the code above, there
-is only one callback produced in each iteration of the loop, so after
-it's called by `setTimer` in 100ms, control continues past the `twait`
-block, onto the log line, and back to the next iteration of the loop.
-The code looks and feels like threaded code, but is still in the
-asynchronous idiom (if you look at the rewritten code output by the
-*tamejs* compiler).
+anonymous callback functions associated with that block.  A function
+must "wait" at the close of a `twait` block until all callbacks made
+by `mkevent` in that `twait` block are called.  In the code above,
+there is only one callback produced in each iteration of the loop, so
+after it's called by `setTimer` in 100ms, control continues past the
+`twait` block, onto the log line, and back to the next iteration of
+the loop.  The code looks and feels like threaded code, but is still
+in the asynchronous idiom (if you look at the rewritten code output by
+the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
 `twait{..}` language addition.  In the example below, the two timers
