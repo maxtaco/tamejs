@@ -67,6 +67,8 @@ function read_cases (ev) {
     var err = res[0];
     var files = res[1];
     if (err) throw err;
+
+	// Don't run cases that were output by the tamejs compiler
     var rxx = new RegExp ('^(\\d+)([^.]*)\\.(t)?js$');
     for (f in files) {
         var file = files[f];
@@ -76,8 +78,7 @@ function read_cases (ev) {
 	        if (m[3]) {
 		        tests.push (new TamedCase (index, prfx, file, 
                                            m[1] + ".out.js"));
-	        } else if (!file.match (bad_rxx)) {
-		        // Don't run cases that were output by the tamejs compiler
+	        } else {
 		        tests.push (new JsCase (index, prfx + file));
 	        }
 	    }
