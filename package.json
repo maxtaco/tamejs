@@ -2,7 +2,7 @@
     "author" : "Max Krohn <max@okcupid.com>",
     "name" : "tamejs",
     "description" : "JavaScript-to-JavaScript code rewriter for taming async-callback-style code",
-    "version" : "0.1.3",
+    "version" : "0.1.4",
     "keywords" : [
 	"tame",
 	"libasync",
