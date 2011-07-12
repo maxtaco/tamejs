@@ -153,10 +153,21 @@ after faster ones, even if issued before them.
 Installing and Using
 --------------------
 
+Install via npm:
+
     npm install -g tamejs
+
+You can their either use the *tamejs* compiler on the command line:
+
     tamejs -o <outfile> <infile>
     node <outfile> # or whatever you want
 
+Or as an extension to node's module import system:
+
+```javscript
+require ('tamejs').register (); // register the *.tjs suffix
+require ("mylib.tjs");          // then use node.js's import as normal
+```
 
 ToDos
 ------
