@@ -283,12 +283,12 @@ of programs that you should be using `twait` for.
 History
 -------
 
-The Tame rewriting idea dates back to 2006. The author (Max Krohn) was
-a founder of [OkCupid](http://www.okcupid.com), which was until that
-time written in an entirely asynchronous-callback-based style with
+The Tame rewriting idea come about at
+[OkCupid](http://www.okcupid.com) in 2006. Until that time, the
+website written in an entirely asynchronous-callback-based style with
 [OKWS](http://www.okws.org) in C++.  This serving technology was
-extremely fast, and saved a lot of money on hardware purchases, but as
-the Web site's code grew, the code became increasingly
+extremely fast, and led to huge cost savings in hardware and hosting,
+but as the Web site's code grew, the code became increasingly
 unmanageable. Simple serial loops with network access, like the
 sequential DNS example above, required "stack-ripping" into multiple
 mutually recursive calls.  As more employees began to work the code,
@@ -312,20 +312,21 @@ back into tamed function as asynchronous events fired.  Once Tame was
 brought to bear on OkCupid's code, it offered almost all of the
 flexibilty and performance of hand-crafted
 asynchronous-callback-passing code without any of the stack-ripping
-headaches.  New employees picked it right up, and even contributed to
+headaches.  New employees picked it right up, and contributed to
 the incremental effort to modernize OkCupid's code to the Tame
 dialect.
 
-OkCupid to this day runs Tame and OKWS in C++ to churn out high-performance,
-massively parallel applications, without worrying about traditional thread-based
-headaches, like deadlock and race-conditions.  Our goal with *tamejs* is to bring
-these benefits to JavaScript and the `node.js` platform.
+OkCupid to this day runs Tame and OKWS in C++ to churn out
+high-performance, parallel applications, without worrying about
+traditional thread-based headaches, like deadlock and race-conditions.
+Our goal with *tamejs* is to bring these benefits to JavaScript and
+the `node.js` platform.
 
 
 Also Available In C++!
 ----------------------
 
-As described above, the T ame source-to-source translator was
+As described above, the Tame source-to-source translator was
 originally written for asynchronous C++ code.  It's an actively
 maintained project, and it is in widespread use at
 [OkCupid.com](http://www.okcupid.com).  See the [sfslite/tame
