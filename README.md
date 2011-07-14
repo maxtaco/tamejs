@@ -286,10 +286,10 @@ History
 
 The Tame rewriting idea come about at
 [OkCupid](http://www.okcupid.com) in 2006. Until that time, the
-website written in an entirely asynchronous-callback-based style with
-[OKWS](http://www.okws.org) in C++.  This serving technology was
+website was written in an entirely asynchronous-callback-based style
+with [OKWS](http://www.okws.org) in C++.  This serving technology was
 extremely fast, and led to huge cost savings in hardware and hosting,
-but as the Web site's code grew, the code became increasingly
+but as the site's code grew, it became increasingly
 unmanageable. Simple serial loops with network access, like the
 sequential DNS example above, required "stack-ripping" into multiple
 mutually recursive calls.  As more employees began to work the code,
