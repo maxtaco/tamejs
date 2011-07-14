@@ -18,8 +18,7 @@ exports["a test of trigger values"] = {
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
-            var y, z;
-            twait { foo (x, mkevent (y, z)); }
+            twait { foo (x, mkevent (var y, z)); }
             if (x != y) { ok = false; }
         }
         

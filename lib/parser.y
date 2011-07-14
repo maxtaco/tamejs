@@ -121,11 +121,11 @@ SlotAtom
 
 SlotAtomList
      : SlotAtom              { $$ = $1; }
-     | StomAtomList SlotAtom { $1.push ($2); $$ = $1; }
+     | SlotAtomList SlotAtom { $$ = $1.concat ($2); }
      ;
 
 Slot
-     : SlotAtomList { $$ = new yy.Expr ($1); }
+     : SlotAtomList { $$ = new yy.Expr ($1);  }
      ;
      
 
