@@ -1,0 +1,42 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+
+var res = 0;
+var i = 0;
+
+function foo (i, cb) {
+    twait { setTimeout (mkevent (), i); }
+    cb (i);
+};
+
+
+var ok = true;
+
+exports["a test of trigger values"] = {
+
+    run : function (cb) {
+        
+        for (var i = 0; i < 20; i++) {
+            var x = 3 * Math.random ();
+            var y, z;
+            twait { foo (x, mkevent (y, z)); }
+            if (x != y) { ok = false; }
+        }
+        
+        for (var i = 0; i < 20; i++) {
+            var x = 3 * Math.random ();
+            var res = [];
+            twait { foo (x, mkevent (res)); }
+            if (x != res[0]) { ok = false; }
+        }
+
+
+        cb ();
+
+    },
+
+    check : function () {
+	    assert.ok (ok, "triggered with proper values");
+    }
+
+};
