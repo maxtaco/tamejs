@@ -102,8 +102,52 @@ OuterExprAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | MKEVENT     
-     { $$ = [ new yy.Atom (@1.first_line, "__tame_ev.mkevent") ] ; }
+     | Mkevent     { $$ = [ $1 ]; }
+     ;
+
+SlotAtom
+     : GENERIC     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | String      { $$ = $1; }
+     | ParenExpr   { $$ = $1; } 
+     | BracketExpr { $$ = $1; }
+     | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
+     | Mkevent     { $$ = [ $1 ]; }
+     | LABEL       { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
+     | BraceExpr   { $$ = $1; }
+     | FunctionDeclaration { $$ = [ $1 ]; }
+     ;
+
+SlotAtomList
+     : SlotAtom              { $$ = $1; }
+     | StomAtomList SlotAtom { $1.push ($2); $$ = $1; }
+     ;
+
+Slot
+     : SlotAtomList { $$ = new yy.Expr ($1); }
+     ;
+     
+
+Mkevent
+     : MKEVENT LPAREN SlotListOpt RPAREN
+     {
+           $$ = new yy.MkeventExpr (@1.first_line, $3);
+     }
+     ;
+
+SlotListOpt
+     : { $$ = []; }
+     | SlotList { $$ = $1; }
+     ;
+
+SlotList
+     :  Slot { $$ = [ $1 ]; }
+     |  SlotList COMMA Slot
+     {
+         $1.push ($3);
+         $$ = $1;
+     }
      ;
 
 Expr
