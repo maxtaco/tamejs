@@ -1,0 +1,41 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+var assert = require ("assert");
+
+var res = 0;
+var i = 0;
+
+function Class () {
+
+    this._v = [];
+
+    for (var i = 0; i < 10; i++) { this._v.push (i); }
+
+    this.run = function (cb) {
+        this._u = [];
+        for (var i in this._v) {
+            this._u.push (this._v[i]);
+            twait { setTimeout (mkevent (), 10*Math.random ()); }
+        }
+        cb ();
+    };
+    
+    this.check = function () {
+        return JSON.stringify (this._v) == JSON.stringify (this._u);
+    };
+
+};
+
+var obj = new Class ();
+
+exports["a test of for (var i in this._foo)"] = { 
+
+    run : function (cb) {
+        twait { obj.run (mkevent ()); }
+        cb ();
+    },
+
+    check : function () {
+	    assert.ok (obj.check (), "made it through 10 times");
+    }
+
+};
