@@ -66,7 +66,7 @@ function do_one (ev, host) {
     if (res[0]) { console.log ("ERROR! " + res[0]); } 
     else { console.log (host + " -> " + res[1]); }
     ev();
-};
+}
 
 function do_all (lst) {
     twait {
@@ -74,7 +74,7 @@ function do_all (lst) {
             do_one (mkevent (), lst[i]);
         }
     }
-};
+}
 
 do_all (process.argv.slice (2));
 ```
@@ -102,7 +102,7 @@ function do_all (lst) {
             do_one (mkevent (), lst[i]);
         }
     }
-};
+}
 ```
 
 Slightly More Advanced Example
@@ -136,7 +136,7 @@ function do_all (lst, windowsz) {
             nrecv++;
         }
     }
-};
+}
 ```
 
 This code maintains two counters: the number of requests sent, and the
