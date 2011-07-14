@@ -61,10 +61,10 @@ will exit as soon as the last of your resolutions completes:
 var dns = require("dns");
 
 function do_one (ev, host) {
-    var res = [];
-    twait { dns.resolve (host, "A", mkevent (res));}
-    if (res[0]) { console.log ("ERROR! " + res[0]); } 
-    else { console.log (host + " -> " + res[1]); }
+    var err, ip;
+    twait { dns.resolve (host, "A", mkevent (err, ip));}
+    if (err) { console.log ("ERROR! " + err); } 
+    else { console.log (host + " -> " + ip); }
     ev();
 }
 
@@ -130,9 +130,9 @@ function do_all (lst, windowsz) {
             do_one (rv.mkev (nsent), lst[nsent]);
             nsent++;
         } else {
-            var evid = [];
+            var evid;
             twait { rv.wait (mkevent (evid)); }
-            console.log ("got back lookup nsent=" + evid[0]);
+            console.log ("got back lookup nsent=" + evid);
             nrecv++;
         }
     }

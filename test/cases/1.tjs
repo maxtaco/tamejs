@@ -27,9 +27,9 @@ exports["rendezvous & windowing example"] = {
 		        call (nsent, rv.mkev (nsent));
 		        nsent++;
 		    } else {
-		        var res = [];
+		        var res;
 		        twait { rv.wait (mkevent (res)); }
-		        slots[res[0]] |= 4;
+		        slots[res] |= 4;
 		        nrecv++;
 		    }
 	    }
