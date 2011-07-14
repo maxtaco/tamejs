@@ -183,7 +183,6 @@ ToDos
      * support unterminated expressions (might not be possible without PEG)
      * with statements?
      * Support Regex's in the grammar and scanner
-     * do .. while  loops!
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have twaits,
 so can get more aggressive here --- in progress, but can still

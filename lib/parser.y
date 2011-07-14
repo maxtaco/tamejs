@@ -181,6 +181,7 @@ Statement
      | ExprStatement
      | ForStatement
      | WhileStatement
+     | DoWhileStatement
      | IfStatement
      | TwaitStatement
      | LabeledStatement
@@ -261,6 +262,13 @@ ForStatement
      : FOR LPAREN ForIter RPAREN Statement
      {
         $$ = new yy.ForStatement (@1.first_line, $3, $5);
+     }
+     ;
+
+WhileStatement
+     : DO Statement WHILE LPAREN Expr RPAREN
+     {
+        $$ = new yy.DoWhileStatement (@1.first_line, $5, $2);
      }
      ;
 
