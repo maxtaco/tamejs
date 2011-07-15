@@ -4,3 +4,8 @@
 
 - List of parsers here:
     https://github.com/joyent/node/wiki/modules#parser-generators
+
+- Try perhaps uglify  / burrito:
+  - https://github.com/mishoo/UglifyJS
+  - https://github.com/mishoo/UglifyJS/blob/6a873a7757895fdc06501854e4ba84e15c12a74a/tmp/instrument.js
+  - https://github.com/substack/node-burrito

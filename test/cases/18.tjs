@@ -4,7 +4,7 @@ var slots = {};
 var n = 40;
 var assert = require ("assert");
 
-exports["simple parallel twait"] = {
+exports["test do..while..."] = {
     
     run : function (cb) {
 	    var i = 0;	
