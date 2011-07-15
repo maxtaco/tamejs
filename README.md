@@ -155,6 +155,31 @@ the issue order. In this example, a slower DNS lookup might arrive
 after faster ones, even if issued before them.
 
 
+Composing Serial And Parallel Patterns
+--------------------------------------
+
+In Tame, arbitrary composition of serial and parallel control flows is
+possible with just normal functional decomposition.  Therefore, we
+don't allow direct `twait` nesting.  With inline anonymous JavaScript
+functions, you can consicely achieve interesting patterns.  The code
+below launches 10 parallel computations, each of which must complete
+two serial actions before finishing:
+
+```javascript
+function f(cb) {
+    twait {
+        for (var i = 0; i < n; i++) {
+            (function (cb) {
+                twait { setTimeout (mkevent (), 5*Math.random ()); }
+                twait { setTimeout (mkevent (), 4*Math.random ()); }
+                cb();
+             })(mkevent ());
+        }
+    }
+    cb();
+}
+```
+
 Installing and Using
 --------------------
 
