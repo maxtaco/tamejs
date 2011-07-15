@@ -181,8 +181,6 @@ See the github issue tracker for the more immediate issues.
 * Documentation
      * Event? Callback?  Try to clean it up?
      * Change mkevent to something else?
-* Basic Functionality 
-     * do with statements work?
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have twaits,
 so can get more aggressive here --- in progress, but can still
