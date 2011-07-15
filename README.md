@@ -176,20 +176,18 @@ require ("mylib.tjs");          // then use node.js's import as normal
 
 ToDos
 ------
+See the github issue tracker for the more immediate issues.
+
 * Documentation
      * Event? Callback?  Try to clean it up?
      * Change mkevent to something else?
 * Basic Functionality 
-     * support unterminated expressions (might not be possible without PEG)
-     * with statements?
-     * Support Regex's in the grammar and scanner
+     * do with statements work?
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have twaits,
 so can get more aggressive here --- in progress, but can still
 seek out some more optimizations....
 * One Can Dream
-     * Support output that preserves line numbering ; and/or switch to debug mode
-only if asked for on the command line.
      * Switch from Bison/Lex style grammar to PEG/Packrat style.
      * Clean up the compile/passThrough/inline mess!
 

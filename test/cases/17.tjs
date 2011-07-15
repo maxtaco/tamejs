@@ -28,15 +28,6 @@ exports["a test of trigger values"] = {
             twait { foo (x, mkevent (res)); }
             if (x != res[0]) { ok = false; }
         }
-
-
-        rv = new tame.Rendezvous ();
-        for (var i = 0; i < 20; i++) {
-            var x = 3 * Math.random ();
-            var res = [];
-            foo (x, rv.mkevent (res)); }
-            if (x != res[0]) { ok = false; }
-        }
         
         cb ();
 

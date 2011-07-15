@@ -190,6 +190,7 @@ Statement
      | ContinueStatement
      | SwitchStatement
      | TryStatement
+     | WithStatement
      ;
 
 Label
@@ -246,6 +247,13 @@ BreakStatement
      : BREAK IdOpt SEMICOLON
      {
          $$ = new yy.BreakStatement (@1.first_line, $2);
+     }
+     ;
+
+WithStatement
+     : WITH LPAREN Expr RPAREN Block
+     {
+         $$ = new yy.WithStatement (@1.first_line, $3, $5);
      }
      ;
 

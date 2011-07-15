@@ -1,0 +1,28 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+var slots = {};
+var assert = require ("assert");
+
+var env = { i : 0, n : 10, sum : 0 };
+
+exports["test do..while..."] = {
+    
+    run : function (cb) {
+
+        with (env) {
+            while (i < n) {
+	            twait { 
+		            setTimeout (mkevent (), 3*Math.random ()); 
+                }
+                sum += i;
+                i++;
+            }
+        }
+	    cb();
+    },
+    
+    check : function () {
+	    assert.ok( (env.i == env.n && env.sum == 45), 
+                   "env was properly modified");
+    }
+};
