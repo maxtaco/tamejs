@@ -5,7 +5,7 @@ var assert = require ("assert");
 
 var env = { i : 0, n : 10, sum : 0 };
 
-exports["test do..while..."] = {
+exports["test with{} statements"] = {
     
     run : function (cb) {
 
