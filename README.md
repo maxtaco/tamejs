@@ -14,7 +14,7 @@ incrementally deployable --- you can keep all of your old code and
 just write the new bits in *tamejs*!  So try it out and let us
 know what you think.
 
-y
+yx
 
 Code Examples
 --------
