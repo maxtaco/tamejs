@@ -171,11 +171,6 @@ ExprStatement
      }
      ;
 
-SemicolonOpt
-     : 
-     | SEMICOLON
-     ;
-
 Statement
      : Block
      | ExprStatement
