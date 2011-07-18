@@ -344,6 +344,12 @@ traditional thread-based headaches, like deadlock and race-conditions.
 Our goal with *tamejs* is to bring these benefits to JavaScript and
 the `node.js` platform.
 
+See our "Glossy Page"
+---------------------
+
+See [tamejs.org](http://tamejs.org) for documentation and information on 
+*tamejs*.
+
 
 Also Available In C++!
 ----------------------
