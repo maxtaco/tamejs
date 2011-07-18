@@ -1,1 +1,586 @@
-hello world, take 4.
+<html>
+<head>
+	<title>Tame.Js from the creators of OkCupid</title>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+	<script type="text/javascript" src="js/prettify.js"></script>
+	<script type="text/javascript" src="js/tamejs_site.js"></script>
+	<link href="css/prettify.css" type="text/css" rel="stylesheet" />
+	<link href="css/tamejs_site.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+<a href="http://github.com/maxtaco/tamejs"><img style="position: absolute; top: 0; left: 0; border: 0;" src="/img/fork_me.png" alt="Fork me on GitHub"></a>
+	<div id="wrapper">
+		<div id="logo">
+			<img src="img/temp_logo.png" />
+		</div>
+		<div id="body_column">
+			<div id="body_left">
+
+				<div id="floating_container" style="position:static;">
+					<p>TOC</p>
+					<ul>
+						<li><a href="#what_is_tame">What is Tame?</a></li>
+						<li><a href="#how_to_use_it">How to Use It</a></li>
+						<li><a href="#how_it_works">How it Works</a></li>
+						<li><a href="#faq">FAQ</a></li>
+					</ul>
+					Sharing Links <span style="font-size:0.6em;">(DON'T CLICK YET)</span>:<br />
+					<span style="font-size:0.8em;display:none;">(hey, <b>don't</b> click these yet)<br /><br /></span>
+					<div id="tweet_container">
+						<a href="http://twitter.com/share" class="twitter-share-button" data-text="The makers of OkCupid are working in #nodejs . Check out their work on #tamejs." data-count="horizontal" data-via="maxtaco">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+					</div>
+					<div id="google_plus_container">
+						<g:plusone size="standard"></g:plusone>
+					</div>
+					<div id="facebook_like_container">
+						<div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#appId=243885035631395&amp;xfbml=1"></script><fb:like href="http://www.tamejs.org" send="true" layout="button_count" width="85" show_faces="false" colorscheme="light" font="segoe ui"></fb:like>
+					</div>
+					<p>Contact</p>
+					<ul>
+						<li>max at okcupid.com</li>
+					</ul>
+					<p>The Code</p>
+					<ul>
+						<li><a href="http://github.com/maxtaco/tamejs">github</a></li>
+					</ul>
+
+				</div>
+				<div>
+					&nbsp;
+				</div>
+			</div>
+			<div id="body_right">
+				<a name="what_is_tame"></a>
+				<h3>What is Tame?</h3>
+				<p>
+					Tame (or "TameJs") is an extension to JavaScript, written in JavaScript, that makes event programming easier to write, read, and edit.
+					Tame is very easy to use in Node and other V8 projects. And it can be dropped into projects where desired - no need to rewrite any existing code.
+				</p>
+				<p>
+					You can jump into Tame on <a href="http://github.com/maxtaco/tamejs">github</a>, but here you'll find some notes
+					on what we learned at OkCupid over the years and why we think Tame is needed for more ambitious projects. (Control-flow libraries are not good enough!) We've written hundreds
+					of thousands of lines of purely async code at OkCupid, and our code has stayed extremely manageable, even after 8 years of development.
+				</p>
+				<p>
+					Note Tame is not an attempt to dumb down async programming. It's just a cleaner way to write it.
+					Further, your programs will likely have lower latency; with Tame it's a lot easier to keep parallel calls parallel.
+				</p>
+				<h3>A Simple Scenario</h3>
+				<p>
+					Let's say you're running a hot dating site, and a certain user, "Angel", just looked at another user, "Buffy."
+					And here's one tiny piece of your program:
+				</p>
+				<div class="note_container">
+					<h4>
+						When Angel views Buffy
+					</h4>
+					<ul id="angel_buffy_ul" class="main_ul">
+						<li>Figure out their match score</li>
+						<li>Request a new, next match for Angel to look at.</li>
+						<li>Record that Angel stalked Buffy, and get back the last time it happened.</li>
+						<li>Send Buffy an email that Angel just looked at her, but only if:
+							<ol>
+								<li>they're a good match, and</li>
+								<li>they haven't looked at each other recently.</li>
+							</ol>
+					</ul>
+				</div>
+				<p>
+					This isn't very complicated logic. In our pre-async minds, our code looks something like this:
+				</p>
+<pre class="prettyprint lang-js">
+handleVisit : function(angel, buffy) {
+	var match_score = getScore(angel, buffy);
+	var next_match  = getNextMatch(angel);
+	var visit_info  = recordVisitAndGetInfo(angel, buffy);
+	if (match_score > 0.9 && ! visit_info.last_visit) {
+		sendVisitorEmail(angel, buffy);
+	}
+	doSomeFinalThings(match_score, next_match, visit_info);
+}
+</pre>
+				<p>
+					But of course these are all blocking calls requiring callback events. So our code ends up like this:
+				</p>
+<pre class="prettyprint lang-js">
+handleVisit : function(angel, buffy) {
+  getScore(angel, buffy, function(match_score) {
+    getNextMatch(angel, function(next_match) {
+      recordVisitAndGetInfo(angel, buffy, function(visit_info) {
+        if (match_score > 0.9 && ! visit_info.last_visit) {
+          sendVisitorEmail(angel, buffy);
+        }
+        doSomeFinalThings(match_score, next_match, visit_info);
+      });
+    });
+  });
+}
+</pre>				
+				<p>
+					There are other ways we could have written it, defining named callback functions, for example. Either way,
+					it's pretty easy to write. But for an outside reader - or you returning to your own code later - it's difficult to follow <i>and far worse to edit or rearrange</i>. 
+					And it's just a simple example. In practice,
+					a full async stack means one path through your code has dozens of calls and callbacks littered across all kinds of unnatural functions you were forced to create.
+					Inserting new calls and rearranging are cumbersome.
+				</p>
+				<p>
+					We learned this about 6 months in at OkCupid. Our web services started out simple and elegant, like the example above, but the more developers added to them, the more absurd our code got. There were some dark days at OkCupid. Once we started integrating more async code: a distributed cache, a pub/sub system, etc., our code got heinous.
+				</p>
+				<p>
+					(A note for more experienced devs: control-flow libraries helped us fire our code in parallel, but they wouldn't let us throw async calls into the middle of an existing function without hacking that function in half. Later in this page you'll see an example that's horrible with such libraries.)
+				</p>
+				<p>
+					But back to our example.  Worse than ugliness, we've made a programming mistake. All of those calls are made in serial. <span class="code_term">getNextMatch</span>, <span class="code_term">getScore</span>, and <span class="code_term">recordVisit</span> are all contacting different servers, so they should be fired in parallel.
+				</p>
+
+				<h3>So...how does Tame solve this?</h3>
+<pre class="prettyprint lang-js">
+var res1, res2;
+twait {
+	doOneThing(mkevent(res1));
+	andAnother(mkevent(res2));
+}
+thenDoSomethingWith(res1, res2);
+</pre>
+
+				<p>
+					As shown above, Tame introduces 2 keywords, <span class="code_term">twait</span> and <span class="code_term">mkevent</span> (short for "make event"). They are used in tandem.
+				</p>
+
+				<p>
+					<span class="code_term">twait</span> is pretty simple: it blocks off a section of code you'd like to execute before proceeding.
+					<span class="code_term">mkevent</span> lets <span class="code_term">twait</span> know what to wait for. In other words, <i>it returns an anonymous function that you give to your async functions as a callback</i>. If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">mkevent</span>, and they'll
+					be available after the <span class="code_term">twait</span> block.
+				</p>
+				<p>
+					mkevent is syntactic sugar, but think of it as "dropping" a callback function in its place.
+				</p>
+				<p>
+					Sound confusing? It's really not when you see it in action. Let's show some example code.
+				</p>
+<pre class="prettyprint lang-js">
+for (var i = 0; i < 10; i++) {
+	twait { setTimeout (mkevent (), 100); }
+	console.log ("Hello world! " + i);
+}
+</pre>				
+				<p>
+					The above code prints "Hello world" 10 times, separated by 100ms. The code looks and feels like threaded code, but it uses preexisting async-style functions.
+					To be clear: this is the setTimeout you know and love, <i>unmodified</i>. TameJS works with all existing async code.
+					setTimeout is expecting a function to execute, and that's what mkevent() is providing.
+				</p>
+				<p>
+					What happens if we put two <span class="code_term">setTimeout</span> calls inside one twait?
+<pre class="prettyprint lang-js">
+for (var i = 0; i < 10; i++) {
+	twait { 
+		setTimeout (mkevent (), 10); 
+		setTimeout (mkevent (), 100); 
+	}
+	console.log ("Hello world! " + i);
+}
+</pre>				
+
+				<p>
+					Tame's beauty is starting to unfold here: 2 timers are fired at once, and after both have returned the loop continues. So every
+					100ms it prints "Hello world" and the next number.
+				<p>
+					Moving the twait outside the for loop is acceptable. All 20 timers would fire at once, and this
+					code would let out your feelings in approximately 100ms:
+				</p>
+<pre class="prettyprint lang-js">
+var message = "I'm starting to get turned on.";
+twait { 
+	for (var i = 0; i < 10; i++) {
+		setTimeout (mkevent (), 10); 
+		setTimeout (mkevent (), 100); 
+	}
+}
+console.log (message);
+
+</pre>				
+
+
+				<p>
+					In practice your async functions call back with information, and you want <span class="code_term">mkevent</span> to collect that information.
+					Let's use Node's <span class="code_term">dns.resolve</span> function:
+				</p>
+<pre class="prettyprint lang-js">
+var err, ip;
+twait { 
+	dns.resolve (host, "A", mkevent (err, ip));
+}
+if (err) { console.log ("ERROR! " + err); } 
+else { console.log (host + " -> " + ip); }
+</pre>
+
+				<p>
+					Notice that <span class="code_term">dns.resolve</span> is expecting a third parameter, a function
+					to call with its result. <span class="code_term">mkevent</span> provides a function that collects
+					the results into <span class="code_term">err</span> and <span class="code_term">ip</span>.
+				</p>
+				<p>
+					Tame also lets us name those variables inline, for convenience:
+				</p>
+<pre class="prettyprint lang-js">
+twait { 
+	dns.resolve (host, "A", mkevent (var err, ip));
+}
+</pre>
+
+				<p>
+					And finally, here's our first full Node program, a parallel DNS resolver that looks
+					up all its arguments at once.
+				</p>
+
+<pre class="prettyprint lang-js">
+var dns = require("dns");
+
+function do_one (ev, host) {
+    twait { 
+    	dns.resolve (host, "A", mkevent (var err, ip));
+    }
+    if (err) { console.log ("ERROR! " + err); } 
+    else { console.log (host + " -> " + ip); }
+    ev();
+};
+
+function do_all (lst) {
+    twait {
+        for (var i = 0; i < lst.length; i++) {
+            do_one (mkevent (), lst[i]);
+        }
+    }
+};
+do_all (process.argv.slice (2));
+</pre>	
+				<p>
+					All the DNS lookups are parallel, and output is fast:
+				</p>
+<pre class="prettyprint">
+yahoo.com -> 72.30.2.43,98.137.149.56,209.191.122.70
+google.com -> 74.125.93.105,74.125.93.99,74.125.93.104
+nytimes.com -> 199.239.136.200
+okcupid.com -> 66.59.66.6
+</pre>
+
+				<p>
+					If you want to do these DNS resolutions in serial (rather than parallel), then the change from above is trivial: just switch the order of the twait and for statements above:
+				</p>
+<pre class="prettyprint lang-js">
+function do_all (lst) {
+    for (var i = 0; i < lst.length; i++) {
+        twait {
+            do_one (mkevent (), lst[i]);
+        }
+    }
+}
+</pre>
+				<h3>Back to Angel and Buffy</h3>
+
+				<p>
+					And finally, here's the Angel & Buffy code, Tamed.
+				</p>
+				<div>
+<pre class="prettyprint lang-js">
+handleVisit : function(angel, buffy) {
+
+	//
+	// let's fire all 3 at once
+	//
+
+	twait {
+		getScore (angel, buffy, mkevent(var score));
+		getNextMatch (angel, buffy, mkevent(var next));
+		recordVisitAndGetInfo (angel, buffy, mkevent(var vinfo));
+	}
+
+	//
+	// they've called back, and now we have our data
+	//
+
+	if (score > 0.9 && ! vinfo.last_visit) {
+		sendVisitorEmail(angel, buffy);
+	}
+	doSomeFinalThings(score, next, vinfo);
+}
+</pre>
+				<p>
+					The Tame code isn't just easier to read. Remeber, it also returns faster, firing all those calls in parallel. And if you want to change it, say by
+					adding another async call or removing one, you won't be ripping functions.
+				</p>
+
+				<h3>A Real Buffy Example: Looping</h3>
+
+				<p>
+					This example shows off Tame even better, nesting two loops and doing all kinds of real-world matchmaking.
+				</p>
+
+				<div class="note_container">
+					<h4>
+						What To Do When Buffy Hunts Men
+					</h4>
+					<ul id="angel_buffy_ul" class="main_ul">
+						<li>Request 10 Matches</li>
+						<li>For each one:
+							<ul>
+								<li>Get their thumbnail URL from our picture server</li>
+									<ul>
+										<li>And ask our vampire server if it's a photo of a vamp</li>
+									</ul>
+								<li>If it's not a vamp:
+									<ul>
+										<li>Get a personality summary from our personality servers</li>
+										<li>Look up the last time they talked</li>
+										<li>And add it to the soulmates array</li>
+									</ul>
+								</li>
+							</ul>
+						<li>If we don't have at least 10 soulmates, find some more.</li>
+					</ul>
+				</div>
+
+				<p>
+					Here's the Tamed solution, heavily commented.				
+				</p>
+
+<pre class="prettyprint lang-js">
+huntMen : function(buffy) {
+
+   var soulmates = [];
+ 
+   while (soulmates.length < 10) {
+ 
+      // Get 10 candidates for Buffy  
+      twait {  
+        getMatches(buffy, 10, mkevent(var userids));
+      }
+  
+      for (var i = 0; i < userids.length; i++) {
+        var u = userids[i];
+        twait {
+          // get their pic from our pic server
+          getThumbnail  (u, mkevent(var thumb));
+        }
+        twait {
+          // ask our pic analyzer to review
+          isPicAVampire(thumb, mkevent(var is_vamp));
+        }
+        if (! is_vamp) {
+          twait {
+            // get 2 more pieces of info
+            getPersonality(u, mkevent(var personality));
+            getLastTalked (u, match, mkevent(var last_talked));
+          }
+          soulmates.push({
+            "userid" : match,
+            "thumb"  : thumb,
+            "last_talked" : last_talked,
+            "personality" : personality
+          });
+        }
+      }
+   }
+ 
+   //
+   // Our function can now continue to do
+   // whatever it wants with
+   // soulmates...
+   //
+
+}
+</pre>
+				<p>
+					Note we're <i>not</i> providing an untamed version of the above for comparison. (We had a hard time
+					writing it.) If you're a Node programmer and up to the challenge: send us a version of it using
+					a control-flow library of your choice.
+				</p>
+
+
+				<a name="how_to_use_it"></a>
+				<h3>How To Use Tame</h3>
+				<p>
+					In Node grab it with npm:
+				</p>
+<pre class="prettyprint lang-js">
+npm install -g tamejs
+</pre>
+				<p>
+					And just register the .tjs extension:
+				</p>
+<pre class="prettyprint lang-js">
+require ('tamejs').register (); // register the *.tjs suffix
+require ("mylib.tjs");          // then use node.js's import as normal
+</pre>
+
+				<p>
+					That's it! Tame will take care of the rest, compiling the tjs file into native JS.
+				</p>
+				<p>
+					Or to use it from the command line:
+				</p>
+<pre class="prettyprint lang-js">
+tamejs -o &lt;outfile&gt; &lt;infile&gt;
+node &lt;outfile&gt; # or whatever you want
+</pre>
+
+
+				<a name="how_it_works"></a>
+				<h3>How Does It Work?</h3>
+				<p>
+					The key idea behind the TameJs implementation is <a href="http://en.wikipedia.org/wiki/Continuation-passing_style">Continuation-Passing Style (CPS)</a> compilation.
+					On our github page we show a bunch of examples of what we actually do to tamed JS to convert it to real JS.
+				</p>
+
+				<a name="faq"></a>
+				<h3>
+					FAQ
+				</h3>
+				<p class="question">
+					Is it open-source? What license is it?
+				</p>
+				<p class="answer">
+					Yes, MIT. Fork it, dude.
+				</p>
+
+				<p class="question">
+					So you guys have been using Tame for years?
+				</p>
+				<p class="answer">
+					Yes, a C++ version of it. (Max published <a href = "http://pdos.csail.mit.edu/~max/docs/tame.pdf">a paper</a> on it at MIT in 2007). Using Tame, OkCupid serves externally over 100 million highly dynamic HTTP requests every day (over 1,000/second on average),
+					each of which fires off calls to all kinds of other services, literally billions of async calls daily. Everything is Tamed, and we'll never look back.
+				</p>
+				<p class="answer">
+					We've been watching the Node community for a while now, and here are our favorite sites/projects: <a href="http://howtonode.org/">HowToNode</a>, <a href="http://debuggable.com/">debuggable</a>, and <a href="http://www.nodejitsu.com/">Nodejitsu</a>, and also the framework &amp; middleware <a href="http://expressjs.com/">Express</a> and <a href="http://senchalabs.github.com/connect/">Connect</a>. The programmers at those sites have gotten us to turn our interest to Node.  But async programming
+					can fail in language scalability, if not performance scalability.  JavaScript is missing native support for this kind of control-flow. (It's worth noting C# just added an await primitive! They're onto us.) We have the experience to see what it does to large-scale projects.
+				</p>
+				<p class="question">
+					Can I use your C++ version of Tame?
+				</p>
+				<p class="answer">
+					Yes, but unlike TameJs, it requires committing to certain other libraries you might not want (sfslite, libasync). TameJs
+					is designed for general use.
+				</p>
+				<p class="question">
+					What's wrong with a control-flow library? You know, say Step? Or Seq?
+				</p>
+				<p class="answer">
+					First off, we're on the same boat as Tim Caswell, maker of Step, and James Halliday, maker of Seq. We clearly agree
+					that a system like this is needed. If they're like us, they're sick of seeing code like this on github:
+				</p>
+				<p class="question">
+					<a href="https://github.com/christkv/node-mongodb-native/blob/master/examples/blog.js">MongoDB Blog Example</a>
+				</p>
+				<p class="answer">
+					That poor developer! Good luck changing that code.
+				<p class="answer">
+					As a quick comparison of Tame and Step, let's say you simply want to read a file and log its text in all caps.
+					In Tame it's very simple:
+				</p>
+<pre class="prettyprint lang-js">
+twait { 
+	fs.readFile (__filename, mkevent (var err, text)); 
+}
+if (err) { throw (err): }
+console.log (text.toUpperCase ());
+</pre>					
+				<p>
+					Here's the same in Step - with code taken from Step's website. New functions "capitalize" and "showIt" had to be written.
+<pre class="prettyprint lang-js">
+Step(
+  function readSelf() {
+    fs.readFile(__filename, this);
+  },
+  function capitalize(err, text) {
+    if (err) throw err;
+    return text.toUpperCase();
+  },
+  function showIt(err, newText) {
+    if (err) throw err;
+    console.log(newText);
+  }
+);
+</pre>
+				<p class="answer">
+					Also, unlike the Step code, the Tame version can sit comfortably inside another function. If you want to read a file 
+					and then use its text in your code, you don't have to split the containing function in half.
+				</p>
+				<p class="answer">
+					Here's a second example from Step's website:
+				</p>
+<pre class="prettyprint lang-js">
+Step(
+  // Loads two files in parallel
+  function loadStuff() {
+    fs.readFile(__filename, this.parallel());
+    fs.readFile("/etc/passwd", this.parallel());
+  },
+  // Show the result when done
+  function showStuff(err, code, users) {
+    if (err) throw err;
+    console.log(code);
+    console.log(users);
+  }
+)
+</pre>		
+				<p class="answer">
+					And Tame:
+				</p>
+<pre class="prettyprint lang-js">
+twait { 
+   fs.readFile (__filename, mkevent (var e1, code));
+   fs.readFile ("/etc/password", mkevent (var e2, users)); 
+}
+if (e1) throw e1;
+if (e2) throw e2;
+console.log (code);
+console.log (users);
+</pre>
+				<p class="answer">
+					Also of note: Step is making pretty specific assumptions about how
+					errors are passed.
+				<p class="answer">
+					This isn't an attack on Tim's code. Step is the best option for native JS; Tame is a markup that's converted to JS. But this difference shouldn't matter, as Node, in all its greatness, allows us to compile Tame code as we <span class="code_term">require</span> it.
+					So using Tame is as easy as using Step.
+				<p class="answer">
+
+				<p class="answer">
+					In general, control-flow libraries aren't bad for simple examples (such as our 1st simple Buffy example), but they are not happy with more complicated flow management (such as our 2nd Buffy example). 
+				</p>
+
+				<p class="question">
+					Have you heard about StratifiedJS?
+				</p>
+
+				<p class="answer">
+					Yes - it's also a translation of JS and seems to use a similar compilation technique, and we think it's more evidence that the Node
+					community needs something on top of JS. However, the <span class="code_term">twait</span> construct is more general
+					and easier to integrate.
+				</p>
+
+				<p class="question">
+					I'm still not sold. Ok?
+				</p>
+
+				<p class="answer">
+					Just try it in an existing project. We hope it will grow on you. Fortunately you don't
+					need to commit to Tame for an entire project.
+				</p>
+
+				<h3>Latest Release / Issues</h3>
+				<p>
+					It's brand new but working well! <a href="https://github.com/maxtaco/tamejs">See us on github</a>.
+				</p>
+
+				<h3>Are you guys hiring?</h3>
+				<p>
+					Yes! If you're a Node developer and you'd like to help us build extremely scalable and useful websites and web apps,
+					let us know. We're hiring in NYC. To get in contact, email chris at okcupid.
+				</p>
+			</div>
+		</div>
+		<div style="clear:both;">&nbsp;</div>
+	</div>
+</body>
+</html>
