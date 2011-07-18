@@ -12,7 +12,7 @@ body {
 }
 #google_plus_container, #facebook_like_container, #tweet_container {
 	padding:3px;
-	margin-left:35px;
+	margin-left:10px;
 }
 #tweet_container {
 	margin-top:10px;
@@ -35,6 +35,17 @@ body {
 #body_left {
 	width:200px;			
 	float:left;
+}
+#body_left ul  { 
+	list-style-type: none;
+	padding-left:12px;
+}
+#body_left h3 {
+	border-bottom:1px solid #eee;
+	padding-bottom:5px;
+	margin-bottom:5px;
+	font-size:0.9em;
+	width:90%;
 }
 #body_right {			
 	width:520px;
