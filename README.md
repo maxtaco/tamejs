@@ -350,6 +350,34 @@ See our "Glossy Page"
 See [tamejs.org](http://tamejs.org) for documentation and information on 
 *tamejs*.
 
+Related Projects & Plugs
+------------------------
+
+[pubjs](https://github.com/maxtaco/pubjs) is yet another a node.js
+templating engine.  But it allows arbtirarily nested code and output
+sections.  Check it out, if you think that:
+
+```html
+{% for (var i = 0; i < 10; i++) {{
+   Counting ... %{i}
+   {% if (i % 2 == 0) {{ ... is even ... }}
+      else            {{ ... is odd .....}}
+   %}
+}} %}
+```
+
+is better than:
+
+```html
+<% for (var i = 0; i < 10; i++) { %>
+   Counting ... <%= i %>
+   <% if (i % 2 == 0) { %> ... is even ...
+   <% } else { %> ... is odd .. 
+   <% } %>
+<% } %>
+```
+
+
 
 Also Available In C++!
 ----------------------
