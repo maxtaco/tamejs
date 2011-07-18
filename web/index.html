@@ -154,7 +154,7 @@ thenDoSomethingWith(res1, res2);
 					inside a <span class="code_term">twait</span> block have finished does control continue past it.
 					<span class="code_term">mkevent</span> lets <span class="code_term">twait</span> know which events to wait for.  <span class="code_term">mkevent</span> 
 					returns an anonymous function that you give to your async functions as a callback.   Such an async function tells <span class="code_term">twait</span> 
-					that the expected event has occurred by <i>calling its<span class="code_term">mkevent</span>-generated callback.</i>
+					that the expected event has occurred by calling its <span class="code_term">mkevent</span>-generated callback.
 				</p>
 				<p>
 					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">mkevent</span>, and they'll
@@ -458,7 +458,9 @@ node &lt;outfile&gt; # or whatever you want
 					So you guys have been using Tame for years?
 				</p>
 				<p class="answer">
-					Yes, a C++ version of it. (Max published <a href = "http://pdos.csail.mit.edu/~max/docs/tame.pdf">a paper</a> on it at MIT in 2007). Using Tame, OkCupid serves externally over 100 million highly dynamic HTTP requests every day (over 1,000/second on average),
+					Yes, a C++ version of it. (See the <a href = "http://pdos.csail.mit.edu/~max/docs/tame.pdf">paper</a> published at the 
+					<a href="http://www.usenix.org/event/usenix07/tech/">2007 USENIX Annual Technical Conference</a>). 
+					Using Tame, OkCupid serves externally over 100 million dynamic HTTP requests every day (over 1,000/second on average),
 					each of which fires off calls to all kinds of other services, literally billions of async calls daily. Everything is Tamed, and we'll never look back.
 				</p>
 				<p class="answer">
@@ -469,8 +471,8 @@ node &lt;outfile&gt; # or whatever you want
 					Can I use your C++ version of Tame?
 				</p>
 				<p class="answer">
-					Yes, but unlike TameJs, it requires committing to certain other libraries you might not want (sfslite, libasync). TameJs
-					is designed for general use.
+					<a href="http://okws.org/doku.php?id=sfslite:tame2">Yes</a>, but unlike TameJs, it requires committing to certain other libraries you might not want 
+					(<a href="http://okws.org/doku.php?id=sfslite">sfslite</a>, libasync). TameJs is designed for general use.
 				</p>
 				<p class="question">
 					What's wrong with a control-flow library? You know, say Step? Or Seq?
@@ -489,9 +491,7 @@ node &lt;outfile&gt; # or whatever you want
 					In Tame it's very simple:
 				</p>
 <pre class="prettyprint lang-js">
-twait { 
-	fs.readFile (__filename, mkevent (var err, text)); 
-}
+twait fs.readFile (__filename, mkevent (var err, text)); 
 if (err) { throw (err): }
 console.log (text.toUpperCase ());
 </pre>					
@@ -550,10 +550,6 @@ console.log (users);
 				<p class="answer">
 					Also of note: Step is making pretty specific assumptions about how
 					errors are passed.
-				<p class="answer">
-					This isn't an attack on Tim's code. Step is the best option for native JS; Tame is a markup that's converted to JS. But this difference shouldn't matter, as Node, in all its greatness, allows us to compile Tame code as we <span class="code_term">require</span> it.
-					So using Tame is as easy as using Step.
-				<p class="answer">
 
 				<p class="answer">
 					In general, control-flow libraries aren't bad for simple examples (such as our 1st simple Buffy example), but they are not happy with more complicated flow management (such as our 2nd Buffy example). 
