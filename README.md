@@ -204,15 +204,13 @@ ToDos
 See the github issue tracker for the more immediate issues.
 
 * Documentation
-     * Event? Callback?  Try to clean it up?
      * Change mkevent to something else?
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have twaits,
 so can get more aggressive here --- in progress, but can still
 seek out some more optimizations....
-* One Can Dream
-     * Switch from Bison/Lex style grammar to PEG/Packrat style.
-     * Clean up the compile/passThrough/inline mess!
+* Parsing
+     * Switch to uglify's parser
 
 
 How It's Implemented In JavaScript
