@@ -60,7 +60,7 @@
 				<p>
 					You can jump into Tame on <a href="http://github.com/maxtaco/tamejs">github</a>, but here you'll find some notes
 					on what we learned at OkCupid over the years and why we think Tame is needed for more ambitious projects. (Control-flow libraries are not good enough!) We've written hundreds
-					of thousands of lines of purely async code at OkCupid, and our code has stayed extremely manageable, even after 8 years of development.
+					of thousands of lines of purely async code at OkCupid, and our code has stayed manageable, even after 8 years of development.
 				</p>
 				<p>
 					Note Tame is not an attempt to dumb down async programming. It's just a cleaner way to write it.
@@ -149,12 +149,22 @@ thenDoSomethingWith(res1, res2);
 				</p>
 
 				<p>
-					<span class="code_term">twait</span> is pretty simple: it blocks off a section of code you'd like to execute before proceeding.
-					<span class="code_term">mkevent</span> lets <span class="code_term">twait</span> know what to wait for. In other words, <i>it returns an anonymous function that you give to your async functions as a callback</i>. If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">mkevent</span>, and they'll
-					be available after the <span class="code_term">twait</span> block.
+					<span class="code_term">twait</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.  
+					Only once all relevant events
+					inside a <span class="code_term">twait</span> block have finished does control continue past it.
+					<span class="code_term">mkevent</span> lets <span class="code_term">twait</span> know which events to wait for.  <span class="code_term">mkevent</span> 
+					returns an anonymous function that you give to your async functions as a callback.   Such an async function tells <span class="code_term">twait</span> 
+					that the expected event has occurred by <i>calling its<span class="code_term">mkevent</span>-generated callback.</i>
 				</p>
 				<p>
-					mkevent is syntactic sugar, but think of it as "dropping" a callback function in its place.
+					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">mkevent</span>, and they'll
+					be available after the <span class="code_term">twait</span> block completes.
+				</p>
+				<p>
+					(For language geeks: <span class="code_term">twait</span> is the only new addition to JavaScript language semantics here.  It takes the current program
+					continuation and stores it in a hidden JavaScript object. 
+					<span class="code_term">mkevent</span> is syntactic sugar that calls into the hidden object. If an event is the last outstanding event 
+					in its parent <span class="code_term">twait</span> block, it reactivates the stored program continuation.)
 				</p>
 				<p>
 					Sound confusing? It's really not when you see it in action. Let's show some example code.
@@ -555,8 +565,38 @@ console.log (users);
 
 				<p class="answer">
 					Yes - it's also a translation of JS and seems to use a similar compilation technique, and we think it's more evidence that the Node
-					community needs something on top of JS. However, the <span class="code_term">twait</span> construct is more general
-					and easier to integrate.
+					community needs something on top of JS. However, we see several advantages to the Tame approach.  First off, it's 
+					simpler: just two new keywords (<span class="code_term">twait</span> and <span class="code_term">mkevent</span>), only
+					the former of which is a true language addition (the latter being syntactic sugar).  
+					Second, it's more powerful, allowing arbitrary parallelism, not just two-way parallelism
+					with <span class="code_term">waitfor..or</span>.  Finally, it's easier to integrate: traditional JS code can call tamed code, and vice-versa,
+					whereas traditional JS cannot conveniently call stratified JS.
+				</p>
+
+				<p class="question"> 
+				    Do exceptions and tame play well together?
+				</p>
+
+				<p class="answer">
+				        Sort of.  Code with <span class="code_term">try..catch</span> will compile in all cases, and run as expected when not
+					composed with <span class="code_term">twait</span> blocks.  But consider the following snippet of traditional JavaScript code:
+<pre class="prettyprint lang-js">
+try {
+   setTimeout (function () { throw new Error ("XX"); }, 10);
+} catch (e) {
+   console.log ("Caught: " + e);
+}
+</pre>
+                                        The exception thrown after the 10 msec will <b>not</b> be caught, because returning to the base event loops rips apart
+                                        the call stack.  Not surprisingly, this tamed version exhibits the same behavior:
+<pre class="prettyprint lang-js">
+try {
+   twait setTimeout (mkevent (), 10);
+   throw new Error ("XX");
+} catch (e) {
+   console.log ("Caught: " + e);
+}
+</pre>
 				</p>
 
 				<p class="question">
@@ -575,7 +615,7 @@ console.log (users);
 
 				<h3>Are you guys hiring?</h3>
 				<p>
-					Yes! If you're a Node developer and you'd like to help us build extremely scalable and useful websites and web apps,
+					Yes! If you're a Node developer and you'd like to help us build scalable and useful websites and web apps,
 					let us know. We're hiring in NYC. To get in contact, email chris at okcupid.
 				</p>
 			</div>
