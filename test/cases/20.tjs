@@ -10,15 +10,15 @@ exports["test nested serial/parallel"] = {
     
     run : function (cb) {
 
-        twait {
+        await {
             for (var i = 0; i < n; i++) {
                 (function (cb) {
                     var my_i = i;
-                    twait { setTimeout (mkevent (), 5*Math.random ()); }
-                    twait { setTimeout (mkevent (), 4*Math.random ()); }
+                    await { setTimeout (promise (), 5*Math.random ()); }
+                    await { setTimeout (promise (), 4*Math.random ()); }
                     slots[my_i] = true;
                     cb();
-                })(mkevent ());
+                })(promise ());
             }
         }
 	    cb();

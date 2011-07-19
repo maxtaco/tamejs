@@ -10,7 +10,7 @@ exports["rendezvous & windowing example"] = {
 	
 	function call (i, ev) {
 	    slots[i] = 1;
-	    twait { setTimeout (mkevent (), 10*Math.random()); }
+	    await { setTimeout (promise (), 10*Math.random()); }
 	    slots[i] |= 2;
 	    ev();
 	};
@@ -28,7 +28,7 @@ exports["rendezvous & windowing example"] = {
 		        nsent++;
 		    } else {
 		        var res;
-		        twait { rv.wait (mkevent (res)); }
+		        await { rv.wait (promise (res)); }
 		        slots[res] |= 4;
 		        nrecv++;
 		    }
@@ -37,7 +37,7 @@ exports["rendezvous & windowing example"] = {
 	};
 	    
 	    var n = 100;
-	    twait { window (n, 10, mkevent ()); }
+	    await { window (n, 10, promise ()); }
 	    ev ();
     },
 	

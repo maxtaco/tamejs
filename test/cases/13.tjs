@@ -10,7 +10,7 @@ exports["passThrough/compile test"] = {
             for (var i = 0; i < 100; i++);
             var d = { cat : function (n, cb) {
                 for (var i = 0; i < n; i++) {
-                    twait { setTimeout (mkevent (), 5 * Math.random ()); }
+                    await { setTimeout (promise (), 5 * Math.random ()); }
                 }
                 cb ();
             }, n : 10 };
@@ -19,7 +19,7 @@ exports["passThrough/compile test"] = {
         };
 
         var d = make_dict ();
-        twait { d.cat (d.n, mkevent ()); }
+        await { d.cat (d.n, promise ()); }
         ok = true;
         cb ();
     },

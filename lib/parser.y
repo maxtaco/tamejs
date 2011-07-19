@@ -102,7 +102,7 @@ OuterExprAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Mkevent     { $$ = [ $1 ]; }
+     | Promise     { $$ = [ $1 ]; }
      ;
 
 SlotAtom
@@ -113,7 +113,7 @@ SlotAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Mkevent     { $$ = [ $1 ]; }
+     | Promise     { $$ = [ $1 ]; }
      | LABEL       { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
      | BraceExpr   { $$ = $1; }
      | FunctionDeclaration { $$ = [ $1 ]; }
@@ -129,10 +129,10 @@ Slot
      ;
      
 
-Mkevent
-     : MKEVENT LPAREN SlotListOpt RPAREN
+Promise
+     : PROMISE LPAREN SlotListOpt RPAREN
      {
-           $$ = new yy.MkeventExpr (@1.first_line, $3);
+           $$ = new yy.PromiseExpr (@1.first_line, $3);
      }
      ;
 
@@ -178,7 +178,7 @@ Statement
      | WhileStatement
      | DoWhileStatement
      | IfStatement
-     | TwaitStatement
+     | AwaitStatement
      | LabeledStatement
      | ReturnStatement
      | BreakStatement
@@ -345,10 +345,10 @@ FunctionDeclaration
      }
      ;
 
-TwaitStatement
-     : TWAIT Statement
+AwaitStatement
+     : AWAIT Statement
      {
-        $$ = new yy.TwaitStatement (@1.first_line, $2);
+        $$ = new yy.AwaitStatement (@1.first_line, $2);
      }
      ;
 

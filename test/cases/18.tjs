@@ -9,9 +9,9 @@ exports["test do..while..."] = {
     run : function (cb) {
 	    var i = 0;	
 	    do {
-	        twait { 
-		        setTimeout (mkevent (), 1); 
-		        setTimeout (mkevent (), 2); 
+	        await { 
+		        setTimeout (promise (), 1); 
+		        setTimeout (promise (), 2); 
 	        }
 	        slots[i] = 1;
 	        i++;

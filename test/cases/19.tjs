@@ -11,8 +11,8 @@ exports["test with{} statements"] = {
 
         with (env) {
             while (i < n) {
-	            twait { 
-		            setTimeout (mkevent (), 3*Math.random ()); 
+	            await { 
+		            setTimeout (promise (), 3*Math.random ()); 
                 }
                 sum += i;
                 i++;

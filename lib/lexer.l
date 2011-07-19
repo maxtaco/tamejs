@@ -17,9 +17,9 @@
 <INITIAL>"else"		return 'ELSE';
 <INITIAL>"try"		return 'TRY';
 <INITIAL>"catch"	return 'CATCH';
-<INITIAL>"twait"	return 'TWAIT';
+<INITIAL>"await"	return 'AWAIT';
 <INITIAL>"function"	return 'FUNCTION';
-<INITIAL>"mkevent"	return 'MKEVENT';
+<INITIAL>"promise"	return 'PROMISE';
 <INITIAL>"finally"	return 'FINALLY';
 <INITIAL>"case"		return 'CASE';
 <INITIAL>"switch"	return 'SWITCH';

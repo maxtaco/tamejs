@@ -8,7 +8,7 @@ exports["a test of return"] = {
     run : function (cb) {
 	
 	while (i < n + 4) {
-	    twait { setTimeout (mkevent (), 10 * Math.random ()); }
+	    await { setTimeout (promise (), 10 * Math.random ()); }
 	    i++;
 	    if (i == n) {
 		cb ();

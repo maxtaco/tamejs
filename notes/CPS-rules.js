@@ -22,7 +22,7 @@ CPS[ l : while (e) { b }  ] = function (k) {
 
 // See event.js for what the event does.  It's a pure-javascript
 // doo-hickey.
-CPS[ twait { b } k ] = {
+CPS[ await { b } k ] = {
     var __ev = new Event ();
     var __f1 = CPS[b];
     var __f2 = CPS[k];

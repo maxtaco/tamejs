@@ -18,7 +18,7 @@ function Case (index, nm, file) {
 	    var ret = true;
 	    var x = require ("../" + this._file);
 	    for (var c in x) {
-	        twait { x[c].run (mkevent ());}
+	        await { x[c].run (promise ());}
 	        try { 
 		        x[c].check ();
 		        console.log (this._nm + ": passed");
@@ -41,11 +41,11 @@ function TamedCase (index, prfx, infile, outfile) {
         var fs = require ('fs');
         var Engine = require ('../lib/engine').Engine;
         var engine = new Engine (this._infile);
-        twait { engine.readInput (mkevent ()); }
+        await { engine.readInput (promise ()); }
 	    engine.parse ();
 	    var outdat = engine.compile ().formatOutput ();
         var res = [];
-        twait { fs.writeFile (this._file, outdat, mkevent (res)); }
+        await { fs.writeFile (this._file, outdat, promise (res)); }
 	    if (res[0]) throw res[0];
         ev();
     };
@@ -63,7 +63,7 @@ function read_cases (ev) {
     var tests = [];
     var res = [];
     var prfx = "test/cases/";
-    twait { fs.readdir ('test/cases/', mkevent (res)); }
+    await { fs.readdir ('test/cases/', promise (res)); }
     var err = res[0];
     var files = res[1];
     if (err) throw err;
@@ -89,15 +89,15 @@ function read_cases (ev) {
 
 function do_cases (ev) {
     var res = [];
-    twait { read_cases (mkevent (res)); }
+    await { read_cases (promise (res)); }
     var cases = res[0];
     var tot = 0;
     var good = 0;
     for (var i in cases) {
-	    twait { cases[i].compile (mkevent ()); }
+	    await { cases[i].compile (promise ()); }
 	    var res = [];
 	    tot++;
-	    twait { cases[i].run (mkevent(res)); }
+	    await { cases[i].run (promise(res)); }
 	    if (res[0]) {
 	        good ++;
 	    }
@@ -110,6 +110,6 @@ function do_cases (ev) {
     ev();
 };
 
-twait { do_cases (mkevent ()); }
+await { do_cases (promise ()); }
 
 

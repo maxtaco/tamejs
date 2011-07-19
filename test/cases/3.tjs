@@ -10,7 +10,7 @@ exports["break and continue"] = {
 	    var i = 0;
 	    while (1) {
 	        slots[i] = 0;
-	        twait { setTimeout (mkevent (), 1); }
+	        await { setTimeout (promise (), 1); }
             
 	        if (i == skip) {
 		        i++;
