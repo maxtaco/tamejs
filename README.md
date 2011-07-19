@@ -309,7 +309,7 @@ is a `timeout`, given here:
 
 #### connectors.timeout(cb, time, res = [])
 
-Timeout an arbitrary blocking operation.
+Timeout an arbitrary async operation.
 
 Given a callback `cb`, a time to wait `time`, and an array to output a
 result `res`, return another callback.  This connector will set up a
