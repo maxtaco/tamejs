@@ -307,7 +307,7 @@ A *connector* is a *tamejs* function that takes as input
 a callback, and outputs another callback.   The best example 
 is a `timeout`, given here:
 
-#### connectors.timeout(cb, time, res = []);
+#### connectors.timeout(cb, time, res = [])
 
 Given a callback `cb`, a time to wait `time`, and an array to output
 a result `res`, return another callback.  This connector
