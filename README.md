@@ -495,16 +495,18 @@ sections.  Check it out, if you like this sample code:
 ```html
 <table>
 {% 
-   rows = [ [ "dog", "cat"], ["parrot", "sparrow"] ];
-   foreach (var row in rows) {{
-       <tr>
-       {% 
-           foreach (var col in row) {{
-               <td>%{col}</td>
-           }} 
+  foreach (match in matches) {
+    if (match.score > 60) {{<div>Excellent Match (%{match.score})</div>}}
+    else                  {{<div>Crap Match  (%{match.score})</div>}}
+    foreach (friend in match.friends) {{
+      <p>
+        Has a friend named %{friend.name}
+        {%
+          if (friend.gender == "f") {{ and she's a girl }}
         %}
-        </tr>
+      </p>
     }}
+  }
 %}
 </table>
 ```
