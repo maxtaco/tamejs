@@ -492,26 +492,21 @@ Related Projects & Plugs
 templating engine.  But it allows arbtirarily nested code and output
 sections.  Check it out, if you think that:
 
-```html
-{% for (var i = 0; i < 10; i++) {{
-   Counting ... %{i}
-   {% if (i % 2 == 0) {{ ... is even ... }}
-      else            {{ ... is odd .....}}
-   %}
-}} %}
-```
+   {% for (var i = 0; i < 10; i++) {{
+      Counting ... %{i}
+      {% if (i % 2 == 0) {{ ... is even ... }}
+         else            {{ ... is odd .....}}
+      %}
+   }} %}
 
 is better than:
 
-```html
-<% for (var i = 0; i < 10; i++) { %>
-   Counting ... <%= i %>
-   <% if (i % 2 == 0) { %> ... is even ...
-   <% } else { %> ... is odd .. 
+   <% for (var i = 0; i < 10; i++) { %>
+      Counting ... <%= i %>
+      <% if (i % 2 == 0) { %> ... is even ...
+      <% } else { %> ... is odd .. 
+      <% } %>
    <% } %>
-<% } %>
-```
-
 
 
 Also Available In C++!
