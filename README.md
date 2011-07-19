@@ -251,7 +251,7 @@ If `mkevent` sees that it's passed on parameter, and that parameter
 happens to be an empty array, it will choose this mode of operation.
 
 
-## tame.Rendezvous
+### tame.Rendezvous
 
 The `Rendezvous` is a not a core *tamejs* feature, meaning it's written as a 
 straight-ahead JavaScript library.  It's quite useful for more advances
@@ -300,6 +300,42 @@ for (var i in hosts) {
 twait { rv.wait (which); }
 console.log (hosts[which] + " -> " + arr[which][1]);
 ```
+
+### connectors
+
+A *connector* is a *tamejs* function that takes as input
+a callback, and outputs another callback.   The best example 
+is a `timeout`, given here:
+
+#### connectors.timeout(cb, time, res = []);
+
+Given a callback `cb`, a time to wait `time`, and an array to output
+a result `res`, return another callback.  This connector
+will set up a race between the callback returned to the caller,
+and the timer that fires after `time` milliseconds.  If the
+callback returns to the caller fires first, then fill `res[0] = true;`
+and if the timer won (i.e., if there was a timeout), then 
+fill `res[0] = false;`.
+
+In the following example, we timeout a DNS lookup after 100ms:
+
+```javascript
+require ('tamejs').register (); // since connectors is a tamed library...
+var connectors = require ('tamejs/lib/connectors');
+var info = [];
+var host = "pirateWarezSite.ru";
+twait { 
+    dns.lookup (host, connectors.timeout (mkevent (var err, ip), 100, info));
+}
+if (!info[0]) {
+    console.log (host + ": timed out!");
+} else if (err) {
+    console.log (host + ": error: " + err);
+} else {
+    console.log (host + " -> " + ip);
+}
+```
+
 
 
 How It's Implemented In JavaScript
