@@ -490,28 +490,24 @@ Related Projects & Plugs
 
 [pubjs](https://github.com/maxtaco/pubjs) is yet another a node.js
 templating engine.  But it allows arbtirarily nested code and output
-sections.  Check it out, if you think that:
+sections.  Check it out, if you like this sample code:
 
-```php
-{% for (var i = 0; i < 10; i++) {{
-   Counting ... %{i}
-   {% if (i % 2 == 0) {{ ... is even ... }}
-      else            {{ ... is odd .....}}
-   %}
-}} %}
+```html
+<table>
+{% 
+   rows = [ [ "dog", "cat"], ["parrot", "sparrow"] ];
+   foreach (var row in rows) {{
+       <tr>
+       {% 
+           foreach (var col in row) {{
+               <td>%{col}</td>
+           }} 
+        %}
+        </tr>
+    }}
+%}
+</table>
 ```
-
-is better than:
-
-```php
-<% for (var i = 0; i < 10; i++) { %>
-   Counting ... <%= i %>
-   <% if (i % 2 == 0) { %> ... is even ...
-   <% } else { %> ... is odd .. 
-   <% } %>
-<% } %>
-```
-
 
 
 Also Available In C++!
