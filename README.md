@@ -199,18 +199,107 @@ require ('tamejs').register (); // register the *.tjs suffix
 require ("mylib.tjs");          // then use node.js's import as normal
 ```
 
-ToDos
-------
-See the github issue tracker for the more immediate issues.
+API and Documentation
+---------------------
 
-* Documentation
-     * Change mkevent to something else?
-* Optimizations
-     * Can passThrough blocks in a tamed function that don't have twaits,
-so can get more aggressive here --- in progress, but can still
-seek out some more optimizations....
-* Parsing
-     * Switch to uglify's parser
+### mkevent
+
+`mkevent` can be called in one of three ways.  
+
+
+## Inline Variable Declaration
+
+The first allows for inline declaration of the callback slot
+variables:
+
+```javascript
+
+twait { dns.resolve ("okcupid.com", mkevent (var err, ip)); }
+
+```
+
+In the tamed output code, the variables `err` and `ip` will be
+declared right before the start of the `twait` block that contains them.
+
+
+## Generic LHS Assignment
+
+The second approach does not auto-declare the callback slot variables, but
+allows more flexibility:
+
+```javascript
+var d = {};
+var err = [];
+twait { dns.resolve ("okcupid.com", mkevent (err[0], d.ip)); }
+```
+This second version allows anything you'd normally put on the
+left-hand side of an assignment.
+
+## Variadic Return
+
+If you callback function might return an arbitrary number of elements,
+`mkevent` has a third mode that allows for variadic return:
+
+```javascript
+var arr = []
+twait { dns.resolve ("okcupid.com", mkevent (arr)); }
+var err = arr[0];
+var ip = arr[1];
+```
+
+If `mkevent` sees that it's passed on parameter, and that parameter
+happens to be an empty array, it will choose this mode of operation.
+
+
+### tame.Rendezvous
+
+The `Rendezvous` is a not a core *tamejs* feature, meaning it's written as a 
+straight-ahead JavaScript library.  It's quite useful for more advances
+control flows, so we've included it in the main runtime library.
+
+The `Rendezvous` is similar to a blocking condition variable (or a
+"Hoare sytle monitor") in threaded programming.
+
+## tame.Rendezvous.mkev(id,arr)
+
+This is the `Rendezvous` equivalent of the `mkevent` built-in, but
+shortened so it doesn't confuse the *tamejs* compiler.  It takes two
+arguments, the event "ID" that the programmer is going to use to
+idenitify this event later on, and also a empty array to return values
+from the callback.  Thus, the `Rendezvous` only works in the third
+style of built-in `mkevent` call above, with variadic return.
+
+As with `mkevent`, the return value of `Rendezvous.mkev` is fed
+to function expecting a callback.  As soon as that callback fires,
+the slots of `arr` will be filled with the arguments to that callback.
+
+## tame.Rendezvous.wait (cb)
+
+Wait until the next event is fired.  When it is, callback `cb`
+with the ID of the event that fired.  If an unclaimed event fired
+before `wait` was called, then `cb` is fired immediately. 
+
+Though `wait` would work with any hand-rolled JS function expecting
+a callback, it's meant to work particularly well with *tamejs*'s
+`twait` function.
+
+## Example
+
+Here is an example that shows off the different inputs and 
+outputs of a `Rendezvous`.  It does two parallel DNS lookups,
+and reports only when the first returns:
+
+```javascript
+var hosts = [ "okcupid.com", "google.com" ];
+var arr = [ [], [] ];
+var which;
+var rv = new tame.Rendezvous ();
+for (var i in hosts) {
+    dns.resolve (hosts[i], rv.mkev (i, arr[i]));
+}
+twait { rv.wait (which); }
+console.log (hosts[which] + " -> " + arr[which][1]);
+```
 
 
 How It's Implemented In JavaScript
@@ -299,6 +388,19 @@ while (true) { twait { setTimeout (mkevent (), 1); i++; } }
 will **not** overflow the runtime stack, since the stack is unwound every
 iteration through the loop (via `setTimeout`). And these are the types
 of programs that you should be using `twait` for.
+
+ToDos
+------
+See the github issue tracker for the more immediate issues.
+
+* Documentation
+     * Change mkevent to something else?
+* Optimizations
+     * Can passThrough blocks in a tamed function that don't have twaits,
+so can get more aggressive here --- in progress, but can still
+seek out some more optimizations....
+* Parsing
+     * Switch to uglify's parser?  Would have to slightly modify it.
 
 History
 -------
