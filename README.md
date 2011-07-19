@@ -207,7 +207,7 @@ API and Documentation
 `mkevent` can be called in one of three ways.  
 
 
-## Inline Variable Declaration
+#### Inline Variable Declaration
 
 The first allows for inline declaration of the callback slot
 variables:
@@ -222,7 +222,7 @@ In the tamed output code, the variables `err` and `ip` will be
 declared right before the start of the `twait` block that contains them.
 
 
-## Generic LHS Assignment
+#### Generic LHS Assignment
 
 The second approach does not auto-declare the callback slot variables, but
 allows more flexibility:
@@ -235,7 +235,7 @@ twait { dns.resolve ("okcupid.com", mkevent (err[0], d.ip)); }
 This second version allows anything you'd normally put on the
 left-hand side of an assignment.
 
-## Variadic Return
+#### Variadic Return
 
 If you callback function might return an arbitrary number of elements,
 `mkevent` has a third mode that allows for variadic return:
@@ -251,7 +251,7 @@ If `mkevent` sees that it's passed on parameter, and that parameter
 happens to be an empty array, it will choose this mode of operation.
 
 
-### tame.Rendezvous
+## tame.Rendezvous
 
 The `Rendezvous` is a not a core *tamejs* feature, meaning it's written as a 
 straight-ahead JavaScript library.  It's quite useful for more advances
@@ -260,7 +260,7 @@ control flows, so we've included it in the main runtime library.
 The `Rendezvous` is similar to a blocking condition variable (or a
 "Hoare sytle monitor") in threaded programming.
 
-## tame.Rendezvous.mkev(id,arr)
+#### tame.Rendezvous.mkev(id,arr)
 
 This is the `Rendezvous` equivalent of the `mkevent` built-in, but
 shortened so it doesn't confuse the *tamejs* compiler.  It takes two
@@ -273,7 +273,7 @@ As with `mkevent`, the return value of `Rendezvous.mkev` is fed
 to function expecting a callback.  As soon as that callback fires,
 the slots of `arr` will be filled with the arguments to that callback.
 
-## tame.Rendezvous.wait (cb)
+#### tame.Rendezvous.wait (cb)
 
 Wait until the next event is fired.  When it is, callback `cb`
 with the ID of the event that fired.  If an unclaimed event fired
@@ -283,7 +283,7 @@ Though `wait` would work with any hand-rolled JS function expecting
 a callback, it's meant to work particularly well with *tamejs*'s
 `twait` function.
 
-## Example
+#### Example
 
 Here is an example that shows off the different inputs and 
 outputs of a `Rendezvous`.  It does two parallel DNS lookups,
