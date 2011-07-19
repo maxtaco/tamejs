@@ -309,13 +309,14 @@ is a `timeout`, given here:
 
 #### connectors.timeout(cb, time, res = [])
 
-Given a callback `cb`, a time to wait `time`, and an array to output
-a result `res`, return another callback.  This connector
-will set up a race between the callback returned to the caller,
-and the timer that fires after `time` milliseconds.  If the
-callback returns to the caller fires first, then fill `res[0] = true;`
-and if the timer won (i.e., if there was a timeout), then 
-fill `res[0] = false;`.
+Timeout an arbitrary blocking operation.
+
+Given a callback `cb`, a time to wait `time`, and an array to output a
+result `res`, return another callback.  This connector will set up a
+race between the callback returned to the caller, and the timer that
+fires after `time` milliseconds.  If the callback returned to the
+caller fires first, then fill `res[0] = true;`.  If the timer won
+(i.e., if there was a timeout), then fill `res[0] = false;`.
 
 In the following example, we timeout a DNS lookup after 100ms:
 
