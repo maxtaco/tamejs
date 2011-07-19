@@ -1,0 +1,43 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+var slots = {};
+var n = 10;
+var assert = require ("assert");
+require ('tamejs').register ();
+var connectors = require ('../../lib/connectors.tjs')
+
+var results = [];
+var animals = [];
+
+function slowGuy (tm, str, cb) {
+    twait { setTimeout (mkevent (), tm); }
+    cb (str);
+};
+
+exports["test timeout connectors"] = {
+    
+    run : function (cb) {
+	var info = [];
+
+	twait { 
+	    slowGuy (1, "dog",
+		     connectors.timeout (mkevent (animals[0]), 100, info));
+	}
+	results[0] = info[0];
+
+	animals[1];
+	twait { 
+	    slowGuy (100, "cat",
+		     connectors.timeout (mkevent (animals[1]), 1, info));
+	}
+	results[1] = !info[1];
+	cb();
+    },
+    
+    check : function () {
+	assert.ok (results[0], "first case didn't timeout");
+	assert.ok (results[1], "first case did timeout");
+	assert.ok (animals[0] == "dog", "first case is a dog");
+	assert.ok (!animals[1], "second case is a un-assigned");
+    }
+};
