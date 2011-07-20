@@ -349,6 +349,33 @@ if (!info[0]) {
 }
 ```
 
+### capture (..) {...}
+
+As described above, in our `Rendezvous` example, a `capture` environment
+is syntactic sugar to solve unfortunate JavaScript scoping issues.  With
+code like this:
+
+```javascript
+for (var i in hosts) {
+    capture (i) {
+       dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
+    }
+}
+```
+
+We need to be careful about when the value of an iterator `i` is bound.
+We would like it to be fixed at the time of the pledge creation, and
+not at the time of the pledge fulfillment.  The `capture` environment is
+that, and is just syntactic sugar for the JavaScript:
+
+```javascript
+for (var i in hosts) {
+    (function (i) {
+       dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
+    })(i);
+}
+```
+
 
 
 How It's Implemented In JavaScript
