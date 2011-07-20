@@ -297,14 +297,16 @@ and reports only when the first returns:
 
 ```javascript
 var hosts = [ "okcupid.com", "google.com" ];
-var arr = [ [], [] ];
-var which;
+var ips = [ ], errs = [];
 var rv = new tame.Rendezvous ();
 for (var i in hosts) {
-    dns.resolve (hosts[i], rv.mkev (i, arr[i]));
+    (function (i) {
+       dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
+    })(i);
 }
+var which;
 await { rv.wait (which); }
-console.log (hosts[which] + " -> " + arr[which][1]);
+console.log (hosts[which] + " -> " + ips[which]);
 ```
 
 ### connectors
