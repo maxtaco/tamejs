@@ -14,7 +14,7 @@ function Class () {
         this._u = [];
         for (var i in this._v) {
             this._u.push (this._v[i]);
-            await { setTimeout (promise (), 10*Math.random ()); }
+            await { setTimeout (pledge (), 10*Math.random ()); }
         }
         cb ();
     };
@@ -30,7 +30,7 @@ var obj = new Class ();
 exports["a test of for (var i in this._foo)"] = { 
 
     run : function (cb) {
-        await { obj.run (promise ()); }
+        await { obj.run (pledge ()); }
         cb ();
     },
 

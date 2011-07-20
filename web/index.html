@@ -141,32 +141,32 @@ handleVisit : function(angel, buffy) {
 <pre class="prettyprint lang-js">
 var res1, res2;
 await {
-	doOneThing(promise(res1));
-	andAnother(promise(res2));
+	doOneThing(pledge(res1));
+	andAnother(pledge(res2));
 }
 thenDoSomethingWith(res1, res2);
 </pre>
 
 				<p>
-					As shown above, Tame introduces 2 keywords, <span class="code_term">await</span> and <span class="code_term">promise</span> (short for "make event"). They are used in tandem.
+					As shown above, Tame introduces 2 keywords, <span class="code_term">await</span> and <span class="code_term">pledge</span> (short for "make event"). They are used in tandem.
 				</p>
 
 				<p>
 					<span class="code_term">await</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.  
 					Only once all relevant events
 					inside a <span class="code_term">await</span> block have finished does control continue past it.
-					<span class="code_term">promise</span> lets <span class="code_term">await</span> know which events to wait for.  <span class="code_term">promise</span> 
+					<span class="code_term">pledge</span> lets <span class="code_term">await</span> know which events to wait for.  <span class="code_term">pledge</span> 
 					returns an anonymous function that you give to your async functions as a callback.   Such an async function tells <span class="code_term">await</span> 
-					that the expected event has occurred by calling its <span class="code_term">promise</span>-generated callback.
+					that the expected event has occurred by calling its <span class="code_term">pledge</span>-generated callback.
 				</p>
 				<p>
-					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">promise</span>, and they'll
+					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">pledge</span>, and they'll
 					be available after the <span class="code_term">await</span> block completes.
 				</p>
 				<p>
 					(For language geeks: <span class="code_term">await</span> is the only new addition to JavaScript language semantics here.  It takes the current program
 					continuation and stores it in a hidden JavaScript object. 
-					<span class="code_term">promise</span> is syntactic sugar that calls into the hidden object. If an event is the last outstanding event 
+					<span class="code_term">pledge</span> is syntactic sugar that calls into the hidden object. If an event is the last outstanding event 
 					in its parent <span class="code_term">await</span> block, it reactivates the stored program continuation.)
 				</p>
 				<p>
@@ -174,22 +174,22 @@ thenDoSomethingWith(res1, res2);
 				</p>
 <pre class="prettyprint lang-js">
 for (var i = 0; i < 10; i++) {
-	await { setTimeout (promise (), 100); }
+	await { setTimeout (pledge (), 100); }
 	console.log ("Hello world! " + i);
 }
 </pre>				
 				<p>
 					The above code prints "Hello world" 10 times, separated by 100ms. The code looks and feels like threaded code, but it uses preexisting async-style functions.
 					To be clear: this is the setTimeout you know and love, <i>unmodified</i>. TameJS works with all existing async code.
-					setTimeout is expecting a function to execute, and that's what promise() is providing.
+					setTimeout is expecting a function to execute, and that's what pledge() is providing.
 				</p>
 				<p>
 					What happens if we put two <span class="code_term">setTimeout</span> calls inside one await?
 <pre class="prettyprint lang-js">
 for (var i = 0; i < 10; i++) {
 	await { 
-		setTimeout (promise (), 10); 
-		setTimeout (promise (), 100); 
+		setTimeout (pledge (), 10); 
+		setTimeout (pledge (), 100); 
 	}
 	console.log ("Hello world! " + i);
 }
@@ -206,8 +206,8 @@ for (var i = 0; i < 10; i++) {
 var message = "I'm starting to get turned on.";
 await { 
 	for (var i = 0; i < 10; i++) {
-		setTimeout (promise (), 10); 
-		setTimeout (promise (), 100); 
+		setTimeout (pledge (), 10); 
+		setTimeout (pledge (), 100); 
 	}
 }
 console.log (message);
@@ -216,13 +216,13 @@ console.log (message);
 
 
 				<p>
-					In practice your async functions call back with information, and you want <span class="code_term">promise</span> to collect that information.
+					In practice your async functions call back with information, and you want <span class="code_term">pledge</span> to collect that information.
 					Let's use Node's <span class="code_term">dns.resolve</span> function:
 				</p>
 <pre class="prettyprint lang-js">
 var err, ip;
 await { 
-	dns.resolve (host, "A", promise (err, ip));
+	dns.resolve (host, "A", pledge (err, ip));
 }
 if (err) { console.log ("ERROR! " + err); } 
 else { console.log (host + " -> " + ip); }
@@ -230,7 +230,7 @@ else { console.log (host + " -> " + ip); }
 
 				<p>
 					Notice that <span class="code_term">dns.resolve</span> is expecting a third parameter, a function
-					to call with its result. <span class="code_term">promise</span> provides a function that collects
+					to call with its result. <span class="code_term">pledge</span> provides a function that collects
 					the results into <span class="code_term">err</span> and <span class="code_term">ip</span>.
 				</p>
 				<p>
@@ -238,7 +238,7 @@ else { console.log (host + " -> " + ip); }
 				</p>
 <pre class="prettyprint lang-js">
 await { 
-	dns.resolve (host, "A", promise (var err, ip));
+	dns.resolve (host, "A", pledge (var err, ip));
 }
 </pre>
 
@@ -252,7 +252,7 @@ var dns = require("dns");
 
 function do_one (ev, host) {
     await { 
-    	dns.resolve (host, "A", promise (var err, ip));
+    	dns.resolve (host, "A", pledge (var err, ip));
     }
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
@@ -262,7 +262,7 @@ function do_one (ev, host) {
 function do_all (lst) {
     await {
         for (var i = 0; i < lst.length; i++) {
-            do_one (promise (), lst[i]);
+            do_one (pledge (), lst[i]);
         }
     }
 };
@@ -285,7 +285,7 @@ okcupid.com -> 66.59.66.6
 function do_all (lst) {
     for (var i = 0; i < lst.length; i++) {
         await {
-            do_one (promise (), lst[i]);
+            do_one (pledge (), lst[i]);
         }
     }
 }
@@ -304,9 +304,9 @@ handleVisit : function(angel, buffy) {
 	//
 
 	await {
-		getScore (angel, buffy, promise(var score));
-		getNextMatch (angel, buffy, promise(var next));
-		recordVisitAndGetInfo (angel, buffy, promise(var vinfo));
+		getScore (angel, buffy, pledge(var score));
+		getNextMatch (angel, buffy, pledge(var next));
+		recordVisitAndGetInfo (angel, buffy, pledge(var vinfo));
 	}
 
 	//
@@ -367,24 +367,24 @@ huntMen : function(buffy) {
  
       // Get 10 candidates for Buffy  
       await {  
-        getMatches(buffy, 10, promise(var userids));
+        getMatches(buffy, 10, pledge(var userids));
       }
   
       for (var i = 0; i < userids.length; i++) {
         var u = userids[i];
         await {
           // get their pic from our pic server
-          getThumbnail  (u, promise(var thumb));
+          getThumbnail  (u, pledge(var thumb));
         }
         await {
           // ask our pic analyzer to review
-          isPicAVampire(thumb, promise(var is_vamp));
+          isPicAVampire(thumb, pledge(var is_vamp));
         }
         if (! is_vamp) {
           await {
             // get 2 more pieces of info
-            getPersonality(u, promise(var personality));
-            getLastTalked (u, match, promise(var last_talked));
+            getPersonality(u, pledge(var personality));
+            getLastTalked (u, match, pledge(var last_talked));
           }
           soulmates.push({
             "userid" : match,
@@ -494,7 +494,7 @@ node &lt;outfile&gt; # or whatever you want
 					In Tame it's very simple:
 				</p>
 <pre class="prettyprint lang-js">
-await fs.readFile (__filename, promise (var err, text)); 
+await fs.readFile (__filename, pledge (var err, text)); 
 if (err) { throw (err): }
 console.log (text.toUpperCase ());
 </pre>					
@@ -542,8 +542,8 @@ Step(
 				</p>
 <pre class="prettyprint lang-js">
 await { 
-   fs.readFile (__filename, promise (var e1, code));
-   fs.readFile ("/etc/password", promise (var e2, users)); 
+   fs.readFile (__filename, pledge (var e1, code));
+   fs.readFile ("/etc/password", pledge (var e2, users)); 
 }
 if (e1) throw e1;
 if (e2) throw e2;
@@ -565,7 +565,7 @@ console.log (users);
 				<p class="answer">
 					Yes - it's also a translation of JS and seems to use a similar compilation technique, and we think it's more evidence that the Node
 					community needs something on top of JS. However, we see several advantages to the Tame approach.  First off, it's 
-					simpler: just two new keywords (<span class="code_term">await</span> and <span class="code_term">promise</span>), only
+					simpler: just two new keywords (<span class="code_term">await</span> and <span class="code_term">pledge</span>), only
 					the former of which is a true language addition (the latter being syntactic sugar).  
 					Second, it's more powerful, allowing arbitrary parallelism, not just two-way parallelism
 					with <span class="code_term">waitfor..or</span>.  Finally, it's easier to integrate: traditional JS code can call tamed code, and vice-versa,
@@ -590,7 +590,7 @@ try {
                                         the call stack.  Not surprisingly, this tamed version exhibits the same behavior:
 <pre class="prettyprint lang-js">
 try {
-   await setTimeout (promise (), 10);
+   await setTimeout (pledge (), 10);
    throw new Error ("XX");
 } catch (e) {
    console.log ("Caught: " + e);

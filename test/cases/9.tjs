@@ -4,7 +4,7 @@ var assert = require ("assert");
 var res = 0;
 
 function foo (cb) {
-    await { setTimeout (promise (), 10 * Math.random ()); }
+    await { setTimeout (pledge (), 10 * Math.random ()); }
     res++;
     cb();
 };
@@ -12,7 +12,7 @@ function foo (cb) {
 exports["parser variations"] = {
     
     run : function (cb) {
-	    if (true) await foo (promise ());
+	    if (true) await foo (pledge ());
 	    res++;
 	    cb();
     },

@@ -21,17 +21,17 @@ slots in between:
 
 ```javascript  
 for (var i = 0; i < 10; i++) {
-    await { setTimeout (promise (), 100); }
+    await { setTimeout (pledge (), 100); }
     console.log ("hello");
 }
 ```
 
 There is one new language addition here, the `await { ... }` block,
-and also one new primitive function, `promise`.  The two of them work
-in concert.  Within the context of a `await` block, `promise` returns
+and also one new primitive function, `pledge`.  The two of them work
+in concert.  Within the context of a `await` block, `pledge` returns
 anonymous callback functions associated with that block.  A function
 must "wait" at the close of a `await` block until all callbacks made
-by `promise` in that `await` block are called.  In the code above,
+by `pledge` in that `await` block are called.  In the code above,
 there is only one callback produced in each iteration of the loop, so
 after it's called by `setTimer` in 100ms, control continues past the
 `await` block, onto the log line, and back to the next iteration of
@@ -47,8 +47,8 @@ does progress continue...
 ```javascript
 for (var i = 0; i < 10; i++) {
     await { 
-        setTimeout (promise (), 100); 
-        setTimeout (promise (), 10); 
+        setTimeout (pledge (), 100); 
+        setTimeout (pledge (), 10); 
     }
     console.log ("hello");
 }
@@ -62,7 +62,7 @@ var dns = require("dns");
 
 function do_one (ev, host) {
     var err, ip;
-    await { dns.resolve (host, "A", promise (err, ip));}
+    await { dns.resolve (host, "A", pledge (err, ip));}
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
     ev();
@@ -71,7 +71,7 @@ function do_one (ev, host) {
 function do_all (lst) {
     await {
         for (var i = 0; i < lst.length; i++) {
-            do_one (promise (), lst[i]);
+            do_one (pledge (), lst[i]);
         }
     }
 }
@@ -99,7 +99,7 @@ order of the `await` and `for` statements above:
 function do_all (lst) {
     for (var i = 0; i < lst.length; i++) {
         await {
-            do_one (promise (), lst[i]);
+            do_one (pledge (), lst[i]);
         }
     }
 }
@@ -110,7 +110,7 @@ Slightly More Advanced Example
 
 We've shown parallel and serial work flows, what about something in
 between?  For instance, we might want to make progress in parallel on
-our DNS lookups, but not smash the server all at once. A compromise is
+our DNS lookups, but not smash the server all at once. A compledge is
 windowing, which can be achieved in *tamejs* conveniently in a number
 of different ways.  The [2007 academic paper on
 tame](http://pdos.csail.mit.edu/~max/docs/tame.pdf) suggests a
@@ -131,7 +131,7 @@ function do_all (lst, windowsz) {
             nsent++;
         } else {
             var evid;
-            await { rv.wait (promise (evid)); }
+            await { rv.wait (pledge (evid)); }
             console.log ("got back lookup nsent=" + evid);
             nrecv++;
         }
@@ -143,7 +143,7 @@ This code maintains two counters: the number of requests sent, and the
 number received.  It keeps looping until the last lookup is received.
 Inside the loop, if there is room in the window and there are more to
 send, then send; otherwise, wait and harvest.  `Rendezvous.mkev` makes
-an event much like the `promise` primitive, but it also takes a first
+an event much like the `pledge` primitive, but it also takes a first
 argument that associates an idenitifer with the event fired.  This
 way, the waiter can know which event he's getting back.  In this case
 we use the variable `nsent` as the event ID --- it's the ID of this
@@ -170,10 +170,10 @@ function f(cb) {
     await {
         for (var i = 0; i < n; i++) {
             (function (cb) {
-                await { setTimeout (promise (), 5*Math.random ()); }
-                await { setTimeout (promise (), 4*Math.random ()); }
+                await { setTimeout (pledge (), 5*Math.random ()); }
+                await { setTimeout (pledge (), 4*Math.random ()); }
                 cb();
-             })(promise ());
+             })(pledge ());
         }
     }
     cb();
@@ -202,9 +202,9 @@ require ("mylib.tjs");          // then use node.js's import as normal
 API and Documentation
 ---------------------
 
-### promise
+### pledge
 
-`promise` can be called in one of three ways.  
+`pledge` can be called in one of three ways.  
 
 
 #### Inline Variable Declaration
@@ -214,7 +214,7 @@ variables:
 
 ```javascript
 
-await { dns.resolve ("okcupid.com", promise (var err, ip)); }
+await { dns.resolve ("okcupid.com", pledge (var err, ip)); }
 
 ```
 
@@ -230,7 +230,7 @@ allows more flexibility:
 ```javascript
 var d = {};
 var err = [];
-await { dns.resolve ("okcupid.com", promise (err[0], d.ip)); }
+await { dns.resolve ("okcupid.com", pledge (err[0], d.ip)); }
 ```
 This second version allows anything you'd normally put on the
 left-hand side of an assignment.
@@ -238,16 +238,16 @@ left-hand side of an assignment.
 #### Variadic Return
 
 If you callback function might return an arbitrary number of elements,
-`promise` has a third mode that allows for variadic return:
+`pledge` has a third mode that allows for variadic return:
 
 ```javascript
 var arr = []
-await { dns.resolve ("okcupid.com", promise (arr)); }
+await { dns.resolve ("okcupid.com", pledge (arr)); }
 var err = arr[0];
 var ip = arr[1];
 ```
 
-If `promise` sees that it's passed on parameter, and that parameter
+If `pledge` sees that it's passed on parameter, and that parameter
 happens to be an empty array, it will choose this mode of operation.
 
 
@@ -262,14 +262,14 @@ The `Rendezvous` is similar to a blocking condition variable (or a
 
 #### tame.Rendezvous.mkev(id,arr)
 
-This is the `Rendezvous` equivalent of the `promise` built-in, but
+This is the `Rendezvous` equivalent of the `pledge` built-in, but
 shortened so it doesn't confuse the *tamejs* compiler.  It takes two
 arguments, the event "ID" that the programmer is going to use to
 idenitify this event later on, and also a empty array to return values
 from the callback.  Thus, the `Rendezvous` only works in the third
-style of built-in `promise` call above, with variadic return.
+style of built-in `pledge` call above, with variadic return.
 
-As with `promise`, the return value of `Rendezvous.mkev` is fed
+As with `pledge`, the return value of `Rendezvous.mkev` is fed
 to function expecting a callback.  As soon as that callback fires,
 the slots of `arr` will be filled with the arguments to that callback.
 
@@ -325,7 +325,7 @@ require ('tamejs').register (); // since connectors is a tamed library...
 var timeout = require ('tamejs/lib/connectors').timeout;
 var info = [];
 var host = "pirateWarezSite.ru";
-await { dns.lookup (host, timeout (promise (var err, ip), 100, info)); }
+await { dns.lookup (host, timeout (pledge (var err, ip), 100, info)); }
 if (!info[0]) {
     console.log (host + ": timed out!");
 } else if (err) {
@@ -352,7 +352,7 @@ time is right (i.e., when all relevant events have completed).
 For example, the simple program:
 
 ```javascript
-if (true) { await { setTimeout (promise (), 100); } }
+if (true) { await { setTimeout (pledge (), 100); } }
 ```
 
 Is rewritten to something like the following (which has been hand-simplified
@@ -363,7 +363,7 @@ var tame = require('tamejs').runtime;
 var f0 = function (k) {
     var f1 = function (k) {
         var __ev = new tame.Event (k);
-        setTimeout ( __ev.promise(), 100 ) ;
+        setTimeout ( __ev.pledge(), 100 ) ;
     };
     if (true) {
         f1 (k);
@@ -417,7 +417,7 @@ some asynchronous event, like a timer fired, a packet arrival, or a
 user action.  Programs like these:
 
 ```javascript
-while (true) { await { setTimeout (promise (), 1); i++; } }
+while (true) { await { setTimeout (pledge (), 1); i++; } }
 ```
 
 will **not** overflow the runtime stack, since the stack is unwound every
@@ -429,7 +429,7 @@ ToDos
 See the github issue tracker for the more immediate issues.
 
 * Documentation
-     * Change promise to something else?
+     * Change pledge to something else?
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have awaits,
 so can get more aggressive here --- in progress, but can still

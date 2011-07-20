@@ -10,7 +10,7 @@ exports["another test of continue and break"] = {
 
 	foo : while (i < 100) {
 
-	    await { setTimeout (promise (), 10*Math.random()); }
+	    await { setTimeout (pledge (), 10*Math.random()); }
 	    
 	    if (i == 10) {
 		i += 2;

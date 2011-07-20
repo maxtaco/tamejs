@@ -102,7 +102,7 @@ OuterExprAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Promise     { $$ = [ $1 ]; }
+     | Plege     { $$ = [ $1 ]; }
      ;
 
 SlotAtom
@@ -113,7 +113,7 @@ SlotAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Promise     { $$ = [ $1 ]; }
+     | Plege     { $$ = [ $1 ]; }
      | LABEL       { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
      | BraceExpr   { $$ = $1; }
      | FunctionDeclaration { $$ = [ $1 ]; }
@@ -129,10 +129,10 @@ Slot
      ;
      
 
-Promise
+Plege
      : PROMISE LPAREN SlotListOpt RPAREN
      {
-           $$ = new yy.PromiseExpr (@1.first_line, $3);
+           $$ = new yy.PlegeExpr (@1.first_line, $3);
      }
      ;
 

@@ -10,7 +10,7 @@ exports["break and continue"] = {
 	    var i = 0;
 	    foo : while (1) {
 	        slots[i] = 0;
-	        await { setTimeout (promise (), 1); }
+	        await { setTimeout (pledge (), 1); }
             
 	        if (i == skip) {
 		        i++;

@@ -14,11 +14,11 @@ exports["test nested serial/parallel"] = {
             for (var i = 0; i < n; i++) {
                 (function (cb) {
                     var my_i = i;
-                    await { setTimeout (promise (), 5*Math.random ()); }
-                    await { setTimeout (promise (), 4*Math.random ()); }
+                    await { setTimeout (pledge (), 5*Math.random ()); }
+                    await { setTimeout (pledge (), 4*Math.random ()); }
                     slots[my_i] = true;
                     cb();
-                })(promise ());
+                })(pledge ());
             }
         }
 	    cb();

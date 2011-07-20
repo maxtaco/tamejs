@@ -10,8 +10,8 @@ exports["simple parallel await"] = {
 	    var i = 0;	
 	    while (i < n) {
 	        await { 
-		        setTimeout (promise (), 1); 
-		        setTimeout (promise (), 2); 
+		        setTimeout (pledge (), 1); 
+		        setTimeout (pledge (), 2); 
 	        }
 	        slots[i] = 1;
 	        i++;

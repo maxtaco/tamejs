@@ -28,7 +28,7 @@ CPS[ await { b } k ] = {
     var __f2 = CPS[k];
     __ev._set_continuation (__f2);
     __f1 ();
-    __ev._trigger (); 
+    __ev._fulfill (); 
 };
 
 CPS[mkev] = { __ev.mkev };

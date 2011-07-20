@@ -4,7 +4,7 @@ var assert = require ("assert");
 var results = [];
 
 function blah (ev) { 
-    await { setTimeout (promise (), 10*Math.random ()); }
+    await { setTimeout (pledge (), 10*Math.random ()); }
     ev(); 
 };
 
@@ -12,23 +12,23 @@ function runsw (x, cb) {
     
     switch (x) {
     case 0:
-	    await { blah (promise ()); }
+	    await { blah (pledge ()); }
 	    results.push (0);
 	    break;
     case 17:
     case 1:
-	    await { blah (promise ()); }
+	    await { blah (pledge ()); }
 	    results.push (1);
 	    break;
     case 2:
-	    await { blah (promise ()); }
+	    await { blah (pledge ()); }
 	    results.push (2);
     case 18:
     case 3:
-	    await { blah (promise ()); }
+	    await { blah (pledge ()); }
 	    results.push (3);
     default:
-	    await { blah (promise ()); }
+	    await { blah (pledge ()); }
 	    results.push (4);
 	    break;
     }
@@ -40,7 +40,7 @@ exports["switch & case statement"] = {
     run : function (cb) {
 	    var lst = [ 0, 1, 2, 3, 4, 18, 17];
 	    for (var i in lst) {
-	        await { runsw (lst[i], promise ()); }
+	        await { runsw (lst[i], pledge ()); }
 	    }
 	    cb ();
     },

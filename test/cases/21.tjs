@@ -8,7 +8,7 @@ exports["test await with no curlies"] = {
     
     run : function (cb) {
         for (var i = 0; i < n; i++) {
-            await setTimeout (promise (), 3 * Math.random ());
+            await setTimeout (pledge (), 3 * Math.random ());
             slots[i] = 1;
         }
 	    cb();

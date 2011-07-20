@@ -5,27 +5,27 @@ var res = 0;
 var i = 0;
 
 function foo (i, cb) {
-    await { setTimeout (promise (), i); }
+    await { setTimeout (pledge (), i); }
     cb (i);
 };
 
 
 var ok = true;
 
-exports["a test of trigger values"] = {
+exports["a test of fulfill values"] = {
 
     run : function (cb) {
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
-            await { foo (x, promise (var y, z)); }
+            await { foo (x, pledge (var y, z)); }
             if (x != y) { ok = false; }
         }
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
             var res = [];
-            await { foo (x, promise (res)); }
+            await { foo (x, pledge (res)); }
             if (x != res[0]) { ok = false; }
         }
         
@@ -34,7 +34,7 @@ exports["a test of trigger values"] = {
     },
 
     check : function () {
-	    assert.ok (ok, "triggered with proper values");
+	    assert.ok (ok, "fulfilled with proper values");
     }
 
 };

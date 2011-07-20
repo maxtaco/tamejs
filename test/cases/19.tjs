@@ -12,7 +12,7 @@ exports["test with{} statements"] = {
         with (env) {
             while (i < n) {
 	            await { 
-		            setTimeout (promise (), 3*Math.random ()); 
+		            setTimeout (pledge (), 3*Math.random ()); 
                 }
                 sum += i;
                 i++;

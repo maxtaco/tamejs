@@ -19,7 +19,7 @@
 <INITIAL>"catch"	return 'CATCH';
 <INITIAL>"await"	return 'AWAIT';
 <INITIAL>"function"	return 'FUNCTION';
-<INITIAL>"promise"	return 'PROMISE';
+<INITIAL>"pledge"	return 'PROMISE';
 <INITIAL>"finally"	return 'FINALLY';
 <INITIAL>"case"		return 'CASE';
 <INITIAL>"switch"	return 'SWITCH';

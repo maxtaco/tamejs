@@ -12,7 +12,7 @@ function makeTest (exports) {
 	
 	        function call (i, ev) {
 	            slots[i] = 1;
-	            await { setTimeout (promise (), 10*Math.random()); }
+	            await { setTimeout (pledge (), 10*Math.random()); }
 	            slots[i] |= 2;
 	            ev();
 	        };
@@ -30,7 +30,7 @@ function makeTest (exports) {
 		                nsent++;
 		            } else {
 		                var res = [];
-		                await { rv.wait (promise (res)); }
+		                await { rv.wait (pledge (res)); }
 		                slots[res[0]] |= 4;
 		                nrecv++;
 		            }
@@ -39,7 +39,7 @@ function makeTest (exports) {
 	        };
 	    
 	        var n = 100;
-	        await { window (n, 10, promise ()); }
+	        await { window (n, 10, pledge ()); }
 	        ev ();
         },
 	    
