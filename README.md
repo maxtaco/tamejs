@@ -41,8 +41,8 @@ the rewritten code output by the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
 `await{..}` language addition.  In the example below, the two timers
-are fired in parallel, and only when both have returned (after 100ms),
-does progress continue...
+are fired in parallel, and only when both have fulfilled their pledges
+(after 100ms), does progress continue...
 
 ```javascript
 for (var i = 0; i < 10; i++) {

@@ -148,16 +148,17 @@ thenDoSomethingWith(res1, res2);
 </pre>
 
 				<p>
-					As shown above, Tame introduces 2 keywords, <span class="code_term">await</span> and <span class="code_term">pledge</span> (short for "make event"). They are used in tandem.
+					As shown above, Tame introduces 2 keywords, <span class="code_term">await</span> and <span class="code_term">pledge</span>. They are used in tandem.
 				</p>
 
 				<p>
-					<span class="code_term">await</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.  
-					Only once all relevant events
-					inside a <span class="code_term">await</span> block have finished does control continue past it.
-					<span class="code_term">pledge</span> lets <span class="code_term">await</span> know which events to wait for.  <span class="code_term">pledge</span> 
-					returns an anonymous function that you give to your async functions as a callback.   Such an async function tells <span class="code_term">await</span> 
-					that the expected event has occurred by calling its <span class="code_term">pledge</span>-generated callback.
+					<span class="code_term">await</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.
+					An <span class="code_term">await</span> block contains one or more <span class="code_term">pledge</span>s.
+					Only once all relevant pledges
+					inside a <span class="code_term">await</span> block have been fulfilled does control continue past it.
+					<span class="code_term">pledge()</span> behaves much like a normal function; it
+					returns an anonymous function that you give to your async functions.  These functions "fulfill" their pledges
+					by calling the callbacks passed to them.
 				</p>
 				<p>
 					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">pledge</span>, and they'll
@@ -166,8 +167,8 @@ thenDoSomethingWith(res1, res2);
 				<p>
 					(For language geeks: <span class="code_term">await</span> is the only new addition to JavaScript language semantics here.  It takes the current program
 					continuation and stores it in a hidden JavaScript object. 
-					<span class="code_term">pledge</span> is syntactic sugar that calls into the hidden object. If an event is the last outstanding event 
-					in its parent <span class="code_term">await</span> block, it reactivates the stored program continuation.)
+					<span class="code_term">pledge</span> is syntactic sugar that calls into the hidden object. If a pledge is the pledge to be 
+					fulfilled in its parent <span class="code_term">await</span> block, it reactivates the stored program continuation.)
 				</p>
 				<p>
 					Sound confusing? It's really not when you see it in action. Let's show some example code.
@@ -566,7 +567,7 @@ console.log (users);
 					Yes - it's also a translation of JS and seems to use a similar compilation technique, and we think it's more evidence that the Node
 					community needs something on top of JS. However, we see several advantages to the Tame approach.  First off, it's 
 					simpler: just two new keywords (<span class="code_term">await</span> and <span class="code_term">pledge</span>), only
-					the former of which is a true language addition (the latter being syntactic sugar).  
+					the former of which is a true language addition (the latter being syntactic sugar). 
 					Second, it's more powerful, allowing arbitrary parallelism, not just two-way parallelism
 					with <span class="code_term">waitfor..or</span>.  Finally, it's easier to integrate: traditional JS code can call tamed code, and vice-versa,
 					whereas traditional JS cannot conveniently call stratified JS.
