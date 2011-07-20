@@ -127,7 +127,7 @@ function do_all (lst, windowsz) {
 
     while (nrecv < lst.length) {
         if (nsent - nrecv < windowsz && nsent < n) {
-            do_one (rv.rvPledge (nsent), lst[nsent]);
+            do_one (rv.id (nsent).pledge (), lst[nsent]);
             nsent++;
         } else {
             var evid;
@@ -142,13 +142,13 @@ function do_all (lst, windowsz) {
 This code maintains two counters: the number of requests sent, and the
 number received.  It keeps looping until the last lookup is received.
 Inside the loop, if there is room in the window and there are more to
-send, then send; otherwise, wait and harvest.  `Rendezvous.rvPledge` makes
-an pledge much like the `pledge` primitive, but it also takes a first
-argument that associates an idenitifer with the event fired.  This
-way, the waiter can know which event he's getting back.  In this case
-we use the variable `nsent` as the event ID --- it's the ID of this
-event in launch order.  When we harvest the event, `rv.wait` fires its
-callback with the ID of the event that's harvested.
+send, then send; otherwise, wait and harvest.  `Rendezvous.pledge`
+makes an pledge much like the `pledge` primitive, but it can be
+labeled with an idenfitier.  This way, the waiter can know which
+pledge has fulfileld.  In this case we use the variable `nsent` as the
+pledge ID --- it's the ID of this pledge in launch order.  When we
+harvest the pledge, `rv.wait` fires its callback with the ID of the
+pledge that's harvested.  
 
 Note that with windowing, the arrival order might not be the same as
 the issue order. In this example, a slower DNS lookup might arrive
@@ -247,32 +247,29 @@ var err = arr[0];
 var ip = arr[1];
 ```
 
-If `pledge` sees that it's passed on parameter, and that parameter
+If `pledge` sees that it's passed one parameter, and that parameter
 happens to be an empty array, it will choose this mode of operation.
 
 
 ### tame.Rendezvous
 
 The `Rendezvous` is a not a core *tamejs* feature, meaning it's written as a 
-straight-ahead JavaScript library.  It's quite useful for more advances
+straight-ahead JavaScript library.  It's quite useful for more advanced
 control flows, so we've included it in the main runtime library.
 
 The `Rendezvous` is similar to a blocking condition variable (or a
 "Hoare sytle monitor") in threaded programming.
 
-#### tame.Rendezvous.id (id).pledge (...)
+#### tame.Rendezvous.id (i).pledge (slots,...)
 
-This is the `Rendezvous` equivalent of the `pledge` built-in, but
-shortened so it doesn't confuse the *tamejs* compiler.  It takes two
-arguments, the event "ID" that the programmer is going to use to
-idenitify this event later on, and also slots to return values from
-the callback.  Those slots can take the three forms of `pledge` return
-as above (i.e., declarative, generic, or variadic).
-
-As with standard `pledge`, the return value of the `Rendezvous`'s
-`pledge` is fed to a function expecting a callback.  As soon as that
-callback fires, the slots of `arr` will be filled with the arguments
-to that callback.
+Associate a new pledge with the given Rendezvous, whose pledge ID is
+`i`, and whose callbacks slots are supplied as `slots`.  Those slots
+can take the three forms of `pledge` return as above (i.e.,
+declarative, generic, or variadic).  As with standard `pledge`, the
+return value of the `Rendezvous`'s `pledge` is fed to a function
+expecting a callback.  As soon as that callback fires (and the pledge
+is fulfilled), the provided slots will be filled with the arguments to
+that callback.
 
 #### tame.Rendezvous.pledge (...)
 
@@ -282,9 +279,10 @@ ascending order starting from `0`.
 
 #### tame.Rendezvous.wait (cb)
 
-Wait until the next event is fired.  When it is, callback `cb`
-with the ID of the event that fired.  If an unclaimed event fired
-before `wait` was called, then `cb` is fired immediately. 
+Wait until the next pledge on this rendezvous is fulfilled.  When it
+is, callback `cb` with the ID of the fulfilled pledge.  If an
+unclaimed pledge fulfilled before `wait` was called, then `cb` is fired
+immediately.
 
 Though `wait` would work with any hand-rolled JS function expecting
 a callback, it's meant to work particularly well with *tamejs*'s
@@ -363,7 +361,7 @@ compilation.  That is, elements of code like `for`, `while` and `if`
 statements are converted to anonymous JavaScript functions written
 in continuation-passing style.  Then, `await` blocks just grab
 those continuations, store them away, and call them when the
-time is right (i.e., when all relevant events have completed).
+time is right (i.e., when all relevant pledges have been fulfilled).
 
 For example, the simple program:
 
@@ -378,7 +376,7 @@ for demonstration purposes):
 var tame = require('tamejs').runtime;
 var f0 = function (k) {
     var f1 = function (k) {
-        var __ev = new tame.Event (k);
+        var __ev = new tame.Pledges (k);
         setTimeout ( __ev.pledge(), 100 ) ;
     };
     if (true) {
@@ -400,10 +398,10 @@ the `true` branch, we call into `f1`, the rewrite of the `await`
 block, and in the `false` branch, it's just go on with the rest of the
 program by calling the continuation `k`.  Function `f1` is doing
 something a little bit different --- it's passing its continuation
-into the pure JavaScript class `tame.Event`, which will hold onto it
-until all associated events (like the one passed to `setTimeout`) have
-been called.  When the last event is fired (here after 100ms), then
-the `tame.Event` class calls the continuation `k`, which here refers
+into the pure JavaScript class `tame.Pledges`, which will hold onto it
+until all associated pledges (like the one passed to `setTimeout`) have
+been fulfilled.  When the last pledge is fulfileld (here after 100ms), then
+the `tame.Pledges` class calls the continuation `k`, which here refers
 to `tame.end`.
 
 The *tamejs* implementation uses other CPS-conversions for `while` and
