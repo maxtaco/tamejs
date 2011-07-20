@@ -363,10 +363,11 @@ for (var i in hosts) {
 }
 ```
 
-We need to be careful about when the value of an iterator `i` is bound.
-We would like it to be fixed at the time of the pledge creation, and
-not at the time of the pledge fulfillment.  The `capture` environment is
-that, and is just syntactic sugar for the JavaScript:
+We need to be careful about when the value of an iterator `i` is
+bound.  We would like it to be fixed at the time of the pledge
+creation, and not at the time of the pledge fulfillment.  The
+`capture` environment does just that, and is just syntactic sugar for
+the JavaScript:
 
 ```javascript
 for (var i in hosts) {
