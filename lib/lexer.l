@@ -43,11 +43,12 @@
 <INITIAL>";"		return "SEMICOLON";
 <INITIAL>','		return 'COMMA';
 <INITIAL>':'		return 'COLON';
+<INITIAL>'.'            return 'DOT';
 
 <INITIAL>"\""		{ this.begin ('ST_QUOTE2'); return 'QUOTE2'; }
 <INITIAL>"'"		{ this.begin ('ST_QUOTE1'); return 'QUOTE1'; }
 <INITIAL>"/*"		{ this.begin ('ST_COMMENT'); }
-<INITIAL>[^/{}()\[\];,:"'\s]+    return 'GENERIC';
+<INITIAL>[^./{}()\[\];,:"'\s]+    return 'GENERIC';
 <INITIAL>.	 	return 'GENERIC';
 
 <ST_QUOTE2>"\\".	return 'STRING_ATOM';

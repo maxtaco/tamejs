@@ -116,7 +116,7 @@ of different ways.  The [2007 academic paper on
 tame](http://pdos.csail.mit.edu/~max/docs/tame.pdf) suggests a
 technique called a *rendezvous*.  A rendezvous is implemented in
 *tamejs* as a pure JS construct (no rewriting involved), which allows
-a program to continue as soon as the first event fires (rather than
+a program to continue as soon as the first pledge is fulfilled (rather than
 the last):
 
 ```javascript  
@@ -127,7 +127,7 @@ function do_all (lst, windowsz) {
 
     while (nrecv < lst.length) {
         if (nsent - nrecv < windowsz && nsent < n) {
-            do_one (rv.mkev (nsent), lst[nsent]);
+            do_one (rv.rvPledge (nsent), lst[nsent]);
             nsent++;
         } else {
             var evid;
@@ -142,8 +142,8 @@ function do_all (lst, windowsz) {
 This code maintains two counters: the number of requests sent, and the
 number received.  It keeps looping until the last lookup is received.
 Inside the loop, if there is room in the window and there are more to
-send, then send; otherwise, wait and harvest.  `Rendezvous.mkev` makes
-an event much like the `pledge` primitive, but it also takes a first
+send, then send; otherwise, wait and harvest.  `Rendezvous.rvPledge` makes
+an pledge much like the `pledge` primitive, but it also takes a first
 argument that associates an idenitifer with the event fired.  This
 way, the waiter can know which event he's getting back.  In this case
 we use the variable `nsent` as the event ID --- it's the ID of this

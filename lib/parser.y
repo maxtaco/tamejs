@@ -96,6 +96,7 @@ BraceExpr
 OuterExprAtom
      : GENERIC     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COMMA       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = $1; }
@@ -108,6 +109,7 @@ OuterExprAtom
 SlotAtom
      : GENERIC     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
