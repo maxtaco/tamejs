@@ -26,6 +26,7 @@
 <INITIAL>"default"	return 'DEFAULT';
 <INITIAL>"this"         return 'THIS';
 <INITIAL>"with"         return 'WITH';
+<INITIAL>"capture"      return 'CAPTURE';
 <INITIAL>"#!"[ ]*[/].*  return 'SHBANG'; 
 
 <INITIAL>[a-zA-Z_0-9]+[ ^]*[:] { 
