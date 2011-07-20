@@ -237,7 +237,7 @@ left-hand side of an assignment.
 
 #### Variadic Return
 
-If you callback function might return an arbitrary number of elements,
+If your callback function might return an arbitrary number of elements,
 `mkevent` has a third mode that allows for variadic return:
 
 ```javascript
@@ -247,14 +247,14 @@ var err = arr[0];
 var ip = arr[1];
 ```
 
-If `mkevent` sees that it's passed on parameter, and that parameter
+If `mkevent` sees that it's passed one parameter, and that parameter
 happens to be an empty array, it will choose this mode of operation.
 
 
 ### tame.Rendezvous
 
 The `Rendezvous` is a not a core *tamejs* feature, meaning it's written as a 
-straight-ahead JavaScript library.  It's quite useful for more advances
+straight-ahead JavaScript library.  It's quite useful for more advanced
 control flows, so we've included it in the main runtime library.
 
 The `Rendezvous` is similar to a blocking condition variable (or a
