@@ -237,7 +237,7 @@ left-hand side of an assignment.
 
 #### Variadic Return
 
-If you callback function might return an arbitrary number of elements,
+If your callback function might return an arbitrary number of elements,
 `pledge` has a third mode that allows for variadic return:
 
 ```javascript
@@ -269,9 +269,10 @@ idenitify this event later on, and also slots to return values from
 the callback.  Those slots can take the three forms of `pledge` return
 as above (i.e., declarative, generic, or variadic).
 
-As with `pledge`, the return value of the `Rendezvous`'s `pledge` is
-fed to function expecting a callback.  As soon as that callback fires,
-the slots of `arr` will be filled with the arguments to that callback.
+As with standard `pledge`, the return value of the `Rendezvous`'s
+`pledge` is fed to a function expecting a callback.  As soon as that
+callback fires, the slots of `arr` will be filled with the arguments
+to that callback.
 
 #### tame.Rendezvous.pledge (...)
 
@@ -300,14 +301,21 @@ var hosts = [ "okcupid.com", "google.com" ];
 var ips = [ ], errs = [];
 var rv = new tame.Rendezvous ();
 for (var i in hosts) {
-    (function (i) {
+    capture (i) {
        dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
-    })(i);
+    }
 }
 var which;
 await { rv.wait (which); }
 console.log (hosts[which] + " -> " + ips[which]);
 ```
+
+What's with that `capture` thing?  Well, it's a third, and non-essential
+`tamejs` langague feature.  It "captures" the value of `i` so that
+`pledge` will get the value of `i` at the time of pledge issuance, 
+rather than the time of its fulfillment (when chances are it will
+always equal 1).  `capture (i) { ... }` is just syntactic sugar for
+`(function (i) { ... })(i);`.
 
 ### connectors
 
