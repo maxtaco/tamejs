@@ -260,18 +260,24 @@ control flows, so we've included it in the main runtime library.
 The `Rendezvous` is similar to a blocking condition variable (or a
 "Hoare sytle monitor") in threaded programming.
 
-#### tame.Rendezvous.mkev(id,arr)
+#### tame.Rendezvous.id (id).pledge (...)
 
 This is the `Rendezvous` equivalent of the `pledge` built-in, but
 shortened so it doesn't confuse the *tamejs* compiler.  It takes two
 arguments, the event "ID" that the programmer is going to use to
-idenitify this event later on, and also a empty array to return values
-from the callback.  Thus, the `Rendezvous` only works in the third
-style of built-in `pledge` call above, with variadic return.
+idenitify this event later on, and also slots to return values from
+the callback.  Those slots can take the three forms of `pledge` return
+as above (i.e., declarative, generic, or variadic).
 
-As with `pledge`, the return value of `Rendezvous.mkev` is fed
-to function expecting a callback.  As soon as that callback fires,
+As with `pledge`, the return value of the `Rendezvous`'s `pledge` is
+fed to function expecting a callback.  As soon as that callback fires,
 the slots of `arr` will be filled with the arguments to that callback.
+
+#### tame.Rendezvous.pledge (...)
+
+You don't need to explicitly assign an ID to a pledge generated from a
+Rendezvous.  If you don't, one will automatically be assigned, in
+ascending order starting from `0`.
 
 #### tame.Rendezvous.wait (cb)
 
