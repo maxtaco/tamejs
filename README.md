@@ -30,14 +30,15 @@ There is one new language addition here, the `await { ... }` block,
 and also one new primitive function, `pledge`.  The two of them work
 in concert.  Within the context of a `await` block, `pledge` returns
 anonymous callback functions associated with that block.  A function
-must "wait" at the close of a `await` block until all callbacks made
-by `pledge` in that `await` block are called.  In the code above,
-there is only one callback produced in each iteration of the loop, so
-after it's called by `setTimer` in 100ms, control continues past the
-`await` block, onto the log line, and back to the next iteration of
-the loop.  The code looks and feels like threaded code, but is still
-in the asynchronous idiom (if you look at the rewritten code output by
-the *tamejs* compiler).
+must "wait" at the close of a `await` block until `pledge`s made in
+that `await` block are fulfilled.  A callee in an `await` block can
+fulfill a pledge by simply calling the callback provided to it.  In
+the code above, there is only one pledge produced in each iteration of
+the loop, so after it's fulfilled by `setTimer` in 100ms, control
+continues past the `await` block, onto the log line, and back to the
+next iteration of the loop.  The code looks and feels like threaded
+code, but is still in the asynchronous idiom (if you look at the
+rewritten code output by the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
 `await{..}` language addition.  In the example below, the two timers
