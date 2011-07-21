@@ -29,10 +29,10 @@ for (var i = 0; i < 10; i++) {
 There is one new language addition here, the `await { ... }` block,
 and also one new primitive function, `defer`.  The two of them work
 in concert.  A function must "wait" at the close of a `await` block
-until all `defer`s made in that `await` block are fulfilled.  The
+until all `defer`rals made in that `await` block are fulfilled.  The
 primitive `defer` returns a callback, and a a callee in an `await`
-block can fulfill a defer by simply calling the callback it was
-given.  In the code above, there is only one defer produced in each
+block can fulfill a deferral by simply calling the callback it was
+given.  In the code above, there is only one deferral produced in each
 iteration of the loop, so after it's fulfilled by `setTimer` in 100ms,
 control continues past the `await` block, onto the log line, and back
 to the next iteration of the loop.  The code looks and feels like
@@ -41,7 +41,7 @@ the rewritten code output by the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
 `await{..}` language addition.  In the example below, the two timers
-are fired in parallel, and only when both have fulfilled their defers
+are fired in parallel, and only when both have fulfilled their deferrals
 (after 100ms), does progress continue...
 
 ```javascript
@@ -110,13 +110,13 @@ Slightly More Advanced Example
 
 We've shown parallel and serial work flows, what about something in
 between?  For instance, we might want to make progress in parallel on
-our DNS lookups, but not smash the server all at once. A comdefer is
+our DNS lookups, but not smash the server all at once. A compromise is
 windowing, which can be achieved in *tamejs* conveniently in a number
 of different ways.  The [2007 academic paper on
 tame](http://pdos.csail.mit.edu/~max/docs/tame.pdf) suggests a
 technique called a *rendezvous*.  A rendezvous is implemented in
 *tamejs* as a pure JS construct (no rewriting involved), which allows
-a program to continue as soon as the first defer is fulfilled (rather than
+a program to continue as soon as the first deferral is fulfilled (rather than
 the last):
 
 ```javascript  
@@ -143,12 +143,12 @@ This code maintains two counters: the number of requests sent, and the
 number received.  It keeps looping until the last lookup is received.
 Inside the loop, if there is room in the window and there are more to
 send, then send; otherwise, wait and harvest.  `Rendezvous.defer`
-makes an defer much like the `defer` primitive, but it can be
+makes a deferral much like the `defer` primitive, but it can be
 labeled with an idenfitier.  This way, the waiter can know which
-defer has fulfileld.  In this case we use the variable `nsent` as the
-defer ID --- it's the ID of this defer in launch order.  When we
-harvest the defer, `rv.wait` fires its callback with the ID of the
-defer that's harvested.  
+deferral has fulfileld.  In this case we use the variable `nsent` as the
+defer ID --- it's the ID of this deferral in launch order.  When we
+harvest the deferral, `rv.wait` fires its callback with the ID of the
+deferral that's harvested.  
 
 Note that with windowing, the arrival order might not be the same as
 the issue order. In this example, a slower DNS lookup might arrive
@@ -262,26 +262,26 @@ The `Rendezvous` is similar to a blocking condition variable (or a
 
 #### tame.Rendezvous.id (i).defer (slots,...)
 
-Associate a new defer with the given Rendezvous, whose defer ID is
+Associate a new deferral with the given Rendezvous, whose deferral ID is
 `i`, and whose callbacks slots are supplied as `slots`.  Those slots
 can take the three forms of `defer` return as above (i.e.,
 declarative, generic, or variadic).  As with standard `defer`, the
 return value of the `Rendezvous`'s `defer` is fed to a function
-expecting a callback.  As soon as that callback fires (and the defer
+expecting a callback.  As soon as that callback fires (and the deferral
 is fulfilled), the provided slots will be filled with the arguments to
 that callback.
 
 #### tame.Rendezvous.defer (slots,...)
 
-You don't need to explicitly assign an ID to a defer generated from a
+You don't need to explicitly assign an ID to a deferral generated from a
 Rendezvous.  If you don't, one will automatically be assigned, in
 ascending order starting from `0`.
 
 #### tame.Rendezvous.wait (cb)
 
-Wait until the next defer on this rendezvous is fulfilled.  When it
-is, callback `cb` with the ID of the fulfilled defer.  If an
-unclaimed defer fulfilled before `wait` was called, then `cb` is fired
+Wait until the next deferral on this rendezvous is fulfilled.  When it
+is, callback `cb` with the ID of the fulfilled deferral.  If an
+unclaimed deferral fulfilled before `wait` was called, then `cb` is fired
 immediately.
 
 Though `wait` would work with any hand-rolled JS function expecting
@@ -310,7 +310,7 @@ console.log (hosts[which] + " -> " + ips[which]);
 
 What's with that `capture` thing?  Well, it's a third, and non-essential
 `tamejs` langague feature.  It "captures" the value of `i` so that
-`defer` will get the value of `i` at the time of defer issuance, 
+`defer` will get the value of `i` at the time of deferral, 
 rather than the time of its fulfillment (when chances are it will
 always equal 1).  `capture (i) { ... }` is just syntactic sugar for
 `(function (i) { ... })(i);`.
@@ -364,8 +364,8 @@ for (var i in hosts) {
 ```
 
 We need to be careful about when the value of an iterator `i` is
-bound.  We would like it to be fixed at the time of the defer
-creation, and not at the time of the defer fulfillment.  The
+bound.  We would like it to be fixed at the time of the deferral,
+and not at the time the deferral is fulfilled.  The
 `capture` environment does just that, and is just syntactic sugar for
 the JavaScript:
 
@@ -389,7 +389,7 @@ compilation.  That is, elements of code like `for`, `while` and `if`
 statements are converted to anonymous JavaScript functions written
 in continuation-passing style.  Then, `await` blocks just grab
 those continuations, store them away, and call them when the
-time is right (i.e., when all relevant defers have been fulfilled).
+time is right (i.e., when all relevant deferrals have been fulfilled).
 
 For example, the simple program:
 
@@ -427,8 +427,8 @@ block, and in the `false` branch, it's just go on with the rest of the
 program by calling the continuation `k`.  Function `f1` is doing
 something a little bit different --- it's passing its continuation
 into the pure JavaScript class `tame.Defers`, which will hold onto it
-until all associated defers (like the one passed to `setTimeout`) have
-been fulfilled.  When the last defer is fulfileld (here after 100ms), then
+until all associated deferrals (like the one passed to `setTimeout`) have
+been fulfilled.  When the last deferral is fulfileld (here after 100ms), then
 the `tame.Defers` class calls the continuation `k`, which here refers
 to `tame.end`.
 
@@ -470,8 +470,6 @@ ToDos
 ------
 See the github issue tracker for the more immediate issues.
 
-* Documentation
-     * Change defer to something else?
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have awaits,
 so can get more aggressive here --- in progress, but can still
