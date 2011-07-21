@@ -339,7 +339,7 @@ require ('tamejs').register (); // since connectors is a tamed library...
 var timeout = require ('tamejs/lib/connectors').timeout;
 var info = [];
 var host = "pirateWarezSite.ru";
-await { dns.lookup (host, timeout (pledge (var err, ip), 100, info)); }
+await dns.lookup (host, timeout (pledge (var err, ip), 100, info));
 if (!info[0]) {
     console.log (host + ": timed out!");
 } else if (err) {
