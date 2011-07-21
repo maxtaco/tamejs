@@ -271,7 +271,7 @@ expecting a callback.  As soon as that callback fires (and the pledge
 is fulfilled), the provided slots will be filled with the arguments to
 that callback.
 
-#### tame.Rendezvous.pledge (...)
+#### tame.Rendezvous.pledge (slots,...)
 
 You don't need to explicitly assign an ID to a pledge generated from a
 Rendezvous.  If you don't, one will automatically be assigned, in
