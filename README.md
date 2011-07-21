@@ -563,8 +563,9 @@ paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
 Authors
 -------
-* Max Krohn <max@okcupid.com>
-* Chris Coyne <chris@okcupid.com>
+* Max Krohn (first name AT okcupid DOT com)
+* Chris Coyne (first name AT okcupid DOT com)
+* Eddie Kohler (original Tame coauthor, and advisor)
 
 License
 -------
