@@ -5,7 +5,7 @@ var res = 0;
 var i = 0;
 
 function foo (i, cb) {
-    await { setTimeout (pledge (), i); }
+    await { setTimeout (defer (), i); }
     cb (i);
 };
 
@@ -18,14 +18,14 @@ exports["a test of fulfill values"] = {
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
-            await { foo (x, pledge (var y, z)); }
+            await { foo (x, defer (var y, z)); }
             if (x != y) { ok = false; }
         }
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
             var res = [];
-            await { foo (x, pledge (res)); }
+            await { foo (x, defer (res)); }
             if (x != res[0]) { ok = false; }
         }
         

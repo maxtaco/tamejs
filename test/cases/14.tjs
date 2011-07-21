@@ -13,7 +13,7 @@ function MyClass (lim) {
         if (this._i >= this._lim) {
             done = true;
         } else {
-            await { setTimeout (pledge (), 3 * Math.random ()); }
+            await { setTimeout (defer (), 3 * Math.random ()); }
             this._i ++;
         }
         cb (done);
@@ -30,7 +30,7 @@ exports["test of 'this' inside of a tamed class"] = {
         var go = true;
         while (go) {
             var res = [];
-            await { obj.next (pledge (res)); }
+            await { obj.next (defer (res)); }
             go = !res[0];
         }
         cb ();

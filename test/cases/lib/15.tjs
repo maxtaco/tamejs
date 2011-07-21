@@ -12,7 +12,7 @@ function makeTest (exports) {
 	
 	        function call (i, ev) {
 	            slots[i] = 1;
-	            await { setTimeout (pledge (), 10*Math.random()); }
+	            await { setTimeout (defer (), 10*Math.random()); }
 	            slots[i] |= 2;
 	            ev();
 	        };
@@ -26,11 +26,11 @@ function makeTest (exports) {
 	            
 	            while (nrecv < n) {
 		            if (nsent - nrecv < window && nsent < n) {
-		                call (nsent, rv.id (nsent).pledge ());
+		                call (nsent, rv.id (nsent).defer ());
 		                nsent++;
 		            } else {
 		                var res = [];
-		                await { rv.wait (pledge (res)); }
+		                await { rv.wait (defer (res)); }
 		                slots[res[0]] |= 4;
 		                nrecv++;
 		            }
@@ -39,7 +39,7 @@ function makeTest (exports) {
 	        };
 	    
 	        var n = 100;
-	        await { window (n, 10, pledge ()); }
+	        await { window (n, 10, defer ()); }
 	        ev ();
         },
 	    

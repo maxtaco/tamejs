@@ -10,7 +10,7 @@ exports["passThrough/compile test"] = {
             for (var i = 0; i < 100; i++);
             var d = { cat : function (n, cb) {
                 for (var i = 0; i < n; i++) {
-                    await { setTimeout (pledge (), 5 * Math.random ()); }
+                    await { setTimeout (defer (), 5 * Math.random ()); }
                 }
                 cb ();
             }, n : 10 };
@@ -19,7 +19,7 @@ exports["passThrough/compile test"] = {
         };
 
         var d = make_dict ();
-        await { d.cat (d.n, pledge ()); }
+        await { d.cat (d.n, defer ()); }
         ok = true;
         cb ();
     },

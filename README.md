@@ -21,18 +21,18 @@ slots in between:
 
 ```javascript  
 for (var i = 0; i < 10; i++) {
-    await { setTimeout (pledge (), 100); }
+    await { setTimeout (defer (), 100); }
     console.log ("hello");
 }
 ```
 
 There is one new language addition here, the `await { ... }` block,
-and also one new primitive function, `pledge`.  The two of them work
+and also one new primitive function, `defer`.  The two of them work
 in concert.  A function must "wait" at the close of a `await` block
-until all `pledge`s made in that `await` block are fulfilled.  The
-primitive `pledge` returns a callback, and a a callee in an `await`
-block can fulfill a pledge by simply calling the callback it was
-given.  In the code above, there is only one pledge produced in each
+until all `defer`s made in that `await` block are fulfilled.  The
+primitive `defer` returns a callback, and a a callee in an `await`
+block can fulfill a defer by simply calling the callback it was
+given.  In the code above, there is only one defer produced in each
 iteration of the loop, so after it's fulfilled by `setTimer` in 100ms,
 control continues past the `await` block, onto the log line, and back
 to the next iteration of the loop.  The code looks and feels like
@@ -41,14 +41,14 @@ the rewritten code output by the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
 `await{..}` language addition.  In the example below, the two timers
-are fired in parallel, and only when both have fulfilled their pledges
+are fired in parallel, and only when both have fulfilled their defers
 (after 100ms), does progress continue...
 
 ```javascript
 for (var i = 0; i < 10; i++) {
     await { 
-        setTimeout (pledge (), 100); 
-        setTimeout (pledge (), 10); 
+        setTimeout (defer (), 100); 
+        setTimeout (defer (), 10); 
     }
     console.log ("hello");
 }
@@ -62,7 +62,7 @@ var dns = require("dns");
 
 function do_one (ev, host) {
     var err, ip;
-    await { dns.resolve (host, "A", pledge (err, ip));}
+    await { dns.resolve (host, "A", defer (err, ip));}
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
     ev();
@@ -71,7 +71,7 @@ function do_one (ev, host) {
 function do_all (lst) {
     await {
         for (var i = 0; i < lst.length; i++) {
-            do_one (pledge (), lst[i]);
+            do_one (defer (), lst[i]);
         }
     }
 }
@@ -99,7 +99,7 @@ order of the `await` and `for` statements above:
 function do_all (lst) {
     for (var i = 0; i < lst.length; i++) {
         await {
-            do_one (pledge (), lst[i]);
+            do_one (defer (), lst[i]);
         }
     }
 }
@@ -110,13 +110,13 @@ Slightly More Advanced Example
 
 We've shown parallel and serial work flows, what about something in
 between?  For instance, we might want to make progress in parallel on
-our DNS lookups, but not smash the server all at once. A compledge is
+our DNS lookups, but not smash the server all at once. A comdefer is
 windowing, which can be achieved in *tamejs* conveniently in a number
 of different ways.  The [2007 academic paper on
 tame](http://pdos.csail.mit.edu/~max/docs/tame.pdf) suggests a
 technique called a *rendezvous*.  A rendezvous is implemented in
 *tamejs* as a pure JS construct (no rewriting involved), which allows
-a program to continue as soon as the first pledge is fulfilled (rather than
+a program to continue as soon as the first defer is fulfilled (rather than
 the last):
 
 ```javascript  
@@ -127,11 +127,11 @@ function do_all (lst, windowsz) {
 
     while (nrecv < lst.length) {
         if (nsent - nrecv < windowsz && nsent < n) {
-            do_one (rv.id (nsent).pledge (), lst[nsent]);
+            do_one (rv.id (nsent).defer (), lst[nsent]);
             nsent++;
         } else {
             var evid;
-            await { rv.wait (pledge (evid)); }
+            await { rv.wait (defer (evid)); }
             console.log ("got back lookup nsent=" + evid);
             nrecv++;
         }
@@ -142,13 +142,13 @@ function do_all (lst, windowsz) {
 This code maintains two counters: the number of requests sent, and the
 number received.  It keeps looping until the last lookup is received.
 Inside the loop, if there is room in the window and there are more to
-send, then send; otherwise, wait and harvest.  `Rendezvous.pledge`
-makes an pledge much like the `pledge` primitive, but it can be
+send, then send; otherwise, wait and harvest.  `Rendezvous.defer`
+makes an defer much like the `defer` primitive, but it can be
 labeled with an idenfitier.  This way, the waiter can know which
-pledge has fulfileld.  In this case we use the variable `nsent` as the
-pledge ID --- it's the ID of this pledge in launch order.  When we
-harvest the pledge, `rv.wait` fires its callback with the ID of the
-pledge that's harvested.  
+defer has fulfileld.  In this case we use the variable `nsent` as the
+defer ID --- it's the ID of this defer in launch order.  When we
+harvest the defer, `rv.wait` fires its callback with the ID of the
+defer that's harvested.  
 
 Note that with windowing, the arrival order might not be the same as
 the issue order. In this example, a slower DNS lookup might arrive
@@ -170,10 +170,10 @@ function f(cb) {
     await {
         for (var i = 0; i < n; i++) {
             (function (cb) {
-                await { setTimeout (pledge (), 5*Math.random ()); }
-                await { setTimeout (pledge (), 4*Math.random ()); }
+                await { setTimeout (defer (), 5*Math.random ()); }
+                await { setTimeout (defer (), 4*Math.random ()); }
                 cb();
-             })(pledge ());
+             })(defer ());
         }
     }
     cb();
@@ -202,9 +202,9 @@ require ("mylib.tjs");          // then use node.js's import as normal
 API and Documentation
 ---------------------
 
-### pledge
+### defer
 
-`pledge` can be called in one of three ways.  
+`defer` can be called in one of three ways.  
 
 
 #### Inline Variable Declaration
@@ -214,7 +214,7 @@ variables:
 
 ```javascript
 
-await { dns.resolve ("okcupid.com", pledge (var err, ip)); }
+await { dns.resolve ("okcupid.com", defer (var err, ip)); }
 
 ```
 
@@ -230,7 +230,7 @@ allows more flexibility:
 ```javascript
 var d = {};
 var err = [];
-await { dns.resolve ("okcupid.com", pledge (err[0], d.ip)); }
+await { dns.resolve ("okcupid.com", defer (err[0], d.ip)); }
 ```
 This second version allows anything you'd normally put on the
 left-hand side of an assignment.
@@ -238,16 +238,16 @@ left-hand side of an assignment.
 #### Variadic Return
 
 If your callback function might return an arbitrary number of elements,
-`pledge` has a third mode that allows for variadic return:
+`defer` has a third mode that allows for variadic return:
 
 ```javascript
 var arr = []
-await { dns.resolve ("okcupid.com", pledge (arr)); }
+await { dns.resolve ("okcupid.com", defer (arr)); }
 var err = arr[0];
 var ip = arr[1];
 ```
 
-If `pledge` sees that it's passed one parameter, and that parameter
+If `defer` sees that it's passed one parameter, and that parameter
 happens to be an empty array, it will choose this mode of operation.
 
 
@@ -260,28 +260,28 @@ control flows, so we've included it in the main runtime library.
 The `Rendezvous` is similar to a blocking condition variable (or a
 "Hoare sytle monitor") in threaded programming.
 
-#### tame.Rendezvous.id (i).pledge (slots,...)
+#### tame.Rendezvous.id (i).defer (slots,...)
 
-Associate a new pledge with the given Rendezvous, whose pledge ID is
+Associate a new defer with the given Rendezvous, whose defer ID is
 `i`, and whose callbacks slots are supplied as `slots`.  Those slots
-can take the three forms of `pledge` return as above (i.e.,
-declarative, generic, or variadic).  As with standard `pledge`, the
-return value of the `Rendezvous`'s `pledge` is fed to a function
-expecting a callback.  As soon as that callback fires (and the pledge
+can take the three forms of `defer` return as above (i.e.,
+declarative, generic, or variadic).  As with standard `defer`, the
+return value of the `Rendezvous`'s `defer` is fed to a function
+expecting a callback.  As soon as that callback fires (and the defer
 is fulfilled), the provided slots will be filled with the arguments to
 that callback.
 
-#### tame.Rendezvous.pledge (slots,...)
+#### tame.Rendezvous.defer (slots,...)
 
-You don't need to explicitly assign an ID to a pledge generated from a
+You don't need to explicitly assign an ID to a defer generated from a
 Rendezvous.  If you don't, one will automatically be assigned, in
 ascending order starting from `0`.
 
 #### tame.Rendezvous.wait (cb)
 
-Wait until the next pledge on this rendezvous is fulfilled.  When it
-is, callback `cb` with the ID of the fulfilled pledge.  If an
-unclaimed pledge fulfilled before `wait` was called, then `cb` is fired
+Wait until the next defer on this rendezvous is fulfilled.  When it
+is, callback `cb` with the ID of the fulfilled defer.  If an
+unclaimed defer fulfilled before `wait` was called, then `cb` is fired
 immediately.
 
 Though `wait` would work with any hand-rolled JS function expecting
@@ -300,7 +300,7 @@ var ips = [ ], errs = [];
 var rv = new tame.Rendezvous ();
 for (var i in hosts) {
     capture (i) {
-       dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
+       dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
     }
 }
 var which;
@@ -310,7 +310,7 @@ console.log (hosts[which] + " -> " + ips[which]);
 
 What's with that `capture` thing?  Well, it's a third, and non-essential
 `tamejs` langague feature.  It "captures" the value of `i` so that
-`pledge` will get the value of `i` at the time of pledge issuance, 
+`defer` will get the value of `i` at the time of defer issuance, 
 rather than the time of its fulfillment (when chances are it will
 always equal 1).  `capture (i) { ... }` is just syntactic sugar for
 `(function (i) { ... })(i);`.
@@ -339,7 +339,7 @@ require ('tamejs').register (); // since connectors is a tamed library...
 var timeout = require ('tamejs/lib/connectors').timeout;
 var info = [];
 var host = "pirateWarezSite.ru";
-await dns.lookup (host, timeout (pledge (var err, ip), 100, info));
+await dns.lookup (host, timeout (defer (var err, ip), 100, info));
 if (!info[0]) {
     console.log (host + ": timed out!");
 } else if (err) {
@@ -358,21 +358,21 @@ code like this:
 ```javascript
 for (var i in hosts) {
     capture (i) {
-       dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
+       dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
     }
 }
 ```
 
 We need to be careful about when the value of an iterator `i` is
-bound.  We would like it to be fixed at the time of the pledge
-creation, and not at the time of the pledge fulfillment.  The
+bound.  We would like it to be fixed at the time of the defer
+creation, and not at the time of the defer fulfillment.  The
 `capture` environment does just that, and is just syntactic sugar for
 the JavaScript:
 
 ```javascript
 for (var i in hosts) {
     (function (i) {
-       dns.resolve (hosts[i], rv.id (i).pledge (errs[i], ips[i]));
+       dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
     })(i);
 }
 ```
@@ -389,12 +389,12 @@ compilation.  That is, elements of code like `for`, `while` and `if`
 statements are converted to anonymous JavaScript functions written
 in continuation-passing style.  Then, `await` blocks just grab
 those continuations, store them away, and call them when the
-time is right (i.e., when all relevant pledges have been fulfilled).
+time is right (i.e., when all relevant defers have been fulfilled).
 
 For example, the simple program:
 
 ```javascript
-if (true) { await { setTimeout (pledge (), 100); } }
+if (true) { await { setTimeout (defer (), 100); } }
 ```
 
 Is rewritten to something like the following (which has been hand-simplified
@@ -404,8 +404,8 @@ for demonstration purposes):
 var tame = require('tamejs').runtime;
 var f0 = function (k) {
     var f1 = function (k) {
-        var __ev = new tame.Pledges (k);
-        setTimeout ( __ev.pledge(), 100 ) ;
+        var __ev = new tame.Defers (k);
+        setTimeout ( __ev.defer(), 100 ) ;
     };
     if (true) {
         f1 (k);
@@ -426,10 +426,10 @@ the `true` branch, we call into `f1`, the rewrite of the `await`
 block, and in the `false` branch, it's just go on with the rest of the
 program by calling the continuation `k`.  Function `f1` is doing
 something a little bit different --- it's passing its continuation
-into the pure JavaScript class `tame.Pledges`, which will hold onto it
-until all associated pledges (like the one passed to `setTimeout`) have
-been fulfilled.  When the last pledge is fulfileld (here after 100ms), then
-the `tame.Pledges` class calls the continuation `k`, which here refers
+into the pure JavaScript class `tame.Defers`, which will hold onto it
+until all associated defers (like the one passed to `setTimeout`) have
+been fulfilled.  When the last defer is fulfileld (here after 100ms), then
+the `tame.Defers` class calls the continuation `k`, which here refers
 to `tame.end`.
 
 The *tamejs* implementation uses other CPS-conversions for `while` and
@@ -459,7 +459,7 @@ some asynchronous event, like a timer fired, a packet arrival, or a
 user action.  Programs like these:
 
 ```javascript
-while (true) { await { setTimeout (pledge (), 1); i++; } }
+while (true) { await { setTimeout (defer (), 1); i++; } }
 ```
 
 will **not** overflow the runtime stack, since the stack is unwound every
@@ -471,7 +471,7 @@ ToDos
 See the github issue tracker for the more immediate issues.
 
 * Documentation
-     * Change pledge to something else?
+     * Change defer to something else?
 * Optimizations
      * Can passThrough blocks in a tamed function that don't have awaits,
 so can get more aggressive here --- in progress, but can still

@@ -10,8 +10,8 @@ exports["test do..while..."] = {
 	    var i = 0;	
 	    do {
 	        await { 
-		        setTimeout (pledge (), 1); 
-		        setTimeout (pledge (), 2); 
+		        setTimeout (defer (), 1); 
+		        setTimeout (defer (), 2); 
 	        }
 	        slots[i] = 1;
 	        i++;
