@@ -204,7 +204,7 @@ API and Documentation
 
 ### defer
 
-`defer` can be called in one of three ways.  
+`defer` can be called in one of two ways.
 
 
 #### Inline Variable Declaration
@@ -222,7 +222,7 @@ In the tamed output code, the variables `err` and `ip` will be
 declared right before the start of the `await` block that contains them.
 
 
-#### Generic LHS Assignment
+#### Generic LHS Assignment w/ "Rest" Parameters
 
 The second approach does not auto-declare the callback slot variables, but
 allows more flexibility:
@@ -235,21 +235,28 @@ await { dns.resolve ("okcupid.com", defer (err[0], d.ip)); }
 This second version allows anything you'd normally put on the
 left-hand side of an assignment.
 
-#### Variadic Return
-
-If your callback function might return an arbitrary number of elements,
-`defer` has a third mode that allows for variadic return:
+For callbcacks with variadic return, `tamejs` also supports the [rest
+paramater](http://wiki.ecmascript.org/doku.php?id=harmony:rest_parameters)
+proposal. The above code could have been written as:
 
 ```javascript
-var arr = []
-await { dns.resolve ("okcupid.com", defer (arr)); }
-var err = arr[0];
-var ip = arr[1];
+var d = {};
+var err = [];
+var rest;
+await { dns.resolve ("okcupid.com", defer (...rest)); }
+err[0] = rest[0];
+d.ip = rest[1];
 ```
 
-If `defer` sees that it's passed one parameter, and that parameter
-happens to be an empty array, it will choose this mode of operation.
+And of course, it's allowable to mix and match:
 
+```javascript
+var d = {};
+var err = [];
+var rest;
+await { dns.resolve ("okcupid.com", defer (err[0], ...rest)); }
+d.ip = rest[0];
+```
 
 ### tame.Rendezvous
 
@@ -264,8 +271,8 @@ The `Rendezvous` is similar to a blocking condition variable (or a
 
 Associate a new deferral with the given Rendezvous, whose deferral ID is
 `i`, and whose callbacks slots are supplied as `slots`.  Those slots
-can take the three forms of `defer` return as above (i.e.,
-declarative, generic, or variadic).  As with standard `defer`, the
+can take the two forms of `defer` return as above (i.e.,
+declarative, or generic).  As with standard `defer`, the
 return value of the `Rendezvous`'s `defer` is fed to a function
 expecting a callback.  As soon as that callback fires (and the deferral
 is fulfilled), the provided slots will be filled with the arguments to
