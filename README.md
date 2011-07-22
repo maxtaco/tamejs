@@ -316,7 +316,7 @@ for (var i in hosts) {
     dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
 }
 var which;
-await { rv.wait (which); }
+await { rv.wait (defer (which)); }
 console.log (hosts[which] + " -> " + ips[which]);
 ```
 
