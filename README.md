@@ -299,21 +299,12 @@ var hosts = [ "okcupid.com", "google.com" ];
 var ips = [ ], errs = [];
 var rv = new tame.Rendezvous ();
 for (var i in hosts) {
-    capture (i) {
-       dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
-    }
+    dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
 }
 var which;
 await { rv.wait (which); }
 console.log (hosts[which] + " -> " + ips[which]);
 ```
-
-What's with that `capture` thing?  Well, it's a third, and non-essential
-`tamejs` langague feature.  It "captures" the value of `i` so that
-`defer` will get the value of `i` at the time of deferral, 
-rather than the time of its fulfillment (when chances are it will
-always equal 1).  `capture (i) { ... }` is just syntactic sugar for
-`(function (i) { ... })(i);`.
 
 ### connectors
 
@@ -348,35 +339,6 @@ if (!info[0]) {
     console.log (host + " -> " + ip);
 }
 ```
-
-### capture (..) {...}
-
-As described above, in our `Rendezvous` example, a `capture` environment
-is syntactic sugar to solve unfortunate JavaScript scoping issues.  With
-code like this:
-
-```javascript
-for (var i in hosts) {
-    capture (i) {
-       dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
-    }
-}
-```
-
-We need to be careful about when the value of an iterator `i` is
-bound.  We would like it to be fixed at the time of the deferral,
-and not at the time the deferral is fulfilled.  The
-`capture` environment does just that, and is just syntactic sugar for
-the JavaScript:
-
-```javascript
-for (var i in hosts) {
-    (function (i) {
-       dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
-    })(i);
-}
-```
-
 
 
 How It's Implemented In JavaScript

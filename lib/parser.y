@@ -195,7 +195,6 @@ Statement
      | SwitchStatement
      | TryStatement
      | WithStatement
-     | CaptureStatement
      ;
 
 Label
@@ -352,13 +351,6 @@ FunctionDeclaration
      : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN Block
      {
          $$ = new yy.FunctionDeclaration (@1.first_line, $2, $4, $6);
-     }
-     ;
-
-CaptureStatement
-     : CAPTURE LPAREN ParamList RPAREN Block
-     {
-        $$ = new yy.CaptureStatement (@1.first_line, $3, $5);
      }
      ;
 
