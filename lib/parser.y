@@ -106,7 +106,7 @@ OuterExprAtom
      | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
-     | String      { $$ = $1; }
+     | String      { $$ = [ $1 ]; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
@@ -118,7 +118,7 @@ SlotAtom
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
-     | String      { $$ = $1; }
+     | String      { $$ = [ $1 ]; }
      | ParenExpr   { $$ = $1; } 
      | SlotBracketExpr { $$ = [ new yy.IndexExpr (@1.first_line, $1) ]; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
