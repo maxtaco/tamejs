@@ -1,0 +1,37 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+var slots = {};
+var n = 10;
+var assert = require ("assert");
+
+var slots = [], x = {}, jams = []; 
+
+function helper (i, cb) {
+    await setTimeout (defer (), i);
+    cb (i, 2*i);
+}
+
+exports["test capture of defer slots"] = {
+
+    
+    
+    run : function (cb) {
+
+	for (var i = 0; i < n; i++) {
+	    x[i] = i;
+	}
+	await {
+	    for (var i = 0; i < n; i++) {
+		helper (i, defer (slots[x[i]], jams[i]));
+	    }
+	}
+	cb();
+    },
+    
+    check : function () {
+	for (var i = 0; i < n; i++) {
+	    assert.equal (slots[i] + jams[i], 3 *i, 
+			  "slot[" + i + "] is " + 3 *i);
+	}
+    }
+};
