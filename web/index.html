@@ -154,11 +154,11 @@ thenDoSomethingWith(res1, res2);
 
 				<p>
 					<span class="code_term">await</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.
-					An <span class="code_term">await</span> block contains one or more <span class="code_term">defer</span>s.
-					Only once all relevant defers
-					inside a <span class="code_term">await</span> block have been fulfilled does control continue past it.
+					An <span class="code_term">await</span> block contains one or more calls to <span class="code_term">defer</span>. Calling 
+					<span class="code_term">constructs a new deferral. Only once all deferrals
+					inside an <span class="code_term">await</span> block are fulfilled does control continue past it.
 					<span class="code_term">defer()</span> behaves much like a normal function; it
-					returns an anonymous function that you give to your async functions.  These functions "fulfill" their defers
+					returns an anonymous function that you give to your async functions.  These functions "fulfill" their deferrals
 					by calling the callbacks passed to them.
 				</p>
 				<p>
@@ -168,7 +168,7 @@ thenDoSomethingWith(res1, res2);
 				<p>
 					(For language geeks: <span class="code_term">await</span> is the only new addition to JavaScript language semantics here.  It takes the current program
 					continuation and stores it in a hidden JavaScript object. 
-					<span class="code_term">defer</span> is syntactic sugar that calls into the hidden object. If a defer is the defer to be 
+					<span class="code_term">defer</span> is syntactic sugar that calls into the hidden object. If a deferral is the last to be 
 					fulfilled in its parent <span class="code_term">await</span> block, it reactivates the stored program continuation.)
 				</p>
 				<p>
@@ -253,9 +253,7 @@ await {
 var dns = require("dns");
 
 function do_one (ev, host) {
-    await { 
-    	dns.resolve (host, "A", defer (var err, ip));
-    }
+    await dns.resolve (host, "A", defer (var err, ip)); 
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
     ev();
