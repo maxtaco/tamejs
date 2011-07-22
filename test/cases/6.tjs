@@ -4,7 +4,7 @@ var assert = require ("assert");
 var results = [];
 
 function blah (ev) { 
-    twait { setTimeout (mkevent (), 10*Math.random ()); }
+    await { setTimeout (defer (), 10*Math.random ()); }
     ev(); 
 };
 
@@ -12,23 +12,23 @@ function runsw (x, cb) {
     
     switch (x) {
     case 0:
-	    twait { blah (mkevent ()); }
+	    await { blah (defer ()); }
 	    results.push (0);
 	    break;
     case 17:
     case 1:
-	    twait { blah (mkevent ()); }
+	    await { blah (defer ()); }
 	    results.push (1);
 	    break;
     case 2:
-	    twait { blah (mkevent ()); }
+	    await { blah (defer ()); }
 	    results.push (2);
     case 18:
     case 3:
-	    twait { blah (mkevent ()); }
+	    await { blah (defer ()); }
 	    results.push (3);
     default:
-	    twait { blah (mkevent ()); }
+	    await { blah (defer ()); }
 	    results.push (4);
 	    break;
     }
@@ -40,7 +40,7 @@ exports["switch & case statement"] = {
     run : function (cb) {
 	    var lst = [ 0, 1, 2, 3, 4, 18, 17];
 	    for (var i in lst) {
-	        twait { runsw (lst[i], mkevent ()); }
+	        await { runsw (lst[i], defer ()); }
 	    }
 	    cb ();
     },

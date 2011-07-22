@@ -4,14 +4,14 @@ var slots = {};
 var n = 40;
 var assert = require ("assert");
 
-exports["simple parallel twait"] = {
+exports["simple parallel await"] = {
     
     run : function (cb) {
 	    var i = 0;	
 	    while (i < n) {
-	        twait { 
-		        setTimeout (mkevent (), 1); 
-		        setTimeout (mkevent (), 2); 
+	        await { 
+		        setTimeout (defer (), 1); 
+		        setTimeout (defer (), 2); 
 	        }
 	        slots[i] = 1;
 	        i++;

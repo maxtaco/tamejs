@@ -4,11 +4,11 @@ var slots = {};
 var n = 10;
 var assert = require ("assert");
 
-exports["test twait with no curlies"] = {
+exports["test await with no curlies"] = {
     
     run : function (cb) {
         for (var i = 0; i < n; i++) {
-            twait setTimeout (mkevent (), 3 * Math.random ());
+            await setTimeout (defer (), 3 * Math.random ());
             slots[i] = 1;
         }
 	    cb();

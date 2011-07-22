@@ -17,9 +17,9 @@
 <INITIAL>"else"		return 'ELSE';
 <INITIAL>"try"		return 'TRY';
 <INITIAL>"catch"	return 'CATCH';
-<INITIAL>"twait"	return 'TWAIT';
+<INITIAL>"await"	return 'AWAIT';
 <INITIAL>"function"	return 'FUNCTION';
-<INITIAL>"mkevent"	return 'MKEVENT';
+<INITIAL>"defer"	return 'DEFER';
 <INITIAL>"finally"	return 'FINALLY';
 <INITIAL>"case"		return 'CASE';
 <INITIAL>"switch"	return 'SWITCH';
@@ -43,11 +43,12 @@
 <INITIAL>";"		return "SEMICOLON";
 <INITIAL>','		return 'COMMA';
 <INITIAL>':'		return 'COLON';
+<INITIAL>'.'            return 'DOT';
 
 <INITIAL>"\""		{ this.begin ('ST_QUOTE2'); return 'QUOTE2'; }
 <INITIAL>"'"		{ this.begin ('ST_QUOTE1'); return 'QUOTE1'; }
 <INITIAL>"/*"		{ this.begin ('ST_COMMENT'); }
-<INITIAL>[^/{}()\[\];,:"'\s]+    return 'GENERIC';
+<INITIAL>[^./{}()\[\];,:"'\s]+    return 'GENERIC';
 <INITIAL>.	 	return 'GENERIC';
 
 <ST_QUOTE2>"\\".	return 'STRING_ATOM';

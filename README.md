@@ -1,7 +1,7 @@
 tamejs
 ======
 This package is a source-to-source translator that outputs JavaScript. The
-input dialect looks a lot like JavaScript, but introduces the `twait` 
+input dialect looks a lot like JavaScript, but introduces the `await` 
 primitive, which allows asynchronous callback style code to work more
 like straight-line threaded code.  *tamejs* is written in JavaScript.
 
@@ -21,34 +21,34 @@ slots in between:
 
 ```javascript  
 for (var i = 0; i < 10; i++) {
-    twait { setTimeout (mkevent (), 100); }
+    await { setTimeout (defer (), 100); }
     console.log ("hello");
 }
 ```
 
-There is one new language addition here, the `twait { ... }` block,
-and also one new primitive function, `mkevent`.  The two of them work
-in concert.  Within the context of a `twait` block, `mkevent` returns
-anonymous callback functions associated with that block.  A function
-must "wait" at the close of a `twait` block until all callbacks made
-by `mkevent` in that `twait` block are called.  In the code above,
-there is only one callback produced in each iteration of the loop, so
-after it's called by `setTimer` in 100ms, control continues past the
-`twait` block, onto the log line, and back to the next iteration of
-the loop.  The code looks and feels like threaded code, but is still
-in the asynchronous idiom (if you look at the rewritten code output by
-the *tamejs* compiler).
+There is one new language addition here, the `await { ... }` block,
+and also one new primitive function, `defer`.  The two of them work
+in concert.  A function must "wait" at the close of a `await` block
+until all `defer`rals made in that `await` block are fulfilled.  The
+primitive `defer` returns a callback, and a a callee in an `await`
+block can fulfill a deferral by simply calling the callback it was
+given.  In the code above, there is only one deferral produced in each
+iteration of the loop, so after it's fulfilled by `setTimer` in 100ms,
+control continues past the `await` block, onto the log line, and back
+to the next iteration of the loop.  The code looks and feels like
+threaded code, but is still in the asynchronous idiom (if you look at
+the rewritten code output by the *tamejs* compiler).
 
 This next example does the same, while showcasing power of the
-`twait{..}` language addition.  In the example below, the two timers
-are fired in parallel, and only when both have returned (after 100ms),
-does progress continue...
+`await{..}` language addition.  In the example below, the two timers
+are fired in parallel, and only when both have fulfilled their deferrals
+(after 100ms), does progress continue...
 
 ```javascript
 for (var i = 0; i < 10; i++) {
-    twait { 
-        setTimeout (mkevent (), 100); 
-        setTimeout (mkevent (), 10); 
+    await { 
+        setTimeout (defer (), 100); 
+        setTimeout (defer (), 10); 
     }
     console.log ("hello");
 }
@@ -62,16 +62,16 @@ var dns = require("dns");
 
 function do_one (ev, host) {
     var err, ip;
-    twait { dns.resolve (host, "A", mkevent (err, ip));}
+    await { dns.resolve (host, "A", defer (err, ip));}
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
     ev();
 }
 
 function do_all (lst) {
-    twait {
+    await {
         for (var i = 0; i < lst.length; i++) {
-            do_one (mkevent (), lst[i]);
+            do_one (defer (), lst[i]);
         }
     }
 }
@@ -93,13 +93,13 @@ And you will get a response:
 
 If you want to run these DNS resolutions in serial (rather than
 parallel), then the change from above is trivial: just switch the
-order of the `twait` and `for` statements above:
+order of the `await` and `for` statements above:
 
 ```javascript  
 function do_all (lst) {
     for (var i = 0; i < lst.length; i++) {
-        twait {
-            do_one (mkevent (), lst[i]);
+        await {
+            do_one (defer (), lst[i]);
         }
     }
 }
@@ -116,7 +116,7 @@ of different ways.  The [2007 academic paper on
 tame](http://pdos.csail.mit.edu/~max/docs/tame.pdf) suggests a
 technique called a *rendezvous*.  A rendezvous is implemented in
 *tamejs* as a pure JS construct (no rewriting involved), which allows
-a program to continue as soon as the first event fires (rather than
+a program to continue as soon as the first deferral is fulfilled (rather than
 the last):
 
 ```javascript  
@@ -127,11 +127,11 @@ function do_all (lst, windowsz) {
 
     while (nrecv < lst.length) {
         if (nsent - nrecv < windowsz && nsent < n) {
-            do_one (rv.mkev (nsent), lst[nsent]);
+            do_one (rv.id (nsent).defer (), lst[nsent]);
             nsent++;
         } else {
             var evid;
-            twait { rv.wait (mkevent (evid)); }
+            await { rv.wait (defer (evid)); }
             console.log ("got back lookup nsent=" + evid);
             nrecv++;
         }
@@ -142,13 +142,13 @@ function do_all (lst, windowsz) {
 This code maintains two counters: the number of requests sent, and the
 number received.  It keeps looping until the last lookup is received.
 Inside the loop, if there is room in the window and there are more to
-send, then send; otherwise, wait and harvest.  `Rendezvous.mkev` makes
-an event much like the `mkevent` primitive, but it also takes a first
-argument that associates an idenitifer with the event fired.  This
-way, the waiter can know which event he's getting back.  In this case
-we use the variable `nsent` as the event ID --- it's the ID of this
-event in launch order.  When we harvest the event, `rv.wait` fires its
-callback with the ID of the event that's harvested.
+send, then send; otherwise, wait and harvest.  `Rendezvous.defer`
+makes a deferral much like the `defer` primitive, but it can be
+labeled with an idenfitier.  This way, the waiter can know which
+deferral has fulfileld.  In this case we use the variable `nsent` as the
+defer ID --- it's the ID of this deferral in launch order.  When we
+harvest the deferral, `rv.wait` fires its callback with the ID of the
+deferral that's harvested.  
 
 Note that with windowing, the arrival order might not be the same as
 the issue order. In this example, a slower DNS lookup might arrive
@@ -160,20 +160,20 @@ Composing Serial And Parallel Patterns
 
 In Tame, arbitrary composition of serial and parallel control flows is
 possible with just normal functional decomposition.  Therefore, we
-don't allow direct `twait` nesting.  With inline anonymous JavaScript
+don't allow direct `await` nesting.  With inline anonymous JavaScript
 functions, you can consicely achieve interesting patterns.  The code
 below launches 10 parallel computations, each of which must complete
 two serial actions before finishing:
 
 ```javascript
 function f(cb) {
-    twait {
+    await {
         for (var i = 0; i < n; i++) {
             (function (cb) {
-                twait { setTimeout (mkevent (), 5*Math.random ()); }
-                twait { setTimeout (mkevent (), 4*Math.random ()); }
+                await { setTimeout (defer (), 5*Math.random ()); }
+                await { setTimeout (defer (), 4*Math.random ()); }
                 cb();
-             })(mkevent ());
+             })(defer ());
         }
     }
     cb();
@@ -202,9 +202,9 @@ require ("mylib.tjs");          // then use node.js's import as normal
 API and Documentation
 ---------------------
 
-### mkevent
+### defer
 
-`mkevent` can be called in one of three ways.  
+`defer` can be called in one of two ways.
 
 
 #### Inline Variable Declaration
@@ -214,15 +214,15 @@ variables:
 
 ```javascript
 
-twait { dns.resolve ("okcupid.com", mkevent (var err, ip)); }
+await { dns.resolve ("okcupid.com", defer (var err, ip)); }
 
 ```
 
 In the tamed output code, the variables `err` and `ip` will be
-declared right before the start of the `twait` block that contains them.
+declared right before the start of the `await` block that contains them.
 
 
-#### Generic LHS Assignment
+#### Generic LHS Assignment w/ "Rest" Parameters
 
 The second approach does not auto-declare the callback slot variables, but
 allows more flexibility:
@@ -230,26 +230,33 @@ allows more flexibility:
 ```javascript
 var d = {};
 var err = [];
-twait { dns.resolve ("okcupid.com", mkevent (err[0], d.ip)); }
+await { dns.resolve ("okcupid.com", defer (err[0], d.ip)); }
 ```
 This second version allows anything you'd normally put on the
 left-hand side of an assignment.
 
-#### Variadic Return
-
-If your callback function might return an arbitrary number of elements,
-`mkevent` has a third mode that allows for variadic return:
+For callbcacks with variadic return, `tamejs` also supports the [rest
+parameter](http://wiki.ecmascript.org/doku.php?id=harmony:rest_parameters)
+proposal. The above code could have been written as:
 
 ```javascript
-var arr = []
-twait { dns.resolve ("okcupid.com", mkevent (arr)); }
-var err = arr[0];
-var ip = arr[1];
+var d = {};
+var err = [];
+var rest;
+await { dns.resolve ("okcupid.com", defer (...rest)); }
+err[0] = rest[0];
+d.ip = rest[1];
 ```
 
-If `mkevent` sees that it's passed one parameter, and that parameter
-happens to be an empty array, it will choose this mode of operation.
+And of course, it's allowable to mix and match:
 
+```javascript
+var d = {};
+var err = [];
+var rest;
+await { dns.resolve ("okcupid.com", defer (err[0], ...rest)); }
+d.ip = rest[0];
+```
 
 ### tame.Rendezvous
 
@@ -260,28 +267,33 @@ control flows, so we've included it in the main runtime library.
 The `Rendezvous` is similar to a blocking condition variable (or a
 "Hoare sytle monitor") in threaded programming.
 
-#### tame.Rendezvous.mkev(id,arr)
+#### tame.Rendezvous.id (i).defer (slots,...)
 
-This is the `Rendezvous` equivalent of the `mkevent` built-in, but
-shortened so it doesn't confuse the *tamejs* compiler.  It takes two
-arguments, the event "ID" that the programmer is going to use to
-idenitify this event later on, and also a empty array to return values
-from the callback.  Thus, the `Rendezvous` only works in the third
-style of built-in `mkevent` call above, with variadic return.
+Associate a new deferral with the given Rendezvous, whose deferral ID is
+`i`, and whose callbacks slots are supplied as `slots`.  Those slots
+can take the two forms of `defer` return as above (i.e.,
+declarative, or generic).  As with standard `defer`, the
+return value of the `Rendezvous`'s `defer` is fed to a function
+expecting a callback.  As soon as that callback fires (and the deferral
+is fulfilled), the provided slots will be filled with the arguments to
+that callback.
 
-As with `mkevent`, the return value of `Rendezvous.mkev` is fed
-to function expecting a callback.  As soon as that callback fires,
-the slots of `arr` will be filled with the arguments to that callback.
+#### tame.Rendezvous.defer (slots,...)
+
+You don't need to explicitly assign an ID to a deferral generated from a
+Rendezvous.  If you don't, one will automatically be assigned, in
+ascending order starting from `0`.
 
 #### tame.Rendezvous.wait (cb)
 
-Wait until the next event is fired.  When it is, callback `cb`
-with the ID of the event that fired.  If an unclaimed event fired
-before `wait` was called, then `cb` is fired immediately. 
+Wait until the next deferral on this rendezvous is fulfilled.  When it
+is, callback `cb` with the ID of the fulfilled deferral.  If an
+unclaimed deferral fulfilled before `wait` was called, then `cb` is fired
+immediately.
 
 Though `wait` would work with any hand-rolled JS function expecting
 a callback, it's meant to work particularly well with *tamejs*'s
-`twait` function.
+`await` function.
 
 #### Example
 
@@ -291,14 +303,14 @@ and reports only when the first returns:
 
 ```javascript
 var hosts = [ "okcupid.com", "google.com" ];
-var arr = [ [], [] ];
-var which;
+var ips = [ ], errs = [];
 var rv = new tame.Rendezvous ();
 for (var i in hosts) {
-    dns.resolve (hosts[i], rv.mkev (i, arr[i]));
+    dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
 }
-twait { rv.wait (which); }
-console.log (hosts[which] + " -> " + arr[which][1]);
+var which;
+await { rv.wait (which); }
+console.log (hosts[which] + " -> " + ips[which]);
 ```
 
 ### connectors
@@ -325,7 +337,7 @@ require ('tamejs').register (); // since connectors is a tamed library...
 var timeout = require ('tamejs/lib/connectors').timeout;
 var info = [];
 var host = "pirateWarezSite.ru";
-twait { dns.lookup (host, timeout (mkevent (var err, ip), 100, info)); }
+await dns.lookup (host, timeout (defer (var err, ip), 100, info));
 if (!info[0]) {
     console.log (host + ": timed out!");
 } else if (err) {
@@ -336,7 +348,6 @@ if (!info[0]) {
 ```
 
 
-
 How It's Implemented In JavaScript
 ----------------------------------
 
@@ -345,14 +356,14 @@ The key idea behind the *tamejs* implementation is
 (CPS)](http://en.wikipedia.org/wiki/Continuation-passing_style)
 compilation.  That is, elements of code like `for`, `while` and `if`
 statements are converted to anonymous JavaScript functions written
-in continuation-passing style.  Then, `twait` blocks just grab
+in continuation-passing style.  Then, `await` blocks just grab
 those continuations, store them away, and call them when the
-time is right (i.e., when all relevant events have completed).
+time is right (i.e., when all relevant deferrals have been fulfilled).
 
 For example, the simple program:
 
 ```javascript
-if (true) { twait { setTimeout (mkevent (), 100); } }
+if (true) { await { setTimeout (defer (), 100); } }
 ```
 
 Is rewritten to something like the following (which has been hand-simplified
@@ -362,8 +373,8 @@ for demonstration purposes):
 var tame = require('tamejs').runtime;
 var f0 = function (k) {
     var f1 = function (k) {
-        var __ev = new tame.Event (k);
-        setTimeout ( __ev.mkevent(), 100 ) ;
+        var __ev = new tame.Defers (k);
+        setTimeout ( __ev.defer(), 100 ) ;
     };
     if (true) {
         f1 (k);
@@ -380,14 +391,14 @@ Function `f0` takes as a parameter the continuation `k`, which
 signifies "the rest of the program".  In the case of this trivial
 program, the rest of the program is just a call to the exit function
 `tame.end`.  Inside the `if` statement, there are two branches.  In
-the `true` branch, we call into `f1`, the rewrite of the `twait`
+the `true` branch, we call into `f1`, the rewrite of the `await`
 block, and in the `false` branch, it's just go on with the rest of the
 program by calling the continuation `k`.  Function `f1` is doing
 something a little bit different --- it's passing its continuation
-into the pure JavaScript class `tame.Event`, which will hold onto it
-until all associated events (like the one passed to `setTimeout`) have
-been called.  When the last event is fired (here after 100ms), then
-the `tame.Event` class calls the continuation `k`, which here refers
+into the pure JavaScript class `tame.Defers`, which will hold onto it
+until all associated deferrals (like the one passed to `setTimeout`) have
+been fulfilled.  When the last deferral is fulfileld (here after 100ms), then
+the `tame.Defers` class calls the continuation `k`, which here refers
 to `tame.end`.
 
 The *tamejs* implementation uses other CPS-conversions for `while` and
@@ -399,39 +410,37 @@ The translation of `switch` is probably the trickiest.
 As you might guess, the output code is less efficient than the input
 code.  All of the anonymous functions add bloat.  This unfortunate
 side-effect of our approach is mitigated by skipping CPS compilation
-when possible.  Functions with no `twait` blocks are passed through
+when possible.  Functions with no `await` blocks are passed through
 unmolested.  Similarly, blocks within tamed functions that don't call
-`twait` can also pass through.
+`await` can also pass through.
 
 Another concern is that the use of tail recursion in translated loops
 might overflow the runtime callstack.  That is certainly true for
 programs like the following:
 
 ```javascript
-while (true) { twait { i++; } }
+while (true) { await { i++; } }
 ```
 
 ...but you should never write programs like these!  That is, there's no
-reason to have a `twait` block unless your program needs to wait for
+reason to have a `await` block unless your program needs to wait for
 some asynchronous event, like a timer fired, a packet arrival, or a 
 user action.  Programs like these:
 
 ```javascript
-while (true) { twait { setTimeout (mkevent (), 1); i++; } }
+while (true) { await { setTimeout (defer (), 1); i++; } }
 ```
 
 will **not** overflow the runtime stack, since the stack is unwound every
 iteration through the loop (via `setTimeout`). And these are the types
-of programs that you should be using `twait` for.
+of programs that you should be using `await` for.
 
 ToDos
 ------
 See the github issue tracker for the more immediate issues.
 
-* Documentation
-     * Change mkevent to something else?
 * Optimizations
-     * Can passThrough blocks in a tamed function that don't have twaits,
+     * Can passThrough blocks in a tamed function that don't have awaits,
 so can get more aggressive here --- in progress, but can still
 seek out some more optimizations....
 * Parsing
@@ -525,8 +534,9 @@ paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
 Authors
 -------
-* Max Krohn <max@okcupid.com>
-* Chris Coyne <chris@okcupid.com>
+* Max Krohn (first name AT okcupid DOT com)
+* Chris Coyne (first name AT okcupid DOT com)
+* Eddie Kohler (original Tame coauthor, and advisor)
 
 License
 -------

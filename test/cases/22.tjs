@@ -10,7 +10,7 @@ var results = [];
 var animals = [];
 
 function slowGuy (tm, str, cb) {
-    twait { setTimeout (mkevent (), tm); }
+    await { setTimeout (defer (), tm); }
     cb (str);
 };
 
@@ -19,16 +19,15 @@ exports["test timeout connectors"] = {
     run : function (cb) {
 	var info = [];
 
-	twait { 
+	await { 
 	    slowGuy (1, "dog",
-		     connectors.timeout (mkevent (animals[0]), 100, info));
+		     connectors.timeout (defer (animals[0]), 100, info));
 	}
 	results[0] = info[0];
 
-	animals[1];
-	twait { 
+	await { 
 	    slowGuy (100, "cat",
-		     connectors.timeout (mkevent (animals[1]), 1, info));
+		     connectors.timeout (defer (animals[1]), 1, info));
 	}
 	results[1] = !info[1];
 	cb();

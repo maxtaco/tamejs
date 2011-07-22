@@ -18,7 +18,7 @@ function Case (index, nm, file) {
 	    var ret = true;
 	    var x = require ("../" + this._file);
 	    for (var c in x) {
-	        twait { x[c].run (mkevent ());}
+	        await { x[c].run (defer ());}
 	        try { 
 		        x[c].check ();
 		        console.log (this._nm + ": passed");
@@ -41,12 +41,11 @@ function TamedCase (index, prfx, infile, outfile) {
         var fs = require ('fs');
         var Engine = require ('../lib/engine').Engine;
         var engine = new Engine (this._infile);
-        twait { engine.readInput (mkevent ()); }
+        await { engine.readInput (defer ()); }
 	    engine.parse ();
 	    var outdat = engine.compile ().formatOutput ();
-        var res = [];
-        twait { fs.writeFile (this._file, outdat, mkevent (res)); }
-	    if (res[0]) throw res[0];
+        await { fs.writeFile (this._file, outdat, defer (var err)); }
+	    if (err) throw err;
         ev();
     };
 
@@ -63,9 +62,7 @@ function read_cases (ev) {
     var tests = [];
     var res = [];
     var prfx = "test/cases/";
-    twait { fs.readdir ('test/cases/', mkevent (res)); }
-    var err = res[0];
-    var files = res[1];
+    await { fs.readdir ('test/cases/', defer (var err, files)); }
     if (err) throw err;
 
 	// Don't run cases that were output by the tamejs compiler
@@ -88,17 +85,14 @@ function read_cases (ev) {
 };
 
 function do_cases (ev) {
-    var res = [];
-    twait { read_cases (mkevent (res)); }
-    var cases = res[0];
+    await { read_cases (defer (var cases)); }
     var tot = 0;
     var good = 0;
     for (var i in cases) {
-	    twait { cases[i].compile (mkevent ()); }
-	    var res = [];
+	    await { cases[i].compile (defer ()); }
 	    tot++;
-	    twait { cases[i].run (mkevent(res)); }
-	    if (res[0]) {
+	    await { cases[i].run (defer(var res)); }
+	    if (res) {
 	        good ++;
 	    }
     }
@@ -110,6 +104,6 @@ function do_cases (ev) {
     ev();
 };
 
-twait { do_cases (mkevent ()); }
+await { do_cases (defer ()); }
 
 

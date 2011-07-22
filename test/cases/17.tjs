@@ -5,28 +5,27 @@ var res = 0;
 var i = 0;
 
 function foo (i, cb) {
-    twait { setTimeout (mkevent (), i); }
+    await { setTimeout (defer (), i); }
     cb (i);
 };
 
 
 var ok = true;
 
-exports["a test of trigger values"] = {
+exports["a test of fulfill values"] = {
 
     run : function (cb) {
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
-            twait { foo (x, mkevent (var y, z)); }
+            await { foo (x, defer (var y, z)); }
             if (x != y) { ok = false; }
         }
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
-            var res = [];
-            twait { foo (x, mkevent (res)); }
-            if (x != res[0]) { ok = false; }
+            await { foo (x, defer (var res)); }
+            if (x != res) { ok = false; }
         }
         
         cb ();
@@ -34,7 +33,7 @@ exports["a test of trigger values"] = {
     },
 
     check : function () {
-	    assert.ok (ok, "triggered with proper values");
+	    assert.ok (ok, "fulfilled with proper values");
     }
 
 };

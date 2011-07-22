@@ -8,7 +8,7 @@ $(function() {
 //----------------------------------------
 
 (function($) {
-  var triggers = [];
+  var fulfills = [];
   $.fn.floatingFixed = function(options) {
     options = $.extend({}, $.floatingFixed.defaults, options);
     var r = $(this).each(function() {
@@ -17,7 +17,7 @@ $(function() {
       $this.data("floatingFixedLeft", pos.left);
       $this.data("floatingFixedOptions", options);
       $this.data("floatingFixedTopOrigTop", $this.css("top"));
-      triggers.push($this);
+      fulfills.push($this);
     });
     windowScroll();    
     return r;
@@ -30,10 +30,10 @@ $(function() {
   
   var $window = $(window);
   var windowScroll = function() {
-    if(triggers.length === 0) { return; }
+    if(fulfills.length === 0) { return; }
     var scrollY = $window.scrollTop();
-    for(var i = 0; i < triggers.length; i++) {
-      var t = triggers[i], opt = t.data("floatingFixedOptions"), top = t.data("floatingFixedTop");
+    for(var i = 0; i < fulfills.length; i++) {
+      var t = fulfills[i], opt = t.data("floatingFixedOptions"), top = t.data("floatingFixedTop");
       if(top < scrollY + opt.padding && !t.data("isFloating")) {        
 //        t.css({position: 'fixed', top: opt.padding, left: t.data("floatingFixedLeft") }).data("isFloating", true);
         t.css({position: 'fixed', top: opt.padding }).data("isFloating", true);

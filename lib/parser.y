@@ -83,6 +83,13 @@ BracketExpr
      }
      ;
 
+SlotBracketExpr 
+     : LBRACKET InnerExpr RBRACKET 
+     { 
+	 $$ = $2;
+     }
+     ;
+
 BraceExpr
      : LBRACE InnerExpr RBRACE    
      { 
@@ -96,24 +103,26 @@ BraceExpr
 OuterExprAtom
      : GENERIC     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COMMA       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Mkevent     { $$ = [ $1 ]; }
+     | Defer      { $$ = [ $1 ]; }
      ;
 
 SlotAtom
      : GENERIC     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
-     | BracketExpr { $$ = $1; }
+     | SlotBracketExpr { $$ = [ new yy.IndexExpr (@1.first_line, $1) ]; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Mkevent     { $$ = [ $1 ]; }
+     | Defer       { $$ = [ $1 ]; }
      | LABEL       { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
      | BraceExpr   { $$ = $1; }
      | FunctionDeclaration { $$ = [ $1 ]; }
@@ -129,10 +138,10 @@ Slot
      ;
      
 
-Mkevent
-     : MKEVENT LPAREN SlotListOpt RPAREN
+Defer
+     : DEFER LPAREN SlotListOpt RPAREN
      {
-           $$ = new yy.MkeventExpr (@1.first_line, $3);
+           $$ = new yy.DeferExpr (@1.first_line, $3);
      }
      ;
 
@@ -178,7 +187,7 @@ Statement
      | WhileStatement
      | DoWhileStatement
      | IfStatement
-     | TwaitStatement
+     | AwaitStatement
      | LabeledStatement
      | ReturnStatement
      | BreakStatement
@@ -345,10 +354,10 @@ FunctionDeclaration
      }
      ;
 
-TwaitStatement
-     : TWAIT Statement
+AwaitStatement
+     : AWAIT Statement
      {
-        $$ = new yy.TwaitStatement (@1.first_line, $2);
+        $$ = new yy.AwaitStatement (@1.first_line, $2);
      }
      ;
 

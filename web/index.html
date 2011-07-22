@@ -55,6 +55,7 @@
 			</div>
 			<div id="body_right">
 				<a name="what_is_tame"></a>
+				
 				<h3>What is Tame?</h3>
 				<p>
 					Tame (or "TameJs") is an extension to JavaScript, written in JavaScript, that makes event programming easier to write, read, and edit.
@@ -140,56 +141,57 @@ handleVisit : function(angel, buffy) {
 				<h3>So...how does Tame solve this?</h3>
 <pre class="prettyprint lang-js">
 var res1, res2;
-twait {
-	doOneThing(mkevent(res1));
-	andAnother(mkevent(res2));
+await {
+	doOneThing(defer(res1));
+	andAnother(defer(res2));
 }
 thenDoSomethingWith(res1, res2);
 </pre>
 
 				<p>
-					As shown above, Tame introduces 2 keywords, <span class="code_term">twait</span> and <span class="code_term">mkevent</span> (short for "make event"). They are used in tandem.
+					As shown above, Tame introduces 2 keywords, <span class="code_term">await</span> and <span class="code_term">defer</span>. They are used in tandem.
 				</p>
 
 				<p>
-					<span class="code_term">twait</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.  
-					Only once all relevant events
-					inside a <span class="code_term">twait</span> block have finished does control continue past it.
-					<span class="code_term">mkevent</span> lets <span class="code_term">twait</span> know which events to wait for.  <span class="code_term">mkevent</span> 
-					returns an anonymous function that you give to your async functions as a callback.   Such an async function tells <span class="code_term">twait</span> 
-					that the expected event has occurred by calling its <span class="code_term">mkevent</span>-generated callback.
+					<span class="code_term">await</span> marks a section of code that depends on externals events, like network or disk activity, or a timer.
+					An <span class="code_term">await</span> block contains one or more <span class="code_term">defer</span>s.
+					Only once all relevant defers
+					inside a <span class="code_term">await</span> block have been fulfilled does control continue past it.
+					<span class="code_term">defer()</span> behaves much like a normal function; it
+					returns an anonymous function that you give to your async functions.  These functions "fulfill" their defers
+					by calling the callbacks passed to them.
 				</p>
 				<p>
-					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">mkevent</span>, and they'll
-					be available after the <span class="code_term">twait</span> block completes.
+					If your callback function is supposed to take arguments, name them as arguments to <span class="code_term">defer</span>, and they'll
+					be available after the <span class="code_term">await</span> block completes.
 				</p>
 				<p>
-					(For language geeks: <span class="code_term">twait</span> is the only new addition to JavaScript language semantics here.  It takes the current program
+					(For language geeks: <span class="code_term">await</span> is the only new addition to JavaScript language semantics here.  It takes the current program
 					continuation and stores it in a hidden JavaScript object. 
-					<span class="code_term">mkevent</span> is syntactic sugar that calls into the hidden object. If an event is the last outstanding event 
-					in its parent <span class="code_term">twait</span> block, it reactivates the stored program continuation.)
+					<span class="code_term">defer</span> is syntactic sugar that calls into the hidden object. If a defer is the defer to be 
+					fulfilled in its parent <span class="code_term">await</span> block, it reactivates the stored program continuation.)
 				</p>
 				<p>
 					Sound confusing? It's really not when you see it in action. Let's show some example code.
 				</p>
 <pre class="prettyprint lang-js">
 for (var i = 0; i < 10; i++) {
-	twait { setTimeout (mkevent (), 100); }
+	await { setTimeout (defer (), 100); }
 	console.log ("Hello world! " + i);
 }
 </pre>				
 				<p>
 					The above code prints "Hello world" 10 times, separated by 100ms. The code looks and feels like threaded code, but it uses preexisting async-style functions.
 					To be clear: this is the setTimeout you know and love, <i>unmodified</i>. TameJS works with all existing async code.
-					setTimeout is expecting a function to execute, and that's what mkevent() is providing.
+					setTimeout is expecting a function to execute, and that's what defer() is providing.
 				</p>
 				<p>
-					What happens if we put two <span class="code_term">setTimeout</span> calls inside one twait?
+					What happens if we put two <span class="code_term">setTimeout</span> calls inside one await?
 <pre class="prettyprint lang-js">
 for (var i = 0; i < 10; i++) {
-	twait { 
-		setTimeout (mkevent (), 10); 
-		setTimeout (mkevent (), 100); 
+	await { 
+		setTimeout (defer (), 10); 
+		setTimeout (defer (), 100); 
 	}
 	console.log ("Hello world! " + i);
 }
@@ -199,15 +201,15 @@ for (var i = 0; i < 10; i++) {
 					Tame's beauty is starting to unfold here: 2 timers are fired at once, and after both have returned the loop continues. So every
 					100ms it prints "Hello world" and the next number.
 				<p>
-					Moving the twait outside the for loop is acceptable. All 20 timers would fire at once, and this
+					Moving the await outside the for loop is acceptable. All 20 timers would fire at once, and this
 					code would let out your feelings in approximately 100ms:
 				</p>
 <pre class="prettyprint lang-js">
 var message = "I'm starting to get turned on.";
-twait { 
+await { 
 	for (var i = 0; i < 10; i++) {
-		setTimeout (mkevent (), 10); 
-		setTimeout (mkevent (), 100); 
+		setTimeout (defer (), 10); 
+		setTimeout (defer (), 100); 
 	}
 }
 console.log (message);
@@ -216,13 +218,13 @@ console.log (message);
 
 
 				<p>
-					In practice your async functions call back with information, and you want <span class="code_term">mkevent</span> to collect that information.
+					In practice your async functions call back with information, and you want <span class="code_term">defer</span> to collect that information.
 					Let's use Node's <span class="code_term">dns.resolve</span> function:
 				</p>
 <pre class="prettyprint lang-js">
 var err, ip;
-twait { 
-	dns.resolve (host, "A", mkevent (err, ip));
+await { 
+	dns.resolve (host, "A", defer (err, ip));
 }
 if (err) { console.log ("ERROR! " + err); } 
 else { console.log (host + " -> " + ip); }
@@ -230,15 +232,15 @@ else { console.log (host + " -> " + ip); }
 
 				<p>
 					Notice that <span class="code_term">dns.resolve</span> is expecting a third parameter, a function
-					to call with its result. <span class="code_term">mkevent</span> provides a function that collects
+					to call with its result. <span class="code_term">defer</span> provides a function that collects
 					the results into <span class="code_term">err</span> and <span class="code_term">ip</span>.
 				</p>
 				<p>
 					Tame also lets us name those variables inline, for convenience:
 				</p>
 <pre class="prettyprint lang-js">
-twait { 
-	dns.resolve (host, "A", mkevent (var err, ip));
+await { 
+	dns.resolve (host, "A", defer (var err, ip));
 }
 </pre>
 
@@ -251,8 +253,8 @@ twait {
 var dns = require("dns");
 
 function do_one (ev, host) {
-    twait { 
-    	dns.resolve (host, "A", mkevent (var err, ip));
+    await { 
+    	dns.resolve (host, "A", defer (var err, ip));
     }
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
@@ -260,9 +262,9 @@ function do_one (ev, host) {
 };
 
 function do_all (lst) {
-    twait {
+    await {
         for (var i = 0; i < lst.length; i++) {
-            do_one (mkevent (), lst[i]);
+            do_one (defer (), lst[i]);
         }
     }
 };
@@ -279,13 +281,13 @@ okcupid.com -> 66.59.66.6
 </pre>
 
 				<p>
-					If you want to do these DNS resolutions in serial (rather than parallel), then the change from above is trivial: just switch the order of the twait and for statements above:
+					If you want to do these DNS resolutions in serial (rather than parallel), then the change from above is trivial: just switch the order of the await and for statements above:
 				</p>
 <pre class="prettyprint lang-js">
 function do_all (lst) {
     for (var i = 0; i < lst.length; i++) {
-        twait {
-            do_one (mkevent (), lst[i]);
+        await {
+            do_one (defer (), lst[i]);
         }
     }
 }
@@ -303,10 +305,10 @@ handleVisit : function(angel, buffy) {
 	// let's fire all 3 at once
 	//
 
-	twait {
-		getScore (angel, buffy, mkevent(var score));
-		getNextMatch (angel, buffy, mkevent(var next));
-		recordVisitAndGetInfo (angel, buffy, mkevent(var vinfo));
+	await {
+		getScore (angel, buffy, defer(var score));
+		getNextMatch (angel, buffy, defer(var next));
+		recordVisitAndGetInfo (angel, buffy, defer(var vinfo));
 	}
 
 	//
@@ -366,25 +368,25 @@ huntMen : function(buffy) {
    while (soulmates.length < 10) {
  
       // Get 10 candidates for Buffy  
-      twait {  
-        getMatches(buffy, 10, mkevent(var userids));
+      await {  
+        getMatches(buffy, 10, defer(var userids));
       }
   
       for (var i = 0; i < userids.length; i++) {
         var u = userids[i];
-        twait {
+        await {
           // get their pic from our pic server
-          getThumbnail  (u, mkevent(var thumb));
+          getThumbnail  (u, defer(var thumb));
         }
-        twait {
+        await {
           // ask our pic analyzer to review
-          isPicAVampire(thumb, mkevent(var is_vamp));
+          isPicAVampire(thumb, defer(var is_vamp));
         }
         if (! is_vamp) {
-          twait {
+          await {
             // get 2 more pieces of info
-            getPersonality(u, mkevent(var personality));
-            getLastTalked (u, match, mkevent(var last_talked));
+            getPersonality(u, defer(var personality));
+            getLastTalked (u, match, defer(var last_talked));
           }
           soulmates.push({
             "userid" : match,
@@ -494,7 +496,7 @@ node &lt;outfile&gt; # or whatever you want
 					In Tame it's very simple:
 				</p>
 <pre class="prettyprint lang-js">
-twait fs.readFile (__filename, mkevent (var err, text)); 
+await fs.readFile (__filename, defer (var err, text)); 
 if (err) { throw (err): }
 console.log (text.toUpperCase ());
 </pre>					
@@ -541,9 +543,9 @@ Step(
 					And Tame:
 				</p>
 <pre class="prettyprint lang-js">
-twait { 
-   fs.readFile (__filename, mkevent (var e1, code));
-   fs.readFile ("/etc/password", mkevent (var e2, users)); 
+await { 
+   fs.readFile (__filename, defer (var e1, code));
+   fs.readFile ("/etc/password", defer (var e2, users)); 
 }
 if (e1) throw e1;
 if (e2) throw e2;
@@ -565,8 +567,8 @@ console.log (users);
 				<p class="answer">
 					Yes - it's also a translation of JS and seems to use a similar compilation technique, and we think it's more evidence that the Node
 					community needs something on top of JS. However, we see several advantages to the Tame approach.  First off, it's 
-					simpler: just two new keywords (<span class="code_term">twait</span> and <span class="code_term">mkevent</span>), only
-					the former of which is a true language addition (the latter being syntactic sugar).  
+					simpler: just two new keywords (<span class="code_term">await</span> and <span class="code_term">defer</span>), only
+					the former of which is a true language addition (the latter being syntactic sugar). 
 					Second, it's more powerful, allowing arbitrary parallelism, not just two-way parallelism
 					with <span class="code_term">waitfor..or</span>.  Finally, it's easier to integrate: traditional JS code can call tamed code, and vice-versa,
 					whereas traditional JS cannot conveniently call stratified JS.
@@ -578,7 +580,7 @@ console.log (users);
 
 				<p class="answer">
 				        Sort of.  Code with <span class="code_term">try..catch</span> will compile in all cases, and run as expected when not
-					composed with <span class="code_term">twait</span> blocks.  But consider the following snippet of traditional JavaScript code:
+					composed with <span class="code_term">await</span> blocks.  But consider the following snippet of traditional JavaScript code:
 <pre class="prettyprint lang-js">
 try {
    setTimeout (function () { throw new Error ("XX"); }, 10);
@@ -590,7 +592,7 @@ try {
                                         the call stack.  Not surprisingly, this tamed version exhibits the same behavior:
 <pre class="prettyprint lang-js">
 try {
-   twait setTimeout (mkevent (), 10);
+   await setTimeout (defer (), 10);
    throw new Error ("XX");
 } catch (e) {
    console.log ("Caught: " + e);

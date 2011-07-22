@@ -7,37 +7,35 @@ exports["rendezvous & windowing example"] = {
 
 
     run : function (ev) {
-	
-	function call (i, ev) {
-	    slots[i] = 1;
-	    twait { setTimeout (mkevent (), 10*Math.random()); }
-	    slots[i] |= 2;
-	    ev();
-	};
-
-    
-	
-	function window (n, window, ev) {
-	    var rv = new tame.Rendezvous ();
-	    var nsent = 0;
-	    var nrecv = 0;
 	    
-	    while (nrecv < n) {
-		    if (nsent - nrecv < window && nsent < n) {
-		        call (nsent, rv.mkev (nsent));
-		        nsent++;
-		    } else {
-		        var res;
-		        twait { rv.wait (mkevent (res)); }
-		        slots[res] |= 4;
-		        nrecv++;
-		    }
-	    }
-	    ev();
-	};
+	    function call (i, ev) {
+	        slots[i] = 1;
+	        await { setTimeout (defer (), 10*Math.random()); }
+	        slots[i] |= 2;
+	        ev();
+	    };
+
+	    function window (n, window, ev) {
+	        var rv = new tame.Rendezvous ();
+	        var nsent = 0;
+	        var nrecv = 0;
+	        
+	        while (nrecv < n) {
+		        if (nsent - nrecv < window && nsent < n) {
+		            call (nsent, rv.id (nsent).defer());
+		            nsent++;
+		        } else {
+		            var res;
+		            await { rv.wait (defer (res)); }
+		            slots[res] |= 4;
+		            nrecv++;
+		        }
+	        }
+	        ev();
+	    };
 	    
 	    var n = 100;
-	    twait { window (n, 10, mkevent ()); }
+	    await { window (n, 10, defer ()); }
 	    ev ();
     },
 	

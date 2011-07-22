@@ -11,7 +11,7 @@ exports["for..in iteration"] = {
         
 	    var i = 0;
 	    for (i = 0; i < 10; i++) {
-	        twait { setTimeout (mkevent (), 10* Math.random ()); }
+	        await { setTimeout (defer (), 10* Math.random ()); }
 	        listA.push (i);
 	    }
 	    for ( ; i < 20; i++) {
@@ -21,7 +21,7 @@ exports["for..in iteration"] = {
 	        if (i >= 30) {
 		        break;
 	        }
-	        twait { setTimeout (mkevent (), 10* Math.random ()); }
+	        await { setTimeout (defer (), 10* Math.random ()); }
 	        listA.push (i);
 	        i++;
 	    }

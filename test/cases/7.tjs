@@ -7,7 +7,7 @@ exports["for..in iteration"] = {
 
     run : function (cb) {
 	    for (var animal in inlist) {
-	        twait { setTimeout (mkevent (), 10 * Math.random ()); }
+	        await { setTimeout (defer (), 10 * Math.random ()); }
 	        outlist.push (inlist[animal]);
 	    }
 	    cb ();
