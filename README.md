@@ -37,7 +37,7 @@ There is one new language addition here, the `await { ... }` block,
 and also one new primitive function, `defer`.  The two of them work
 in concert.  A function must "wait" at the close of a `await` block
 until all `defer`rals made in that `await` block are fulfilled.  The
-primitive `defer` returns a callback, and a a callee in an `await`
+function `defer` returns a callback, and a callee in an `await`
 block can fulfill a deferral by simply calling the callback it was
 given.  In the code above, there is only one deferral produced in each
 iteration of the loop, so after it's fulfilled by `setTimer` in 100ms,
