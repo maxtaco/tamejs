@@ -236,7 +236,7 @@ This second version allows anything you'd normally put on the
 left-hand side of an assignment.
 
 For callbcacks with variadic return, `tamejs` also supports the [rest
-paramater](http://wiki.ecmascript.org/doku.php?id=harmony:rest_parameters)
+parameter](http://wiki.ecmascript.org/doku.php?id=harmony:rest_parameters)
 proposal. The above code could have been written as:
 
 ```javascript

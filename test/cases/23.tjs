@@ -6,33 +6,35 @@ var assert = require ("assert");
 
 var slots = [], x = {}, jams = []; 
 
+var hard = { foo : { bar: [ { baz : [] } ] } };
+
 function helper (i, cb) {
     await setTimeout (defer (), i);
-    cb (i, 7*i, 2*i);
+    cb (i, 7*i, 2*i, 3*i);
 }
 
 exports["test capture of defer slots"] = {
 
     
-    
     run : function (cb) {
-
-	for (var i = 0; i < n; i++) {
-	    x[i] = i;
-	}
-	var dummy = 0;
-	await {
+        
 	    for (var i = 0; i < n; i++) {
-		helper (i, defer (slots[x[i]], dummy, jams[i]));
+	        x[i] = i;
 	    }
-	}
-	cb();
+	    var dummy = { puppy : 0 };
+	    await {
+	        for (var i = 0; i < n; i++) {
+		        helper (i, defer (slots[x[i]], dummy.puppy, jams[i], 
+                                  hard.foo["bar"][0].baz[i]));
+	        }
+	    }
+	    cb();
     },
     
     check : function () {
-	for (var i = 0; i < n; i++) {
-	    assert.equal (slots[i] + jams[i], 3 *i, 
-			  "slot[" + i + "] is " + 3 *i);
-	}
+	    for (var i = 0; i < n; i++) {
+	        assert.equal (slots[i] + jams[i] + hard.foo.bar[0].baz[i], 
+                          6 *i, "slot[" + i + "] is " + 6 *i);
+	    }
     }
 };
