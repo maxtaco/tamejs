@@ -8,7 +8,7 @@ var slots = [], x = {}, jams = [];
 
 function helper (i, cb) {
     await setTimeout (defer (), i);
-    cb (i, 2*i);
+    cb (i, 7*i, 2*i);
 }
 
 exports["test capture of defer slots"] = {
@@ -20,9 +20,10 @@ exports["test capture of defer slots"] = {
 	for (var i = 0; i < n; i++) {
 	    x[i] = i;
 	}
+	var dummy = 0;
 	await {
 	    for (var i = 0; i < n; i++) {
-		helper (i, defer (slots[x[i]], jams[i]));
+		helper (i, defer (slots[x[i]], dummy, jams[i]));
 	    }
 	}
 	cb();
