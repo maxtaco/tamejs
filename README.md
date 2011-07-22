@@ -315,8 +315,7 @@ var rv = new tame.Rendezvous ();
 for (var i in hosts) {
     dns.resolve (hosts[i], rv.id (i).defer (errs[i], ips[i]));
 }
-var which;
-await { rv.wait (defer (which)); }
+await rv.wait (defer (var which));
 console.log (hosts[which] + " -> " + ips[which]);
 ```
 
