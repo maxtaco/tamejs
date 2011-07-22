@@ -27,11 +27,9 @@ exports["test of 'this' inside of a tamed class"] = {
 
     run  : function (cb) {
         obj = new MyClass (n);
-        var go = true;
-        while (go) {
-            var res = [];
-            await { obj.next (defer (res)); }
-            go = !res[0];
+        var done = false;
+        while (!done) {
+            await { obj.next (defer (done)); }
         }
         cb ();
     },

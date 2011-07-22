@@ -29,9 +29,8 @@ function makeTest (exports) {
 		                call (nsent, rv.id (nsent).defer ());
 		                nsent++;
 		            } else {
-		                var res = [];
-		                await { rv.wait (defer (res)); }
-		                slots[res[0]] |= 4;
+		                await { rv.wait (defer (var res)); }
+		                slots[res] |= 4;
 		                nrecv++;
 		            }
 	            }

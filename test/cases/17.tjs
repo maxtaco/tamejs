@@ -24,9 +24,8 @@ exports["a test of fulfill values"] = {
         
         for (var i = 0; i < 20; i++) {
             var x = 3 * Math.random ();
-            var res = [];
-            await { foo (x, defer (res)); }
-            if (x != res[0]) { ok = false; }
+            await { foo (x, defer (var res)); }
+            if (x != res) { ok = false; }
         }
         
         cb ();

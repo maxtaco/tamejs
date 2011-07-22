@@ -44,9 +44,8 @@ function TamedCase (index, prfx, infile, outfile) {
         await { engine.readInput (defer ()); }
 	    engine.parse ();
 	    var outdat = engine.compile ().formatOutput ();
-        var res = [];
-        await { fs.writeFile (this._file, outdat, defer (res)); }
-	    if (res[0]) throw res[0];
+        await { fs.writeFile (this._file, outdat, defer (var err)); }
+	    if (err) throw err;
         ev();
     };
 
@@ -63,9 +62,7 @@ function read_cases (ev) {
     var tests = [];
     var res = [];
     var prfx = "test/cases/";
-    await { fs.readdir ('test/cases/', defer (res)); }
-    var err = res[0];
-    var files = res[1];
+    await { fs.readdir ('test/cases/', defer (var err, files)); }
     if (err) throw err;
 
 	// Don't run cases that were output by the tamejs compiler
@@ -88,17 +85,14 @@ function read_cases (ev) {
 };
 
 function do_cases (ev) {
-    var res = [];
-    await { read_cases (defer (res)); }
-    var cases = res[0];
+    await { read_cases (defer (var cases)); }
     var tot = 0;
     var good = 0;
     for (var i in cases) {
 	    await { cases[i].compile (defer ()); }
-	    var res = [];
 	    tot++;
-	    await { cases[i].run (defer(res)); }
-	    if (res[0]) {
+	    await { cases[i].run (defer(var res)); }
+	    if (res) {
 	        good ++;
 	    }
     }
