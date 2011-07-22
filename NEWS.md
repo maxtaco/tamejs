@@ -8,5 +8,3 @@ v0.3.0
     * `twait` --> `await`
     * `mkevent` --> `defer`
 * Different `Rendezvous` semantics.
-* Introduction of the `capture` environment to fix unforuntate JS scoping issues.
-    
