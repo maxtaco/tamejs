@@ -14,6 +14,13 @@ incrementally deployable --- you can keep all of your old code and
 just write the new bits in *tamejs*!  So try it out and let us
 know what you think.
 
+NEWS
+--------
+Now available in [NEWS.md](https://github.com/maxtaco/tamejs/blob/master/NEWS.md).
+Version v0.3.0 just released, with improved but non-backwards-compatible syntax, 
+and bugfixes. This will hopefully be the last such breakage for a while.
+
+
 Code Examples
 --------
 Here is a simple example that prints "hello" 10 times, with 100ms delay
