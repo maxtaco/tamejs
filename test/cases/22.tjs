@@ -25,7 +25,6 @@ exports["test timeout connectors"] = {
 	}
 	results[0] = info[0];
 
-	animals[1];
 	await { 
 	    slowGuy (100, "cat",
 		     connectors.timeout (defer (animals[1]), 1, info));

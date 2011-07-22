@@ -83,6 +83,13 @@ BracketExpr
      }
      ;
 
+SlotBracketExpr 
+     : LBRACKET InnerExpr RBRACKET 
+     { 
+	 $$ = $2;
+     }
+     ;
+
 BraceExpr
      : LBRACE InnerExpr RBRACE    
      { 
@@ -113,9 +120,9 @@ SlotAtom
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = $1; }
      | ParenExpr   { $$ = $1; } 
-     | BracketExpr { $$ = [ new yy.IndexExpr (@1.first_line, $1) ]; }
+     | SlotBracketExpr { $$ = [ new yy.IndexExpr (@1.first_line, $1) ]; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
-     | Defer      { $$ = [ $1 ]; }
+     | Defer       { $$ = [ $1 ]; }
      | LABEL       { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
      | BraceExpr   { $$ = $1; }
      | FunctionDeclaration { $$ = [ $1 ]; }
