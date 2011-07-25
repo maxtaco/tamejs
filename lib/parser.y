@@ -318,7 +318,7 @@ Case
 CaseLabel
      : DEFAULT COLON     { $$ = yy.Case (@1.first_line); }
      | CASE LABEL        { $$ = yy.Case (@1.first_line, $2); }
-     | CASE String COLON { $$ = yy.Case (@1.first_line, $2); }
+     | CASE String COLON { $$ = yy.Case (@1.first_line, $2.toString ()); }
      ;
 
 CaseBody
