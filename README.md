@@ -17,7 +17,7 @@ know what you think.
 NEWS
 --------
 Now available in [NEWS.md](https://github.com/maxtaco/tamejs/blob/master/NEWS.md).
-Version v0.3.0 just released, with improved but non-backwards-compatible syntax, 
+Version v0.3 just released, with improved but non-backwards-compatible syntax, 
 and bugfixes. This will hopefully be the last such breakage for a while.
 
 
