@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.3.2
+------
+* Fix bug with `switch (x) { case "foo": break; }`.
+
 v0.3.1
 -------
 * Fix bugs with 'use strict'; in the parser
