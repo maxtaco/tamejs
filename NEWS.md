@@ -1,6 +1,12 @@
 News And Changelog
 ==================
 
+v0.3.1
+-------
+* Fix bugs with 'use strict'; in the parser
+* Fix code generation to work with 'use strict' in the case of labeled break
+points.
+
 v0.3.0
 ------
  
