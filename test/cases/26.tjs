@@ -6,7 +6,7 @@ var assert = require ("assert");
 
 var dec = 0.2;
 
-exports["test of 'this' inside of a tamed class"] = {
+exports["test that decimal literals compile"] = {
 
     run  : function (cb) {
         cb ();
