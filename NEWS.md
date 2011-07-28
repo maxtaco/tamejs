@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.3.4
+------
+* Handle decimals properly, patch submitted by frew.
+
 v0.3.3
 -------
 * Fix bug with `this` rewriting. Now all `this` references are rewritten inside a function that's tamed.
