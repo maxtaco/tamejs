@@ -4,7 +4,7 @@
 
 var assert = require ("assert");
 
-var dec = 0.2;
+var dec = 0.2, b = -.11, c = -1.222, d = 10000.111111, e = -1000;
 
 exports["test that decimal literals compile"] = {
 
