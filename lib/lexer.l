@@ -33,6 +33,7 @@
 				   return 'LABEL'; 
                               }
 <INITIAL>[a-zA-Z_][a-zA-Z_0-9]* { return 'ID'; }
+<INITIAL>[-]?[0-9]*\.[0-9]+ { return 'DECIMAL'; }
 
 <INITIAL>"{"		return 'LBRACE';
 <INITIAL>"}"		return 'RBRACE';

@@ -106,6 +106,7 @@ OuterExprAtom
      | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | DECIMAL     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = [ $1 ]; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
@@ -118,6 +119,7 @@ SlotAtom
      | COLON       { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | DOT         { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | DECIMAL     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = [ $1 ]; }
      | ParenExpr   { $$ = $1; } 
      | SlotBracketExpr { $$ = [ new yy.IndexExpr (@1.first_line, $1) ]; }
@@ -318,7 +320,7 @@ Case
 CaseLabel
      : DEFAULT COLON     { $$ = yy.Case (@1.first_line); }
      | CASE LABEL        { $$ = yy.Case (@1.first_line, $2); }
-     | CASE String COLON { $$ = yy.Case (@1.first_line, $2); }
+     | CASE String COLON { $$ = yy.Case (@1.first_line, $2.toString ()); }
      ;
 
 CaseBody

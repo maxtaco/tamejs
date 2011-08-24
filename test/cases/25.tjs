@@ -1,0 +1,49 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var assert = require ("assert");
+
+function MyClass (lim) {
+    this._i = 0;
+    this._lim = lim;
+
+    this.iter = function () { return this._i; }
+    
+    this.next = function (cb) {
+        var done = false;
+        await { setTimeout (defer (), 2 * Math.random ()); }
+        do { 
+            if (this._i >= this._lim) {
+                done = true;
+            } else {
+                this._i ++;
+            }
+        } while (0);
+        await { setTimeout (defer (), 2 * Math.random ()); }
+        cb (done);
+    };
+};
+
+var obj = null;
+var n = 30;
+
+exports["test of 'this' inside of a tamed class"] = {
+
+    run  : function (cb) {
+        obj = new MyClass (n);
+        var done = false;
+        while (!done) {
+            await { obj.next (defer (done)); }
+        }
+        cb ();
+    },
+
+    check : function () {
+        assert.equal (obj.iter (), n, "achieved n iterations");
+    }
+
+
+
+};
+
