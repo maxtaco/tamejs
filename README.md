@@ -206,6 +206,15 @@ require ('tamejs').register (); // register the *.tjs suffix
 require ("mylib.tjs");          // then use node.js's import as normal
 ```
 
+If you want a different extension, this will work:
+```javascript
+require ('tamejs').register ('tamejs'); // register the *.tamejs suffix
+require ("mylib.tamejs");               // then use node.js's import as normal
+``
+
+And you can register lots of different extensions, by calling `register`
+a bunch of times.
+
 API and Documentation
 ---------------------
 
