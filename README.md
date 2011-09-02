@@ -371,8 +371,8 @@ hand-rolled, is that stack traces are often incomplete or
 incomprehensible.  If an exception is caught in a tamed function, the
 stack trace will only show the "bottom half" of the call stack, or all
 of those functions that are descendents of the main event loop.  The
-"top half" of the call stack is probably long gone, telling you "who
-_really_ called this function," is probably long gone.
+"top half" of the call stack, telling you "who _really_ called this
+function," is probably long gone.
 
 Tame has a workaround to this problem.  If you name the callbacks
 passed into your tamed function `cb`, then Tame will attempt to treat
