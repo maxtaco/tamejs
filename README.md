@@ -424,7 +424,7 @@ Tame 'stack' cb trace:
     at baz (8.tjs:15)
 ```
 
-The first stack trace is the standard Node stacktrace.  It is largely
+The first stack trace is the standard Node stacktrace.  It is
 inscrutable, since it mainly covers Tame internals, and has line
 numbering relative to the translated file (I still haven't fixed this
 bug, sorry). The second stack trace is much better.  It tells the
@@ -434,7 +434,7 @@ relative to the original input file.
 In future releases, we'll be cleaning this feature up, but for now, it's a
 marked improvement over previous versions of tamejs.
 
-The API is as follows:
+The relavant API is as follows:
 
 #### tame.stackWalk (cb)
 
