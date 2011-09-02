@@ -16,9 +16,12 @@ know what you think.
 
 NEWS
 --------
-Now available in [NEWS.md](https://github.com/maxtaco/tamejs/blob/master/NEWS.md).
+
+Now available in
+[NEWS.md](https://github.com/maxtaco/tamejs/blob/master/NEWS.md).
 Version v0.4 just released, with initial support for what everyone has
-been asking for --- tame-aware stack traces!
+been asking for --- Tame-aware stack traces! See the section
+"Debugging and Stack Traces..." below for more details.
 
 
 Code Examples
