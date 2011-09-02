@@ -366,12 +366,13 @@ if (!info[0]) {
 How To Debug
 ------------
 
-An oft-cited problem with async style program with explicit callback-passing,
-with Tame or otherwise, is that stack traces are often incomplete.
-If an exception is caught in a tamed function, the stack trace will
-only show the "bottom half" of the call stack: all of those functions
-that are descendents of the main event loop.  The "top half" of the call
-stack is probably long-gone.  
+An oft-cited problem with async-style programming, with Tame or
+hand-rolled, is that stack traces are often incomplete or
+incomprehensible.  If an exception is caught in a tamed function, the
+stack trace will only show the "bottom half" of the call stack, or all
+of those functions that are descendents of the main event loop.  The
+"top half" of the call stack is probably long gone, telling you "who
+_really_ called this function," is probably long gone.
 
 Tame has a workaround to this problem.  If you name the callbacks
 passed into your tamed function `cb`, then Tame will attempt to treat
