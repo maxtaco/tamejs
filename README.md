@@ -363,8 +363,8 @@ if (!info[0]) {
 }
 ```
 
-How To Debug
-------------
+Debugging and Stack Traces -- Now Greatly Improved!
+---------------------------------------------------
 
 An oft-cited problem with async-style programming, with Tame or
 hand-rolled, is that stack traces are often incomplete or
