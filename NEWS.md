@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.4.0
+------
+* Tame-aware stack-traces.
+
 v0.3.4
 ------
 * Handle decimals properly, patch submitted by frew.
