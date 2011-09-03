@@ -1,0 +1,39 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var assert = require ("assert");
+
+var check = false;
+
+function f2 (x) {
+    await setTimeout (defer (), 10);
+    var stk = tame.stackWalk ();
+    if (stk.length > 2 &&
+        stk[0].search (new RegExp ("at f1 \\(test/cases/31.tjs:\\d+\\)")) &&
+        stk[1].search (new RegExp ("at foo \\(test/cases/31.tjs:\\d+\\)"))) {
+        check = true;
+    }
+    x();
+};
+
+function f1 (y) {
+    await f2 (defer ());
+    y();
+};
+
+function foo (z) {
+    await f1 (defer ());
+    z();
+};
+
+exports["tame stack dump"] = {
+
+    run : function (cb) {
+	    await foo (defer ());
+	    cb();
+    },
+    check : function () {
+	    assert.ok (check, "stack was correct");
+    }
+};
