@@ -423,7 +423,7 @@ Error: oh no!
     at Defers._fulfill (/home/max/node/tamejs/lib/runtime.js:149:11)
     at Object._onTimeout (/home/max/node/tamejs/lib/runtime.js:64:4)
     at Timer.callback (timers.js:83:39)
-Tame 'stack' cb trace:
+Tame 'stack' trace:
     at bar (8.tjs:10)
     at baz (8.tjs:15)
 ```
