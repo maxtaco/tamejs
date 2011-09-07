@@ -216,8 +216,18 @@ require ('tamejs').register ('tamejs'); // register the *.tamejs suffix
 require ("mylib.tamejs");               // then use node.js's import as normal
 ```
 
-And you can register lots of different extensions, by calling `register`
-a bunch of times.
+Or, finally, you can call `register` to do a few things at once,
+including multiple suffix registrations:
+
+```javascript
+// Will register suffixes 'tamejs' and 'yojs'; will
+// also enable tame stack tracing...
+require ('tamejs').register ({ extension       : [ 'tamejs', 'yojs'], 
+                               catchExceptions : true }); 
+require ("mylib.tamejs");
+require ("yourlib.yojs");
+```
+
 
 API and Documentation
 ---------------------
