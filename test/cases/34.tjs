@@ -1,0 +1,32 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var slots = {};
+var assert = require ("assert");
+
+var slots = {};
+var n = 10;
+
+exports["test nested serial/parallel"] = {
+    
+    run : function (autocb) {
+	
+        await {
+            for (var i = 0; i < n; i++) {
+                (function (autocb) {
+                    var my_i = i;
+                    await { setTimeout (defer (), 5*Math.random ()); }
+                    await { setTimeout (defer (), 4*Math.random ()); }
+                    slots[my_i] = true;
+                })(defer ());
+            }
+        }
+    },
+    
+    check : function () {
+        for (var i = 0; i < n; i++) {
+	        assert.ok(slots[i], "slots[" + i + "] is set!");
+        }
+    }
+};

@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.4.1
+------
+* `autocb` convenience
+
 v0.4.0
 ------
 * Tame-aware stack-traces.

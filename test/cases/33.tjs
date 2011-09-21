@@ -11,14 +11,9 @@ function foo (val, autocb)
 {
     await setTimeout (defer(), 1);
 
-    if (val == 0) {
-	return [1,2,3];
-    } else  if (val == 1) {
-	return { "a" : 10 };
-    } else if (val == 2) {
-	return (bar());
-    }
-
+    if (val == 0) { return [1,2,3]; } 
+    if (val == 1) { return { "a" : 10 }; } 
+    if (val == 2) { return (bar()); }
     return(33);
 }
 

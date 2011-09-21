@@ -21,7 +21,8 @@ Now available in
 [NEWS.md](https://github.com/maxtaco/tamejs/blob/master/NEWS.md).
 Version v0.4 just released, with initial support for what everyone has
 been asking for --- Tame-aware stack traces! See the section
-"Debugging and Stack Traces..." below for more details.
+"Debugging and Stack Traces..." below for more details.   Also,
+we've added `autocb`s, that fire whenever your tamed function returns.
 
 
 Code Examples
@@ -164,7 +165,6 @@ Note that with windowing, the arrival order might not be the same as
 the issue order. In this example, a slower DNS lookup might arrive
 after faster ones, even if issued before them.
 
-
 Composing Serial And Parallel Patterns
 --------------------------------------
 
@@ -189,6 +189,43 @@ function f(cb) {
     cb();
 }
 ```
+
+
+autocb
+-------------------
+
+Most of the times, a tamed function will call its callback and return
+at the same time.  To get this behavior "for free", you can simply
+name this callback `autocb` and it will fire whenver your tamed function
+returns.  For instance, the above example could be equivalently written as:
+
+```javascript
+function f(autocb) {
+    await {
+        for (var i = 0; i < n; i++) {
+            (function (autocb) {
+                await { setTimeout (defer (), 5*Math.random ()); }
+                await { setTimeout (defer (), 4*Math.random ()); }
+             })(defer ());
+        }
+    }
+}
+```
+
+If your callback needs to fulfill with a value, then you can pass
+that value via return:
+
+```javascript
+function rand_wait(autocb) {
+    var time = Math.floor (Math.random()*5);
+    if (time == 0) {
+        return 0;
+    }
+    await setTimeout (defer (), time);
+    return time;
+}
+```
+	 
 
 Installing and Using
 --------------------
