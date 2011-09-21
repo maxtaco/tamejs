@@ -1,0 +1,43 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var assert = require ("assert");
+var oks = 0;
+
+function bar() { return "yoyo"; }
+
+function foo (val, autocb) 
+{
+    await setTimeout (defer(), 1);
+
+    if (val == 0) {
+	return [1,2,3];
+    } else  if (val == 1) {
+	return { "a" : 10 };
+    } else if (val == 2) {
+	return (bar());
+    }
+
+    return(33);
+}
+
+exports["simple autocb operations"] = {
+    
+    run : function (autocb) {
+	await foo (0, defer (var x));
+	if (x[2] == 3) { oks += 1; }
+	await foo (1, defer (x));
+	if (x["a"] == 10) { oks += 1; }
+	await foo (2, defer (x));
+	if (x == "yoyo") { oks += 1; }
+	await foo (100, defer (x));
+	if (x == 33) { oks += 1; }
+	
+	
+    },
+    
+    check : function () {
+	assert.ok (oks == 4, "all 4 returns happened correctly");
+    }
+};
