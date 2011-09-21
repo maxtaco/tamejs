@@ -33,8 +33,6 @@ exports["simple autocb operations"] = {
 	if (x == "yoyo") { oks += 1; }
 	await foo (100, defer (x));
 	if (x == 33) { oks += 1; }
-	
-	
     },
     
     check : function () {
