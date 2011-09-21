@@ -71,12 +71,12 @@ will exit as soon as the last of your resolutions completes:
 ```javascript
 var dns = require("dns");
 
-function do_one (ev, host) {
+function do_one (cb, host) {
     var err, ip;
     await { dns.resolve (host, "A", defer (err, ip));}
     if (err) { console.log ("ERROR! " + err); } 
     else { console.log (host + " -> " + ip); }
-    ev();
+    cb();
 }
 
 function do_all (lst) {
@@ -466,8 +466,8 @@ Here's what happens when this program is run:
 Error: oh no!
     at /home/max/node/tamejs/8.js:31:23
     at callChain (/home/max/node/tamejs/lib/runtime.js:38:2)
-    at Defers._continuation (/home/max/node/tamejs/lib/runtime.js:38:23)
-    at Defers._fulfill (/home/max/node/tamejs/lib/runtime.js:149:11)
+    at Deferrals._continuation (/home/max/node/tamejs/lib/runtime.js:38:23)
+    at Deferrals._fulfill (/home/max/node/tamejs/lib/runtime.js:149:11)
     at Object._onTimeout (/home/max/node/tamejs/lib/runtime.js:64:4)
     at Timer.callback (timers.js:83:39)
 Tame 'stack' trace:
@@ -525,8 +525,8 @@ for demonstration purposes):
 var tame = require('tamejs').runtime;
 var f0 = function (k) {
     var f1 = function (k) {
-        var __ev = new tame.Defers (k);
-        setTimeout ( __ev.defer(), 100 ) ;
+        var __cb = new tame.Deferrals (k);
+        setTimeout ( __cb.defer(), 100 ) ;
     };
     if (true) {
         f1 (k);
@@ -547,10 +547,10 @@ the `true` branch, we call into `f1`, the rewrite of the `await`
 block, and in the `false` branch, it's just go on with the rest of the
 program by calling the continuation `k`.  Function `f1` is doing
 something a little bit different --- it's passing its continuation
-into the pure JavaScript class `tame.Defers`, which will hold onto it
+into the pure JavaScript class `tame.Deferrals`, which will hold onto it
 until all associated deferrals (like the one passed to `setTimeout`) have
 been fulfilled.  When the last deferral is fulfileld (here after 100ms), then
-the `tame.Defers` class calls the continuation `k`, which here refers
+the `tame.Deferrals` class calls the continuation `k`, which here refers
 to `tame.end`.
 
 The *tamejs* implementation uses other CPS-conversions for `while` and
