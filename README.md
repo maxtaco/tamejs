@@ -211,11 +211,11 @@ function f(autocb) {
     }
 }
 ```
-In the first example, recall, you call to call `cb()` explicitly.  In this example, because the callback is
+In the first example, recall, you call `cb()` explicitly.  In this example, because the callback is
 named `autocb`, it's fired automatically when the tamed function returns.
 
 If your callback needs to fulfill with a value, then you can pass
-that value via return.  Consider the following function, that waits
+that value via `return`.  Consider the following function, that waits
 for a random number of seconds between 0 and 4. After waiting, it
 then fulfills its callback `cb` with the amount of time it waited:
 
@@ -242,7 +242,7 @@ function rand_wait(autocb) {
     return time;
 }
 ```
-Implicitly, `return 0;` is mapped by the tamejs compiler to `autocb(1); return`.
+Implicitly, `return 0;` is mapped by the tamejs compiler to `autocb(0); return`.
  
 
 Installing and Using
