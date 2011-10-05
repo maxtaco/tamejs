@@ -1,0 +1,46 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+require ('tamejs').register ();
+var assert = require ("assert");
+var Pipeliner = require ('../../lib/connectors.tjs').Pipeliner;
+var slots = {};
+
+exports["pipelining"] = {
+
+
+    run : function (ev) {
+	    
+	    function call (i, cb) {
+	        slots[i] = 1;
+	        await { setTimeout (defer (), 10*Math.random()); }
+	        slots[i] |= 2;
+	        cb(4);
+	    };
+
+	    function window (n, w, cb) {
+		var pipeliner = new Pipeliner (w, .01);
+		var tmp = {};
+		for (var i = 0; i < n; i++) {
+		    await pipeliner.waitInQueue (defer ());
+		    call (i, pipeliner.defer (tmp[i]));
+		}
+		await pipeliner.flush (defer ());
+		for (var i in tmp) {
+		    slots[i] |= tmp[i];
+		}
+	        cb ();
+	    };
+	    
+	    var n = 100;
+	    await { window (n, 10, defer ()); }
+	    ev ();
+    },
+	
+    check : function () {
+	    for (var i in slots) {
+	        assert.equal (slots[i], 7, "all 3 events make bitwise 7");
+	    }
+    }
+};
