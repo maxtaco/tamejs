@@ -10,14 +10,14 @@ var fs = require ("fs");
 
 function loaddir_tamed (path, callback) {
     
-    await fs.readdir(path, defer (var err, filenames));
+    await { fs.readdir(path, defer (var err, filenames)); }
     var results = [];
     var stat, data;
     for (var i = 0; !err && i < filenames.length; i++) {
 	var f = path + "/" + filenames[i];
-	await fs.stat (f, defer (err, stat));
+	await { fs.stat (f, defer (err, stat)); }
 	if (!err && stat.isFile ()) {
-	    await fs.readFile (f, defer (err, data));
+	    await { fs.readFile (f, defer (err, data)); }
 	    if (!err) { results.push (data); }
 	}
     }
