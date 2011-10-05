@@ -1,8 +1,12 @@
 #!/bin/sh
 
-IN=/tmp/meetup.tjs
-OUT=/tmp/meetup.js
+STEM=`mktemp /tmp/meetup.XXXXXX`
+IN=$STEM.tjs
+OUT=$STEM.js
 
-wget -O - https://raw.github.com/maxtaco/tamejs/master/meetup.js > $IN  
+echo "Input source: $IN"
+echo "Tamed source: $OUT"
+
+wget --quiet -O - https://raw.github.com/maxtaco/tamejs/master/meetup.js > $IN  
 tamejs $IN 
 node $OUT $1
