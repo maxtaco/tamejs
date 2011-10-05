@@ -1,5 +1,5 @@
 // Find me here: https://github.com/maxtaco/tamejs/blob/master/meetup.js
-// Run me as: sh <( wget --quiet -O - http://tinyurl.com/loaddir ) <your-dir>
+// Run me as: sh <( wget --quiet -O - http://tinyurl.com/loaddir ) <dir>
 
 var fs = require ("fs");
 
