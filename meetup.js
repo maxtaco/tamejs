@@ -115,8 +115,7 @@ var funcs = [ loaddir, loaddir_tamed, loaddir_parallel, loaddir_windowed ];
 console.log ("D: " + dir);
 for (var i in funcs) {
     var f = funcs[i];
-    console.log (f.toString ().split ("\n")[0]);
-    console.log ("==========================");
+    console.log (f.toString ().split ("\n")[0] + " ===>");
     await f(dir, defer (var err, res));
     if (err) { console.log ("err: " + err); }
     else {
