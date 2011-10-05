@@ -3,37 +3,6 @@
 
 var fs = require ("fs");
 
-//=======================================================================
-
-function loaddir(path, callback) {
-    fs.readdir(path, function (err, filenames) {
-	if (err) { callback(err); return; }
-	var realfiles = [];
-	var count = filenames.length;
-	filenames.forEach(function (filename) {
-	    filename = path + "/" + filename;
-	    fs.stat(filename, function (err, stat) {
-		if (err) { callback(err); return; }
-		if (stat.isFile()) {
-		    realfiles.push(filename);
-		}
-		count--;
-		if (count === 0) {
-		    var results = [];
-		    realfiles.forEach(function (filename) {
-			fs.readFile(filename, function (err, data) {
-			    if (err) { callback(err); return; }
-			    results.push(data);
-			    if (results.length === realfiles.length) {
-				callback(null, results);
-			    };
-			});
-		    });
-		}
-	    });
-	});
-    });
-}
 
 //=======================================================================
 
@@ -83,9 +52,8 @@ require ('tamejs').register ()
 var Pipeliner = require ("tamejs/lib/connectors.tjs").Pipeliner;
 
 function loaddir_windowed (path, callback, window) {
-    
-    if (!window) { window = 10; }
-    var pipeline = new Pipeliner (window);
+
+    var pipeline = new Pipeliner (window || 10);
     await fs.readdir(path, defer (var err, filenames));
     var results = [];
 
@@ -107,24 +75,60 @@ function loaddir_windowed (path, callback, window) {
 }
 
 //=======================================================================
+
+function loaddir(path, callback) {
+    fs.readdir(path, function (err, filenames) {
+	if (err) { callback(err); return; }
+	var realfiles = [];
+	var count = filenames.length;
+	filenames.forEach(function (filename) {
+	    filename = path + "/" + filename;
+	    fs.stat(filename, function (err, stat) {
+		if (err) { callback(err); return; }
+		if (stat.isFile()) {
+		    realfiles.push(filename);
+		}
+		count--;
+		if (count === 0) {
+		    var results = [];
+		    realfiles.forEach(function (filename) {
+			fs.readFile(filename, function (err, data) {
+			    if (err) { callback(err); return; }
+			    results.push(data);
+			    if (results.length === realfiles.length) {
+				callback(null, results);
+			    };
+			});
+		    });
+		}
+	    });
+	});
+    });
+}
+
+//=======================================================================
 //
 // Tester code...
 //
 
-var dir = process.argv[2];
-var funcs = [ loaddir, loaddir_tamed, loaddir_parallel, loaddir_windowed ];
+function test (dir) {
+    var dir = process.argv[2];
+    var funcs = [ loaddir, loaddir_tamed, loaddir_parallel, loaddir_windowed ];
 
-console.log ("D: " + dir);
-for (var i in funcs) {
-    var f = funcs[i];
-    console.log (f.toString ().split ("\n")[0] + " ===>");
-    await f(dir, defer (var err, res));
-    if (err) { console.log ("err: " + err); }
-    else {
-	var lens = [];
-	for (var r in res) { lens.push (res[r].length); }
-	console.log (lens.sort().join (","));
+    console.log ("D: " + dir);
+    for (var i in funcs) {
+	var f = funcs[i];
+	console.log (f.toString ().split ("\n")[0] + " ===>");
+	await f(dir, defer (var err, res));
+	if (err) { console.log ("err: " + err); }
+	else {
+	    var lens = [];
+	    for (var r in res) { lens.push (res[r].length); }
+	    console.log (lens.sort().join (","));
+	}
     }
 }
 	    
 //=======================================================================
+
+test (process.argv[2]);
