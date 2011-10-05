@@ -2,7 +2,7 @@
 
 if [ $# -ne 1 ]
 then
-	echo "usage: $0 <your-dir>"
+	echo "usage: meetup.sh <your-dir>"
 	exit 2
 fi
 
