@@ -3,7 +3,6 @@
 
 var fs = require ("fs");
 
-
 //=======================================================================
 
 function loaddir_tamed (path, callback) {
@@ -22,8 +21,9 @@ function loaddir_tamed (path, callback) {
     callback (err, results);
 }
 
-//=======================================================================
 
+
+//=======================================================================
 
 function loaddir_parallel (path, callback) {
     
@@ -46,6 +46,10 @@ function loaddir_parallel (path, callback) {
     callback (err, results);
 }
 
+
+
+
+
 //=======================================================================
 
 require ('tamejs').register ()
@@ -53,12 +57,12 @@ var Pipeliner = require ("tamejs/lib/connectors.tjs").Pipeliner;
 
 function loaddir_windowed (path, callback, window) {
 
-    var pipeline = new Pipeliner (window || 10);
+    var pipeliner = new Pipeliner (window || 10);
     await fs.readdir(path, defer (var err, filenames));
     var results = [];
 
     for (var i = 0; !err && i < filenames.length; i++) {
-	await pipeline.waitInQueue (defer ());
+	await pipeliner.waitInQueue (defer ());
 	(function (autocb) {
 	    var f = path + "/" + filenames[i];
 	    var myerr, stat, data;
@@ -68,11 +72,35 @@ function loaddir_windowed (path, callback, window) {
 		if (!myerr) { results.push (data); }
 	    }
 	    if (myerr) { err = myerr; }
-	}) (pipeline.defer ());
+	}) (pipeliner.defer ());
     }
-    await pipeline.flush (defer ());
+    await pipeliner.flush (defer ());
     callback (err, results);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //=======================================================================
 
@@ -106,6 +134,26 @@ function loaddir(path, callback) {
     });
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //=======================================================================
 //
 // Tester code...
@@ -113,7 +161,8 @@ function loaddir(path, callback) {
 
 function test (dir) {
     var dir = process.argv[2];
-    var funcs = [ loaddir, loaddir_tamed, loaddir_parallel, loaddir_windowed ];
+    var funcs = [ loaddir, loaddir_tamed, loaddir_parallel, 
+                  loaddir_windowed ];
 
     console.log ("D: " + dir);
     for (var i in funcs) {
