@@ -1,4 +1,7 @@
 
+require ('tamejs').register ()
+var fs = require ("fs");
+
 //=======================================================================
 
 function loaddir(path, callback) {
@@ -7,6 +10,7 @@ function loaddir(path, callback) {
 	var realfiles = [];
 	var count = filenames.length;
 	filenames.forEach(function (filename) {
+	    filename = path + "/" + filename;
 	    fs.stat(filename, function (err, stat) {
 		if (err) { callback(err); return; }
 		if (stat.isFile()) {
@@ -38,9 +42,10 @@ function loaddir_tamed (path, callback) {
     var results = [];
     var stat, data;
     for (var i = 0; !err && i < filenames.length; i++) {
-	await fs.stat (filenames[i], defer (err, stat));
+	var f = path + "/" + filenames[i];
+	await fs.stat (f, defer (err, stat));
 	if (!err && stat.isFile ()) {
-	    await fs.readFile (filenames[i], defer (err, data));
+	    await fs.readFile (f, defer (err, data));
 	    if (!err) { results.push (data); }
 	}
     }
@@ -57,10 +62,11 @@ function loaddir_parallel (path, callback) {
     await {
 	for (var i = 0; !err && i < filenames.length; i++) {
 	    (function (autocb) {
+		var f = path + "/" + filenames[i];
 		var myerr, stat, data;
-		await fs.stat (filenames[i], defer (myerr, stat));
+		await fs.stat (f, defer (myerr, stat));
 		if (!myerr && stat.isFile ()) {
-		    await fs.readFile (filenames[i], defer (myerr, data));
+		    await fs.readFile (f, defer (myerr, data));
 		    if (!myerr) { results.push (data); }
 		}
 		if (myerr) { err = myerr; }
@@ -72,30 +78,52 @@ function loaddir_parallel (path, callback) {
 
 //=======================================================================
 
-var Pipeliner = require ("connectors").Pipeliner;
+var Pipeliner = require ("tamejs/lib/connectors.tjs").Pipeliner;
 
 function loaddir_windowed (path, callback, window) {
     
+    if (!window) { window = 10; }
     var pipeline = new Pipeliner (window);
     await fs.readdir(path, defer (var err, filenames));
     var results = [];
 
     for (var i = 0; !err && i < filenames.length; i++) {
 	await pipeline.waitInQueue (defer ());
-
 	(function (autocb) {
+	    var f = path + "/" + filenames[i];
 	    var myerr, stat, data;
-	    await fs.stat (filenames[i], defer (myerr, stat));
+	    await fs.stat (f, defer (myerr, stat));
 	    if (!myerr && stat.isFile ()) {
-		await fs.readFile (filenames[i], defer (myerr, data));
+		await fs.readFile (f, defer (myerr, data));
 		if (!myerr) { results.push (data); }
 	    }
 	    if (myerr) { err = myerr; }
 	}) (pipeline.defer ());
     }
-    await pipeliner.flush (defer ());
-
-    callback (topErr, errors, results);
+    await pipeline.flush (defer ());
+    callback (err, results);
 }
 
+//=======================================================================
+//
+// Tester code...
+//
+
+var dir = process.argv[2];
+var funcs = [ loaddir, loaddir_tamed, loaddir_parallel, loaddir_windowed ];
+
+console.log ("D: " + dir);
+for (var i in funcs) {
+    var f = funcs[i];
+    console.log (f.toString ().split ("\n")[0]);
+    console.log ("==========================");
+    await f(dir, defer (var err, res));
+    if (err) { console.log ("err: " + err); }
+    else {
+	var lens = [];
+	for (var r in res) { lens.push (res[r].length); }
+	console.log (lens.sort().join (","));
+    }
+}
+	    
 //=======================================================================
