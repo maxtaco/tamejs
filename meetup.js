@@ -1,5 +1,4 @@
 
-require ('tamejs').register ()
 var fs = require ("fs");
 
 //=======================================================================
@@ -78,6 +77,7 @@ function loaddir_parallel (path, callback) {
 
 //=======================================================================
 
+require ('tamejs').register ()
 var Pipeliner = require ("tamejs/lib/connectors.tjs").Pipeliner;
 
 function loaddir_windowed (path, callback, window) {
