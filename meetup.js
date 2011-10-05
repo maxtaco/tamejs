@@ -1,5 +1,8 @@
-// Find me here: https://github.com/maxtaco/tamejs/blob/master/meetup.js
-// Run me as: sh <( wget --quiet -O - http://tinyurl.com/loaddir ) <dir>
+// Online: https://github.com/maxtaco/tamejs/blob/master/meetup.js
+// Prereq: npm install tamejs
+// Run me: sh <( wget --quiet -O - http://tinyurl.com/loaddir ) <dir>
+// Author: Max Krohn max@okcupid.com
+
 
 var fs = require ("fs");
 
@@ -45,9 +48,6 @@ function loaddir_parallel (path, callback) {
     }
     callback (err, results);
 }
-
-
-
 
 
 //=======================================================================
