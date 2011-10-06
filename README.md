@@ -455,8 +455,8 @@ function do_all (lst, windowsz) {
     var pipeliner = new Pipeliner (windowsz);
 
     for (var i in lst) {
-    	await pipeliner.waitInQueue (defer ());
-	do_one (pipeliner.defer (), lst[i]);
+        await pipeliner.waitInQueue (defer ());
+        do_one (pipeliner.defer (), lst[i]);
     }
     await pipeliner.flush (defer ());
 }
@@ -478,9 +478,9 @@ The callback `c` will be fulfilled when there is room.
 ### Pipeliner.defer (...args)
 
 Create a new `defer`al for this pipeline, and pass it to whatever
-function is doing the actually work.  When the work completes,
-it will update the accounting in the pipeliner class, so that 
-queued actions can now proceed.
+function is doing the actual work.  When the work completes, fulfill
+this `defer`al --- that will update the accounting in the pipeliner
+class, allowing queued actions to proceed.
 
 ### Pipeliner.flush (c)
 
