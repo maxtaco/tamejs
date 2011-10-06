@@ -1,6 +1,14 @@
 News And Changelog
 ==================
 
+v0.4.3
+------
+* Add sktaylor's patch for a bug in findDeferCb (issue #20).
+
+v0.4.2
+------
+* `Pipeliner class
+
 v0.4.1
 ------
 * `autocb` convenience
