@@ -211,8 +211,9 @@ function f(autocb) {
     }
 }
 ```
-In the first example, recall, you call `cb()` explicitly.  In this example, because the callback is
-named `autocb`, it's fired automatically when the tamed function returns.
+In the first example, recall, you call `cb()` explicitly.  In this
+example, because the callback is named `autocb`, it's fired
+automatically when the tamed function returns.
 
 If your callback needs to fulfill with a value, then you can pass
 that value via `return`.  Consider the following function, that waits
@@ -430,6 +431,62 @@ if (!info[0]) {
     console.log (host + " -> " + ip);
 }
 ```
+
+### The Pipeliner library
+
+There's another way to do the windowed DNS lookups we saw earlier ---
+you can use the control flow library called `Pipeliner`, which 
+manages the common pattern of having "m calls total, with only
+n of them in flight at once, where m > n."
+
+The Pipeliner class is available in the connectors library:
+
+```javascript
+require ('tamejs').register (); // since connectors is a tamed library...
+var Pipeliner = require ('tamejs/lib/connectors').Pipeliner;
+var pipeliner = new Pipeliner (w,s);
+```
+
+Using the pipeliner, we can rewrite our earlier windowed DNS lookups
+as follows:
+
+```javascript  
+function do_all (lst, windowsz) {
+    var pipeliner = new Pipeliner (windowsz);
+
+    for (var i in lst) {
+    	await pipeliner.waitInQueue (defer ());
+	do_one (pipeliner.defer (), lst[i]);
+    }
+    await pipeliner.flush (defer ());
+}
+```
+
+The API is as follows:
+
+### new Pipeliner (w, s)
+
+Create a new Pipeliner controller, with a window of at most `w` calls
+out at once, and waiting `s` seconds before launching each call.  The
+default values are `w = 10` and `s = 0`.
+
+### Pipeliner.waitInQueue (c)
+
+Wait in a queue until there's room in the window to launch a new call.
+The callback `c` will be fulfilled when there is room.
+
+### Pipeliner.defer (...args)
+
+Create a new `defer`al for this pipeline, and pass it to whatever
+function is doing the actually work.  When the work completes,
+it will update the accounting in the pipeliner class, so that 
+queued actions can now proceed.
+
+### Pipeliner.flush (c)
+
+Wait for the pipeline to clear out.  Fulfills the callback `c`
+when the last action in the pipeline is done.
+
 
 Debugging and Stack Traces -- Now Greatly Improved!
 ---------------------------------------------------
