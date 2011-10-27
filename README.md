@@ -277,9 +277,11 @@ including multiple suffix registrations:
 
 ```javascript
 // Will register suffixes 'tamejs' and 'yojs'; will
-// also enable tame stack tracing...
+// also enable tame stack tracing, and disable caching of
+// .tjs files included at runtime
 require ('tamejs').register ({ extension       : [ 'tamejs', 'yojs'], 
-                               catchExceptions : true }); 
+                               catchExceptions : true,
+			       disableCache    : true })
 require ("mylib.tamejs");
 require ("yourlib.yojs");
 ```
