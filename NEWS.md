@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.4.4
+-------
+* Fix in caching of intermediate runtime files, and also some more switches to turn of caching
+
 v0.4.3
 ------
 * Add sktaylor's patch for a bug in findDeferCb (issue #20).
