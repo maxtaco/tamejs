@@ -1,1 +1,0 @@
-docs/meetup-20111005/meetup.sh
