@@ -49,6 +49,7 @@
 <INITIAL>"!="           return 'EQUALS';
 <INITIAL>"<="           return 'EQUALS';
 <INITIAL>">="           return 'EQUALS';
+<INITIAL>[<>&\|*^/~+-][=] return 'EQUALS';
 
 <INITIAL>"\""		{ this.begin ('ST_QUOTE2'); return 'QUOTE2'; }
 <INITIAL>"'"		{ this.begin ('ST_QUOTE1'); return 'QUOTE1'; }
