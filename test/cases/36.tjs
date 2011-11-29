@@ -1,0 +1,33 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var assert = require ("assert");
+
+var sum = 0;
+var i = 0;
+
+exports["another test of continue and break (no tame)"] = {
+
+    run : function (cb) {
+
+	while (i < 100) {
+	    i++;
+
+	    if (i == 4) {
+		continue;
+	    }
+	    sum += i;
+
+	    if (i == 10) { 
+		break;
+	    }
+	}
+	cb();
+    },
+
+    check : function () {
+	assert.ok ((sum == 51 && i == 10), "continues / breaks ok!");
+    }
+
+};

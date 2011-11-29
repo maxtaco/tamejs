@@ -11,31 +11,31 @@ exports["another test of continue and break"] = {
 
     run : function (cb) {
 
-	foo : while (i < 100) {
-
-	    await { setTimeout (defer (), 10*Math.random()); }
-	    
-	    if (i == 10) {
-		i += 2;
-		res |= (1 << 20);
-		continue foo;
+	    foo : while (i < 100) {
+            
+	        await { setTimeout (defer (), 10*Math.random()); }
+	        
+	        if (i == 10) {
+		        i += 2;
+		        res |= (1 << 20);
+		        continue foo;
+	        }
+            
+	        res |= (1 << i);
+            
+	        if (i == 3) {
+		        i++;
+		        res |= (1 << 21);
+	        }
+            
+	        if (i == 13) {
+		        res |= (1 << 22);
+		        break foo;
+	        }
+	        i++;
 	    }
-
-	    res |= (1 << i);
-
-	    if (i == 3) {
-		i++;
-		res |= (1 << 21);
-	    }
-
-	    if (i == 13) {
-		res |= (1 << 22);
-		break foo;
-	    }
-	    i++;
-	}
-	res |= (1 << 23);
-	cb();
+	    res |= (1 << 23);
+	    cb();
     },
 
     check : function () {

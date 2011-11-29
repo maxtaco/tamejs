@@ -62,7 +62,9 @@ A(block) {
 function bar (x) {
     if (x) { 
 	if (x == 3) {
-	    return x;
+	    if (y == 4) {
+		return x;
+	    }
 	    x++;
 	} else {
 	    x += 3
