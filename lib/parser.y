@@ -108,6 +108,7 @@ OuterExprAtom
      | ID          { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | DECIMAL     { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | EQUALS      { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
+     | BANG        { $$ = [ new yy.Atom (@1.first_line, yytext) ]; }
      | String      { $$ = [ $1 ]; }
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }

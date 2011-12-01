@@ -1,0 +1,38 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var assert = require ("assert");
+
+var sum = 0;
+var i = 0;
+
+function Class () {
+    this._stop = false;
+
+    this.run = function (cb) {
+	var i = 0;
+	var tot = 0;
+	while (!this._stop) {
+	    await setTimeout (defer(), 1);
+	    tot += i;
+	    i += 1;
+	    if (i >= 10) { this._stop = true; }
+	}
+	cb (tot);
+    };
+};
+
+exports["appropriate this translation for tamed while"] = {
+
+    run : function (cb) {
+	c = new Class ();
+	await c.run (defer (res));
+	cb();
+    },
+
+    check : function () {
+	assert.equal (res, 45, "loop broke");
+    }
+
+};
