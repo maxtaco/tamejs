@@ -1,6 +1,14 @@
 News And Changelog
 ==================
 
+v0.4.9
+------
+* Fix bug in !== lexing
+
+v0.4.8
+------
+* Fix bug in while(!foo) {} 
+
 v0.4.4
 -------
 * Fix in caching of intermediate runtime files, and also some more switches to turn of caching
