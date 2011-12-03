@@ -46,6 +46,7 @@
 <INITIAL>':'		return 'COLON';
 <INITIAL>'.'            return 'DOT';
 <INITIAL>[=]+           return 'EQUALS';
+<INITIAL>"!=="          return 'EQUALS';
 <INITIAL>"!="           return 'EQUALS';
 <INITIAL>"<="           return 'EQUALS';
 <INITIAL>">="           return 'EQUALS';
