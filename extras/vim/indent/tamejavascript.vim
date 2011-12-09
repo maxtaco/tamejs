@@ -1,0 +1,2 @@
+runtime! indent/javascript.vim
+
