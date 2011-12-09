@@ -766,7 +766,7 @@ Authors
 * Max Krohn (first name AT okcupid DOT com)
 * Chris Coyne (first name AT okcupid DOT com)
 * Eddie Kohler (original Tame coauthor, and advisor)
-* Martin Schürrer (vim mode; see `extras/vim`)
+* Martin Schürrer (vim mode; see `extras/vim`, see https://github.com/MSch/vim-tamejs)
 
 License
 -------
