@@ -757,7 +757,7 @@ As described above, the Tame source-to-source translator was
 originally written for asynchronous C++ code.  It's an actively
 maintained project, and it is in widespread use at
 [OkCupid.com](http://www.okcupid.com).  See the [sfslite/tame
-Wiki](http://okws.org/doku.php?id=sfslite:tame2) for more information,
+Wiki](https://github.com/okws/sfslite/wiki/tame) for more information,
 or read the [2007 Usenix ATC
 paper](http://pdos.csail.mit.edu/~max/docs/tame.pdf).
 
