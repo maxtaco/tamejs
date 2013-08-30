@@ -67,9 +67,9 @@ ParenExpr
      : LPAREN InnerExpr RPAREN     
      { 
          var out = [ new yy.Atom (@1.first_line, '(') ];
-	 $2.pushAtomsToArray (out);
-	 out.push (new yy.Atom (@3.first_line, ')'));
-	 $$ = out;
+     $2.pushAtomsToArray (out);
+     out.push (new yy.Atom (@3.first_line, ')'));
+     $$ = out;
      }
      ;
 
@@ -77,16 +77,16 @@ BracketExpr
      : LBRACKET InnerExpr RBRACKET 
      { 
          var out = [ new yy.Atom (@1.first_line, '[') ];
-	 $2.pushAtomsToArray (out);
-	 out.push (new yy.Atom (@3.first_line, ']'));
-	 $$ = out;
+     $2.pushAtomsToArray (out);
+     out.push (new yy.Atom (@3.first_line, ']'));
+     $$ = out;
      }
      ;
 
 SlotBracketExpr 
      : LBRACKET InnerExpr RBRACKET 
      { 
-	 $$ = $2;
+     $$ = $2;
      }
      ;
 
@@ -94,9 +94,9 @@ BraceExpr
      : LBRACE InnerExpr RBRACE    
      { 
          var out = [ new yy.Atom (@1.first_line, '{') ];
-	 $2.pushAtomsToArray (out);
-	 out.push (new yy.Atom (@3.first_line, '}'));
-	 $$ = out;
+     $2.pushAtomsToArray (out);
+     out.push (new yy.Atom (@3.first_line, '}'));
+     $$ = out;
      }
      ;
 
@@ -168,8 +168,8 @@ Expr
      : { $$ = new yy.Expr ([]); }
      | OuterExprAtom InnerExprAtomList
      {
-	 var lst = $1.concat ($2);
-	 $$ = new yy.Expr (lst);
+     var lst = $1.concat ($2);
+     $$ = new yy.Expr (lst);
      }
      ;
 
@@ -177,7 +177,7 @@ ExprStatement
      : Expr SEMICOLON 
      { 
          $1.addAtom (new yy.Atom (@2.first_line, ";")); 
-	 $$ = $1; 
+     $$ = $1; 
      }
      | FunctionDeclaration 
      {
@@ -210,14 +210,14 @@ LabeledStatement
      : Label Statement
      {
          $2.setLabel ($1);
-	 $$ = $2;
+     $$ = $2;
      }
      ;
 
 TryStatement
      : TRY Block CatchStatementOpt FinallyStatementOpt
      {
-	  $$ = new yy.TryStatement (@1.first_line, $2, $3, $4);
+      $$ = new yy.TryStatement (@1.first_line, $2, $3, $4);
      }
      ;
 
@@ -308,7 +308,7 @@ CaseBlock
      | CaseBlock Case 
      {
          $1.push ($2);
-	 $$ = $1;
+     $$ = $1;
      }
      ;
 
@@ -316,7 +316,7 @@ Case
      : CaseLabel CaseBody
      {
          $1.addBody (@1.first_line, $2);
-	 $$ = $1;
+     $$ = $1;
      }
      ;
 
@@ -353,7 +353,7 @@ ForIter
      ;
 
 FunctionDeclaration
-     : FUNCTION	IdOpt LPAREN ParamListOpt RPAREN Block
+     : FUNCTION IdOpt LPAREN ParamListOpt RPAREN Block
      {
          $$ = new yy.FunctionDeclaration (@1.first_line, $2, $4, $6);
      }
