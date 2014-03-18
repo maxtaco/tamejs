@@ -1,0 +1,67 @@
+// -*- mode: javascript; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+"use strict";
+
+var slots = {};
+var n = 40;
+var assert = require ("assert");
+
+exports["simple arguments test await"] = {
+    
+    run : function (cb) {
+
+        function noAwait(callback){
+            slots.noAwait = [];
+            for(var i = 1; i < arguments.length; i++){
+                slots.noAwait.push(arguments[i]);
+            }
+            callback();
+        }
+
+        function singleAwait(callback){
+            slots.singleAwait = [];
+            await { setTimeout (defer (), 1); }
+            for(var i = 1; i < arguments.length; i++){
+                slots.singleAwait.push(arguments[i]);
+            }
+            callback();
+        }
+
+        function doubleAwait(callback){
+            slots.doubleAwait = [];
+            await { setTimeout (defer (), 1); }
+            (function(){
+                await { setTimeout (defer (), 1); }
+                for(var i = 0; i < arguments.length; i++){
+                    slots.doubleAwait[i] = arguments[i];
+                }
+                callback();
+            })(1, 2, 3);
+        }
+
+        function deepAwait(callback){
+            slots.deepAwait = [];
+            (function(){
+                await { setTimeout (defer (), 1); }
+                for(var i = 0; i < arguments.length; i++){
+                    slots.deepAwait[i] = arguments[i];
+                }
+                callback();
+            })(4, 5, 6);
+        }
+
+        await{ noAwait(defer(), "a", "b", "c"); }
+        await{ singleAwait(defer(), "c", "d", "e"); }
+        await{ doubleAwait(defer()); }
+        await{ deepAwait(defer()); }
+
+        cb();
+    },
+    
+    check : function () {
+        assert.deepEqual(slots.noAwait, ["a", "b", "c"]);
+        assert.deepEqual(slots.singleAwait, ["c", "d", "e"]);
+        assert.deepEqual(slots.doubleAwait, [1, 2, 3]);
+        assert.deepEqual(slots.deepAwait, [4, 5, 6]);
+    }
+};

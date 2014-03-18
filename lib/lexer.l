@@ -25,6 +25,7 @@
 <INITIAL>"switch"   return 'SWITCH';
 <INITIAL>"default"  return 'DEFAULT';
 <INITIAL>"this"         return 'THIS';
+<INITIAL>"arguments"         return 'ARGUMENTS';
 <INITIAL>"with"         return 'WITH';
 <INITIAL>"#!"[ ]*[/].*  return 'SHBANG'; 
 

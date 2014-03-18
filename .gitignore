@@ -1,0 +1,4 @@
+test/cases/*.out.js
+node_modules
+.*.tjs.*.cache
+.*.tamejs.*.cache
