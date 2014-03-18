@@ -113,6 +113,7 @@ OuterExprAtom
      | ParenExpr   { $$ = $1; } 
      | BracketExpr { $$ = $1; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
+     | ARGUMENTS   { $$ = [ new yy.ArgumentsExpr (@1.first_line) ]; }
      | Defer      { $$ = [ $1 ]; }
      ;
 
@@ -127,6 +128,7 @@ SlotAtom
      | ParenExpr   { $$ = $1; } 
      | SlotBracketExpr { $$ = [ new yy.IndexExpr (@1.first_line, $1) ]; }
      | THIS        { $$ = [ new yy.ThisExpr (@1.first_line) ]; }
+     | ARGUMENTS   { $$ = [ new yy.ArgumentsExpr (@1.first_line) ]; }
      | Defer       { $$ = [ $1 ]; }
      | LABEL       { $$ = [ new yy.Atom (@1.first_line, yytext + " :")]; }
      | BraceExpr   { $$ = $1; }
