@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.4.12
+------
+* No changes - fix inconsistent npm version numbers
+
 v0.4.10
 ------
 * Add support for the arguments pseudo array in tamed functions
