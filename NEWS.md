@@ -1,6 +1,10 @@
 News And Changelog
 ==================
 
+v0.4.10
+------
+* Add support for the arguments pseudo array in tamed functions
+
 v0.4.9
 ------
 * Fix bug in !== lexing
