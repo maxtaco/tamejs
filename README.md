@@ -353,7 +353,7 @@ straight-ahead JavaScript library.  It's quite useful for more advanced
 control flows, so we've included it in the main runtime library.
 
 The `Rendezvous` is similar to a blocking condition variable (or a
-"Hoare sytle monitor") in threaded programming.
+"Hoare style monitor") in threaded programming.
 
 #### tame.Rendezvous.id (i).defer (slots,...)
 
@@ -505,7 +505,7 @@ Tame has a workaround to this problem.  When a tamed function is
 entered, the runtime will find the first argument to the function that
 was output by `defer()`.  Such callbacks are annotated to contain the
 file, line and function where they were created.  They also are
-annotated to hold a refernce to `defer()`-generated callback passed to
+annotated to hold a reference to `defer()`-generated callback passed to
 the function in which they were created.  This chaining creates an
 implicit stack that can be walked when an exception is thrown.
 
